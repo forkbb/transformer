@@ -52,8 +52,8 @@ P.S. If you see the contents of the file in both cases, then something went wron
 
 ### For NGINX:
 
-* [Example](https://github.com/forkbb/forkbb/blob/master/nginx.dist.conf) nginx configuration.
-* Note: Root must point to the [**public/**](https://github.com/forkbb/forkbb/tree/master/public) directory.
+* [Example](https://github.com/forkbb/transformer/blob/main/nginx.dist.conf) nginx configuration.
+* Note: Root must point to the [**public/**](https://github.com/forkbb/transformer/tree/main/public) directory.
 * Note: The **index.dist.php** file does not need to be renamed.
 
 ## Links
