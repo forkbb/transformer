@@ -1,0 +1,205 @@
+#
+msgid ""
+msgstr ""
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Project-Id-Version: ForkBB\n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: ForkBB <mio.visman@yandex.ru>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: en\n"
+
+msgid "User search"
+msgstr "User search"
+
+msgid "No search permission"
+msgstr "You do not have permission to use the search feature."
+
+msgid "Search criteria legend"
+msgstr "Enter your search criteria"
+
+msgid "Search info"
+msgstr "To search by keyword, enter a term or terms to search for. Separate terms with spaces. Use AND, OR and NOT to refine your search. To search by author enter the username of the author whose posts you wish to search for. Use wildcard character * for partial matches."
+
+msgid "Keyword search"
+msgstr "Keyword search"
+
+msgid "Author search"
+msgstr "Author search"
+
+msgid "Search in legend"
+msgstr "Select where to search"
+
+msgid "Search in info"
+msgstr "Choose in which forum you would like to search and if you want to search in topic subjects, message text or both."
+
+msgid "Search multiple forums info"
+msgstr "If no forums are selected, all forums will be searched."
+
+msgid "Forum search"
+msgstr "Forum"
+
+msgid "Search in"
+msgstr "Search in"
+
+msgid "Message and subject"
+msgstr "Message text and topic subject"
+
+msgid "Message only"
+msgstr "Message text only"
+
+msgid "Topic only"
+msgstr "Topic subject only"
+
+msgid "Sort by"
+msgstr "Sort by"
+
+msgid "Sort order"
+msgstr "Results sort order"
+
+msgid "Search results legend"
+msgstr "Select how to view search results"
+
+msgid "Search results info"
+msgstr "You can choose how you wish to sort and show your results."
+
+msgid "Sort by post time"
+msgstr "Post time"
+
+msgid "Sort by author"
+msgstr "Author"
+
+msgid "Sort by subject"
+msgstr "Subject"
+
+msgid "Sort by forum"
+msgstr "Forum"
+
+msgid "Ascending"
+msgstr "Ascending"
+
+msgid "Descending"
+msgstr "Descending"
+
+msgid "Show as"
+msgstr "Show results as"
+
+msgid "Show as topics"
+msgstr "Topics"
+
+msgid "Show as posts"
+msgstr "Posts"
+
+msgid "Search results"
+msgstr "Search results"
+
+msgid "Quick search new"
+msgstr "New"
+
+msgid "Quick search latest_active_topics"
+msgstr "Latest active"
+
+msgid "Quick search unanswered_topics"
+msgstr "Unanswered"
+
+msgid "Quick search topics_with_your_posts"
+msgstr "Posted"
+
+msgid "Quick search user topics"
+msgstr "Topics by %s"
+
+msgid "Quick search user posts"
+msgstr "Posts by %s"
+
+msgid "Quick search user topics_subscriptions"
+msgstr "Topics subscribed by %s"
+
+msgid "Quick search user forums_subscriptions"
+msgstr "Forums subscribed by %s"
+
+msgid "Quick search show_user_warn"
+msgstr "Warnings for %s"
+
+msgid "Quick search show_last"
+msgstr "Last posts"
+
+msgid "Search query: %s"
+msgstr "Search query: «%s»"
+
+msgid "Search query: %1$s and Author: %2$s"
+msgstr "Search query: «%1$s» - Author: «%2$s»"
+
+msgid "No terms"
+msgstr "You have to enter at least one keyword and/or an author to search for."
+
+msgid "No hits"
+msgstr "Your search returned no hits."
+
+msgid "No user posts"
+msgstr "There are no posts by this user in this forum."
+
+msgid "No user topics"
+msgstr "There are no topics by this user in this forum."
+
+msgid "No subscriptions"
+msgstr "This user is currently not subscribed to any topics."
+
+msgid "No new posts"
+msgstr "There are no topics with new posts since your last visit."
+
+msgid "No recent posts"
+msgstr "No new posts have been made within the last 24 hours."
+
+msgid "No unanswered"
+msgstr "There are no unanswered posts in this forum."
+
+msgid "Go to post"
+msgstr "Go to post"
+
+msgid "Go to topic"
+msgstr "Go to topic"
+
+msgid "Go to forum"
+msgstr "Go to forum"
+
+msgid "Search btn"
+msgstr "Serach"
+
+msgid "<a href=\"%s\">Advanced search</a>"
+msgstr "<a href=\"%s\">Advanced search</a>"
+
+msgid "<a href=\"%s\">Simple search</a>"
+msgstr "<a href=\"%s\">Simple search</a>"
+
+msgid "Category prefix"
+msgstr ""
+
+msgid "Forum prefix"
+msgstr ""
+
+msgid "Forum indent"
+msgstr "◦ ◦ "
+
+msgid "There is no word for search: '%s'"
+msgstr "There is no word for search: '%s'"
+
+msgid "Logical operator at the end of the search query: '%s'"
+msgstr "Logical operator at the end of the search query: '%s'"
+
+msgid "The order of brackets is broken: '%s'"
+msgstr "The order of brackets is broken: '%s'"
+
+msgid "Empty subquery: '%s'"
+msgstr "Empty subquery: '%s'"
+
+msgid "Logical operator at the end of the search subquery: '%s'"
+msgstr "Logical operator at the end of the search subquery: '%s'"
+
+msgid "Logical operator at the beginning of the search (sub)query: '%s'"
+msgstr "Logical operator at the beginning of the search (sub)query: '%s'"
+
+msgid "Logical operators follow one after another: '%s'"
+msgstr "Logical operators follow one after another: '%s'"

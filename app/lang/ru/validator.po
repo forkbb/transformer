@@ -1,0 +1,196 @@
+#
+msgid ""
+msgstr ""
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"Project-Id-Version: ForkBB\n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: ForkBB <mio.visman@yandex.ru>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: ru\n"
+
+msgid "Invalid email"
+msgstr "Указанный почтовый адрес неверен."
+
+msgid "Long email"
+msgstr "Указанный почтовый адрес слишком длинный."
+
+msgid "Passphrase help"
+msgstr "Кодовая фраза должна содержать несколько слов. Кодовая фраза должна состоять минимум из 16 символов. Она чувствительна к регистру вводимых букв."
+
+msgid "Pass format"
+msgstr "Кодовая фраза должна содержать несколько слов. Кодовая фраза должна состоять минимум из 16 символов."
+
+msgid "Login format"
+msgstr "Имя пользователя должно начинаться с буквы. Может содержать буквы, цифры, пробел, точку, дефис и знак подчеркивания."
+
+msgid "Banned email"
+msgstr "Введенный почтовый адрес заблокирован."
+
+msgid "Username censor"
+msgstr "Выбранное имя пользователя содержит запрещенные слова. Пожалуйста, выберите другое имя."
+
+msgid "Banned username"
+msgstr "Введенное имя пользователя заблокировано. Пожалуйста, выберите другое имя."
+
+msgid "Username not unique"
+msgstr "Выбранное имя пользователя не уникально. Пожалуйста, выберите другое имя."
+
+msgid "Dupe email"
+msgstr "Введенный почтовый адрес уже кем-то используется. Пожалуйста, выберите другой адрес."
+
+msgid "Account email flood"
+msgstr "Для этой учетной записи недавно уже запрашивали сброс кодовой фразы. Пожалуйста, подождите %s минут, прежде чем повторить попытку."
+
+msgid "Old browser"
+msgstr "Обновите свой браузер."
+
+msgid "Bad browser"
+msgstr "Обновите свой браузер."
+
+msgid "Username contains consecutive spaces"
+msgstr "В имени пользователя есть идущие подряд пробелы."
+
+msgid "Flood message"
+msgstr "Пожалуйста, подождите %s секунд и попробуйте снова."
+
+msgid "[%1$s] tag in blacklist"
+msgstr "Тег [%1$s] находится в черном списке."
+
+msgid "[%1$s] tag not in whitelist"
+msgstr "Тег [%1$s] отсутствует в белом списке."
+
+msgid "[%1$s] tag can't be opened in [%2$s] tag"
+msgstr "Тег [%1$s] нельзя открыть внутри тега [%2$s]."
+
+msgid "No start tag found for [/%1$s] tag"
+msgstr "Не найден начальный тег для парного тега [/%1$s]."
+
+msgid "Found [/%1$s] tag for single [%1$s] tag"
+msgstr "Найден парный тег [/%1$s] для одиночного тега [%1$s]."
+
+msgid "No attributes in [%1$s] tag"
+msgstr "В теге [%1$s] отсутствуют атрибуты."
+
+msgid "Primary attribute is forbidden in [%1$s] tag"
+msgstr "Тег [%1$s] не может содержать первичный атрибут."
+
+msgid "Secondary attribute is forbidden in [%1$s] tag"
+msgstr "Тег [%1$s] не может содержать вторичные атрибуты."
+
+msgid "Attribute '%2$s' does not match pattern in [%1$s] tag"
+msgstr "Атрибут '%2$s' тега [%1$s] не соответствует шаблону."
+
+msgid "[%1$s] tag contains unknown secondary attribute '%2$s'"
+msgstr "Тег [%1$s] содержит неизвестный вторичный атрибут '%2$s'."
+
+msgid "Body of [%1$s] tag does not match pattern"
+msgstr "Тело тега [%1$s] не соответствует шаблону."
+
+msgid "[%1$s] tag was opened within itself, this is not allowed"
+msgstr "Тег [%1$s] нельзя открыть внутри аналогичного тега."
+
+msgid "Missing attribute '%2$s' in [%1$s] tag"
+msgstr "В теге [%1$s] отсутствует обязательный атрибут '%2$s'."
+
+msgid "All tags are empty"
+msgstr "Все теги пустые."
+
+msgid "The depth of the tag tree is greater than %1$s"
+msgstr "Глубина дерева тегов больше %1$s."
+
+msgid "[%1$s] tag is enclosed in itself more than %2$s times"
+msgstr "Тег [%1$s] вложен в себя больше %2$s раз."
+
+msgid "Invalid closing %1$s tag. Expected closing %2$s tag"
+msgstr "Неверный закрывающийся тег &lt;/ %1$s &gt;. Ожидалось закрытие &lt;/ %2$s &gt;."
+
+msgid "%2$s attribute is not allowed in %1$s tag"
+msgstr "Атрибут '%2$s' запрещен в теге &lt; %1$s &gt;."
+
+msgid "Attempting to insert JavaScript into %2$s attribute of %1$s tag"
+msgstr "Попытка вставить JavaScript в атрибут '%2$s' тега &lt; %1$s &gt;."
+
+msgid "Invalid value for %2$s attribute [=%3$s] of %1$s tag"
+msgstr "Недопустимое значение атрибута '%2$s' [=%3$s] тега &lt; %1$s &gt;."
+
+msgid "Missing required %2$s attribute in %1$s tag"
+msgstr "Отсутствует обязательный атрибут '%2$s' в теге &lt; %1$s &gt;."
+
+msgid "Invalid value for %2$s attribute of %1$s tag (combination)"
+msgstr "Недопустимое значение атрибута '%2$s' тега &lt; %1$s &gt; (комбинирование)."
+
+msgid "Missing required %2$s attribute in %1$s tag (combination)"
+msgstr "Отсутствует обязательный атрибут '%2$s' в теге &lt; %1$s &gt; (комбинирование)."
+
+msgid "Not expected to close %1$s tag"
+msgstr "Не ожидалось закрывающегося тега &lt;/ %1$s &gt;."
+
+msgid "The :alias should be absent"
+msgstr "Поле :alias лишнее."
+
+msgid "The :alias is required"
+msgstr "Поле :alias обязательно для заполнения."
+
+msgid "The :alias must be string"
+msgstr "Поле :alias должно содержать строку."
+
+msgid "The :alias must be numeric"
+msgstr "Поле :alias должно содержать число."
+
+msgid "The :alias must be integer"
+msgstr "Поле :alias должно содержать целое число."
+
+msgid "The :alias must be array"
+msgstr "Поле :alias должно содержать массив."
+
+msgid "The :alias minimum is :attr characters"
+msgstr "Минимальная длина поля :alias равна :attr символам."
+
+msgid "The :alias minimum is :attr"
+msgstr "Минимальное значение поля :alias равно :attr."
+
+msgid "The :alias minimum is :attr elements"
+msgstr "Поле :alias должно содержать как минимум :attr элементов."
+
+msgid "The :alias maximum is :attr characters"
+msgstr "Максимальная длина поля :alias равна :attr символам."
+
+msgid "The :alias maximum is :attr"
+msgstr "Максимальное значение поля :alias равно :attr."
+
+msgid "The :alias contains too large a file"
+msgstr "Поле :alias содержит слишком большой файл."
+
+msgid "The :alias maximum is :attr elements"
+msgstr "Поле :alias должно содержать не больше :attr элементов."
+
+msgid "The :alias contains an invalid value"
+msgstr "Поле :alias имеет недопустимое значение."
+
+msgid "The :alias must be same with original"
+msgstr "Значение поля :alias должно совпадать со значение источника."
+
+msgid "The :alias is not valid format"
+msgstr "Поле :alias не соответствует формату."
+
+msgid "The :alias not contains file"
+msgstr "В поле :alias нет файла."
+
+msgid "The :alias contains more than one file"
+msgstr "Поле :alias содержит больше одного файла."
+
+msgid "The :alias not contains image"
+msgstr "В поле :alias нет изображения."
+
+msgid "The :alias does not contain a date"
+msgstr "Не удалось определить дату в поле :alias."
+
+msgid "Too much data"
+msgstr "Лишние данные"
+
+msgid "The :alias not exist"
+msgstr "Поле :alias отсутствует."

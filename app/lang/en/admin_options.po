@@ -1,0 +1,433 @@
+#
+msgid ""
+msgstr ""
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Project-Id-Version: ForkBB\n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: ForkBB <mio.visman@yandex.ru>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: en\n"
+
+msgid "Must enter title message"
+msgstr "You must enter a board title."
+
+msgid "Invalid e-mail message"
+msgstr "The admin email address you entered is invalid."
+
+msgid "Invalid webmaster e-mail message"
+msgstr "The webmaster email address you entered is invalid."
+
+msgid "Enter announcement here"
+msgstr "Enter your announcement here."
+
+msgid "Enter rules here"
+msgstr "Enter your rules here."
+
+msgid "Timeout error message"
+msgstr "The value of &quot;Timeout online&quot; must be smaller than the value of &quot;Timeout visit&quot;."
+
+msgid "Options updated redirect"
+msgstr "Options updated."
+
+msgid "Options head"
+msgstr "Options"
+
+msgid "Essentials subhead"
+msgstr "Essentials"
+
+msgid "Board title label"
+msgstr "Board title"
+
+msgid "Board title help"
+msgstr "The title of this bulletin board (shown at the top of every page)."
+
+msgid "Board desc label"
+msgstr "Board description (HTML)"
+
+msgid "Board desc help"
+msgstr "A short description of this bulletin board (shown at the top of every page)."
+
+msgid "Timezone label"
+msgstr "Default time zone"
+
+msgid "Timezone help"
+msgstr "The default time zone for guests and users attempting to register for the board."
+
+msgid "Language label"
+msgstr "Default language"
+
+msgid "Language help"
+msgstr "The default language for guests and users attempting to register for the board."
+
+msgid "Default style label"
+msgstr "Default style"
+
+msgid "Default style help"
+msgstr "The default style for guests and users attempting to register for the board."
+
+msgid "Timeouts subhead"
+msgstr "Time and timeouts"
+
+msgid "Visit timeout label"
+msgstr "Visit timeout"
+
+msgid "Visit timeout help"
+msgstr "Number of seconds a user must be idle before his/hers last visit data is updated (primarily affects new message indicators)."
+
+msgid "Online timeout label"
+msgstr "Online timeout"
+
+msgid "Online timeout help"
+msgstr "Number of seconds a user must be idle before being removed from the online users list."
+
+msgid "Redirect time label"
+msgstr "Redirect time"
+
+msgid "Redirect time help"
+msgstr "Number of seconds to wait when redirecting. If set to 0, no redirect page will be displayed."
+
+msgid "Display subhead"
+msgstr "Display"
+
+msgid "Info in posts label"
+msgstr "User info in posts"
+
+msgid "Info in posts help"
+msgstr "Show information about the poster under the username in topic view. The information affected is location, register date, post count and the contact links (email and URL)."
+
+msgid "Post count label"
+msgstr "User post count"
+
+msgid "Post count help"
+msgstr "Show the number of posts a user has made (affects topic view, profile and user list). Does not affect administrators and moderators."
+
+msgid "Topic review label"
+msgstr "Topic review"
+
+msgid "Topic review help"
+msgstr "Maximum number of posts to display when posting (newest first). Set to 0 to disable."
+
+msgid "Topics per page help"
+msgstr "The default number of topics to display per page in a forum. Users can personalize this setting."
+
+msgid "Posts per page help"
+msgstr "The default number of posts to display per page in a topic. Users can personalize this setting."
+
+msgid "Users per page label"
+msgstr "Users per page"
+
+msgid "Users per page help"
+msgstr "The number of users displayed on one page of the list."
+
+msgid "Features subhead"
+msgstr "Features"
+
+msgid "Quick post label"
+msgstr "Quick reply"
+
+msgid "Quick post help"
+msgstr "When enabled, ForkBB will add a quick reply form at the bottom of topics. This way users can post directly from the topic view."
+
+msgid "Users online label"
+msgstr "Users online"
+
+msgid "Users online help"
+msgstr "Display info on the index page about guests and registered users currently browsing the board."
+
+msgid "User has posted label"
+msgstr "User has posted earlier"
+
+msgid "User has posted help"
+msgstr "This feature displays a dot in front of topics in the forum page in case the currently logged in user has posted in that topic earlier. Disable if you are experiencing high server load."
+
+msgid "Topic views label"
+msgstr "Topic views"
+
+msgid "Topic views help"
+msgstr "Keep track of the number of views a topic has. Disable if you are experiencing high server load in a busy forum."
+
+msgid "Menu items label"
+msgstr "Additional menu items"
+
+msgid "Menu items help"
+msgstr "You can add any number of new items in the menu. Each line specifies one item in the format: <b>Position</b><wbr>|<b>Name</b><wbr>|<b>Link</b><wbr><i>[|<b>Identifier</b>]</i>."
+
+msgid "Feed subhead"
+msgstr "Syndication"
+
+msgid "Default feed label"
+msgstr "Default feed type"
+
+msgid "Default feed help"
+msgstr "Select the type of syndication feed to display. Note: Choosing none will not disable feeds, only hide them by default."
+
+msgid "No feeds"
+msgstr "None"
+
+msgid "RSS"
+msgstr "RSS"
+
+msgid "Atom"
+msgstr "Atom"
+
+msgid "Feed TTL label"
+msgstr "Duration to cache feeds"
+
+msgid "Feed TTL help"
+msgstr "Feeds can be cached to lower the resource usage of feeds."
+
+msgid "No cache"
+msgstr "Don't cache"
+
+msgid "%d Minutes"
+msgstr "%d minutes"
+
+msgid "Reports subhead"
+msgstr "Reports"
+
+msgid "Reporting method label"
+msgstr "Reporting method"
+
+msgid "Internal"
+msgstr "Internal"
+
+msgid "By e-mail"
+msgstr "Email"
+
+msgid "Both"
+msgstr "Both"
+
+msgid "Reporting method help"
+msgstr "Select the method for handling topic/post reports. You can choose whether topic/post reports should be handled by the internal report system, emailed to the addresses on the mailing list (see below) or both."
+
+msgid "Mailing list label"
+msgstr "Mailing list"
+
+msgid "Mailing list help"
+msgstr "A comma separated list of subscribers. The people on this list are the recipients of reports."
+
+msgid "Avatars subhead"
+msgstr "Avatars"
+
+msgid "Use avatars label"
+msgstr "Use avatars"
+
+msgid "Use avatars help"
+msgstr "When enabled, users will be able to upload an avatar."
+
+msgid "Upload directory label"
+msgstr "Upload directory"
+
+msgid "Upload directory help"
+msgstr "The upload directory for avatars (relative to %s). PHP must have write permissions to this directory."
+
+msgid "Max width label"
+msgstr "Max width"
+
+msgid "Max width help"
+msgstr "The maximum allowed width of avatars in pixels (60 is recommended)."
+
+msgid "Max height label"
+msgstr "Max height"
+
+msgid "Max height help"
+msgstr "The maximum allowed height of avatars in pixels (60 is recommended)."
+
+msgid "Max size label"
+msgstr "Max size"
+
+msgid "Max size help"
+msgstr "The maximum allowed size of avatars in bytes (10240 is recommended)."
+
+msgid "E-mail subhead"
+msgstr "Email"
+
+msgid "Admin e-mail label"
+msgstr "Admin email"
+
+msgid "Admin e-mail help"
+msgstr "The email address of the board administrator."
+
+msgid "Webmaster e-mail label"
+msgstr "Webmaster email"
+
+msgid "Webmaster e-mail help"
+msgstr "This is the address that all emails sent by the board will be addressed from. <b>Must match the SMTP settings (see below), if specified.</b>"
+
+msgid "Forum subscriptions label"
+msgstr "Forum subscriptions"
+
+msgid "Forum subscriptions help"
+msgstr "Enable users to subscribe to forums (receive email when someone creates a new topic)."
+
+msgid "Topic subscriptions label"
+msgstr "Topic subscriptions"
+
+msgid "Topic subscriptions help"
+msgstr "Enable users to subscribe to topics (receive email when someone replies)."
+
+msgid "SMTP address label"
+msgstr "SMTP server address"
+
+msgid "SMTP address help"
+msgstr "The address of an external SMTP server to send emails with. You can specify a custom port number if the SMTP server doesn't run on the default port 25 (example: smtp.gmail.com:465). Leave blank to use the local mail program."
+
+msgid "SMTP username label"
+msgstr "SMTP username"
+
+msgid "SMTP username help"
+msgstr "Username for SMTP server. Only enter a username if it is required by the SMTP server."
+
+msgid "SMTP password label"
+msgstr "SMTP password"
+
+msgid "SMTP change password help"
+msgstr "Check this if you want to change or delete the currently stored password."
+
+msgid "SMTP password help"
+msgstr "Password for SMTP server. Only enter a password if it is required by the SMTP server."
+
+msgid "SMTP SSL label"
+msgstr "Encrypt SMTP using SSL"
+
+msgid "SMTP SSL help"
+msgstr "Encrypts the connection to the SMTP server using SSL. Should only be used if your SMTP server requires it and your version of PHP supports SSL."
+
+msgid "Registration subhead"
+msgstr "Registration"
+
+msgid "Allow new label"
+msgstr "Allow new registrations"
+
+msgid "Allow new help"
+msgstr "Controls whether this board accepts new registrations. Disable only under special circumstances."
+
+msgid "Verify label"
+msgstr "Verify registrations"
+
+msgid "Verify help"
+msgstr "When enabled, after registration, users receive an email with an activation link to their email. This is an effective way of avoiding registration abuse and making sure that all users have "correct" email addresses in their profiles."
+
+msgid "Report new label"
+msgstr "Report new registrations"
+
+msgid "Report new help"
+msgstr "If enabled, ForkBB will notify users on the mailing list (see above) when a new user registers in the forums."
+
+msgid "Use rules label"
+msgstr "User forum rules"
+
+msgid "Use rules help"
+msgstr "When enabled, users must agree to a set of rules when registering (enter text below). The rules will always be available through a link in the navigation table at the top of every page."
+
+msgid "Rules label"
+msgstr "Enter your rules here (HTML)"
+
+msgid "Rules help"
+msgstr "Here you can enter any rules or other information that the user must review and accept when registering. If you enabled rules above you have to enter something here, otherwise it will be disabled."
+
+msgid "E-mail default label"
+msgstr "Default email setting"
+
+msgid "E-mail default help"
+msgstr "Choose the default privacy setting for new user registrations."
+
+msgid "Announcement subhead"
+msgstr "Announcements"
+
+msgid "Display announcement label"
+msgstr "Display announcement"
+
+msgid "Display announcement help"
+msgstr "Enable this to display the below message in the board."
+
+msgid "Announcement message label"
+msgstr "Announcement message (HTML)"
+
+msgid "Announcement message help"
+msgstr ""
+
+msgid "Email max recipients label"
+msgstr "Max recipients"
+
+msgid "Email max recipients help"
+msgstr "The maximum number of recipients for one email. Depends on your mail server."
+
+msgid "All caps message label"
+msgstr "All caps message"
+
+msgid "All caps message help"
+msgstr "Allow a message to contain only capital letters."
+
+msgid "All caps subject label"
+msgstr "All caps subject"
+
+msgid "All caps subject help"
+msgstr "Allow a subject to contain only capital letters."
+
+msgid "Require e-mail label"
+msgstr "Require guest email"
+
+msgid "Require e-mail help"
+msgstr "Require guests to supply an email address when posting."
+
+msgid "All caps sigs label"
+msgstr "All caps signature"
+
+msgid "All caps sigs help"
+msgstr "Allow a signature to contain only capital letters."
+
+msgid "Polls subhead"
+msgstr "Polls"
+
+msgid "Allow polls label"
+msgstr "Allow polls"
+
+msgid "Max questions label"
+msgstr "Max. questions"
+
+msgid "Max questions help"
+msgstr "The maximum number of questions in one poll. <b>It is recommended to set it once and do not change it again!</b>"
+
+msgid "Max options label"
+msgstr "Max. options"
+
+msgid "Max options help"
+msgstr "The maximum number of possible answers to a question. <b>It is recommended to set it once and do not change it again!</b>"
+
+msgid "Poll edit time label"
+msgstr "Edit time"
+
+msgid "Poll edit time help"
+msgstr "Poll editing time (in minutes). Set to 0 to disable."
+
+msgid "Hidden voices label"
+msgstr "Hidden voices"
+
+msgid "Hidden voices help"
+msgstr "The number of votes before which you can hide the poll results. Set in the poll."
+
+msgid "Result for guest label"
+msgstr "Result for guest"
+
+msgid "Result for guest help"
+msgstr "The guests see the voting results."
+
+msgid "The folder for uploading avatars is incorrectly"
+msgstr "The folder for uploading avatars is incorrectly."
+
+msgid "For PHP, it is forbidden to write in the folder for uploading avatars"
+msgstr "For PHP, it is forbidden to write in the folder for uploading avatars."
+
+msgid "PM subhead"
+msgstr "Private messages"
+
+msgid "Allow PM label"
+msgstr "Allow private messages"
+
+msgid "Allow PM help"
+msgstr "Settings for individual groups are available in <a href="%2$s">%1$s</a>."

@@ -1,0 +1,2652 @@
+/* Palette URL: http://paletton.com/#uid=10I0u0kllll++b4w0gdaFqt00vB
+.color-primary-0 { color: #AA7939 }	Main Primary color
+.color-primary-1 { color: #583200 }
+.color-primary-2 { color: #814A00 }
+.color-primary-3 { color: #D3B58D }
+.color-primary-4 { color: #FCFCFC } #FEFCF2  #F8F4E3 #FFEBCD
+*/
+
+/*******************/
+/* Общие настройки */
+/*******************/
+@font-face {
+  font-family: "FontAwesomeFree";
+  font-style: normal;
+  font-weight: 400;
+  src: url("font/fa/fa-regular-400.v.51502.woff2") format("woff2"), url("font/fa/fa-regular-400.v.51502.woff") format("woff");
+}
+
+@font-face {
+  font-family: "FontAwesomeFree";
+  font-style: normal;
+  font-weight: 900;
+  src: url("font/fa/fa-solid-900.v.51502.woff2") format("woff2"), url("font/fa/fa-solid-900.v.51502.woff") format("woff");
+}
+
+html,
+body,
+#fork,
+#fork a,
+#fork abbr,
+#fork acronym,
+#fork address,
+#fork applet,
+#fork article,
+#fork aside,
+#fork audio,
+/*#fork b,*/
+#fork big,
+#fork blockquote,
+#fork canvas,
+#fork caption,
+#fork center,
+#fork cite,
+#fork code,
+#fork dd,
+#fork del,
+#fork details,
+#fork dfn,
+#fork div,
+#fork dl,
+#fork dt,
+#fork em,
+#fork embed,
+#fork fieldset,
+#fork figcaption,
+#fork figure,
+#fork footer,
+#fork form,
+#fork h1,
+#fork h2,
+#fork h3,
+#fork h4,
+#fork h5,
+#fork h6,
+#fork header,
+#fork hgroup,
+/*#fork i,*/
+#fork iframe,
+#fork img,
+#fork input,
+#fork ins,
+#fork kbd,
+#fork label,
+#fork legend,
+#fork li,
+#fork main,
+#fork mark,
+#fork menu,
+#fork nav,
+#fork object,
+#fork ol,
+#fork output,
+#fork p,
+#fork pre,
+#fork q,
+#fork ruby,
+/*#fork s,*/
+#fork samp,
+#fork section,
+#fork small,
+#fork span,
+#fork strike,
+/*#fork strong,*/
+#fork sub,
+#fork summary,
+#fork sup,
+#fork table,
+#fork tbody,
+#fork td,
+#fork textarea,
+#fork tfoot,
+#fork th,
+#fork thead,
+#fork time,
+#fork tr,
+#fork tt,
+/*#fork u,*/
+#fork ul,
+#fork var,
+#fork video {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	font: inherit;
+  box-sizing: border-box;
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+
+body,
+#fork {
+  color: #333333;
+  background-color: #FFFFFF;
+}
+
+#fork {
+  display: flex;
+  flex-direction: column;
+  padding: 0 0.3125rem;
+  max-width: 64rem;
+  margin: 0 auto;
+  font-style: normal;
+  font-weight: normal;
+  font-family: Arial, Helvetica, sans-serif;
+  line-height: 1.5;
+  position: relative;
+}
+
+@media screen and (min-width: 64rem) {
+  #fork {
+    max-width: calc(80% + 12.8rem); /* (100% - 64rem) * 0.8 + 64rem */
+  }
+}
+
+#fork main {
+  display: block;
+}
+
+#fork code,
+#fork pre {
+  font-family: "DejaVu Sans Mono", Consolas, "Droid Sans Mono", Monospace, Monaco, "Courier New", Courier;
+}
+
+#fork div,
+#fork fieldset {
+  min-width: 0;
+}
+
+#fork ul,
+#fork ol {
+  list-style: none;
+}
+
+#fork textarea {
+  resize: vertical;
+}
+
+#fork summary {
+  cursor: pointer;
+  margin-bottom: 0.625rem;
+}
+
+#fork summary::after {
+  display: inline-block;
+  content: "(click to open)";
+  font-size: 0.875rem;
+  margin: 0 0.3125rem;
+  opacity: 0.6;
+}
+
+[lang="ru"] #fork summary::after {
+  content: "(открыть)";
+}
+
+#fork details[open] > summary::after {
+  content: "(click to close)";
+}
+
+[lang="ru"] #fork details[open] > summary::after {
+  content: "(закрыть)";
+}
+
+#fork select {
+  background-color: #D3B58D;
+}
+
+#fork section > h2,
+#fork aside > h2 {
+  display: none;
+}
+
+#fork h1,
+#fork h2,
+#fork h3 {
+  font-weight: bold;
+}
+
+#fork h2 {
+  font-size: 1.25rem;
+}
+
+#fork h3 {
+  font-size: 1rem;
+}
+
+#fork #id-fhth1,
+#fork .f-category .f-ftch2,
+#fork .f-category .f-finfo-h3 {
+  font-family: "Segoe Print", Arial, Helvetica, sans-serif;
+}
+
+#fork .f-category .f-ftch2 {
+  font-size: 1.5rem
+}
+
+#fork .f-category .f-finfo-h3 {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3125rem;
+  align-items: center;
+  font-size: 1.25rem;
+}
+
+#fork a,
+#fork .f-btn {
+  color: #583200;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+#fork .f-btn {
+  display: inline-block;
+  font-size: 0.875rem;
+  line-height: 1.125rem;
+  border: 0.0625rem solid;
+  border-radius: 0.1875rem;
+  padding: 0.125rem 0.5rem;
+  background-color: #F8F4E3;
+  touch-action: manipulation;
+  user-select: none;
+  white-space: nowrap;
+  text-align: center;
+}
+
+#fork .f-btn.f-opacity:not(:hover):not(:focus) {
+  opacity: 0.5;
+}
+
+#fork a:hover,
+#fork a:focus,
+#fork .f-btn:hover,
+#fork .f-btn:focus {
+  background-color: #D3B58D;
+}
+
+#fork a:active,
+#fork .f-btn:active {
+  background-color: #814A00;
+}
+
+#fork .f-inline > dt,
+#fork .f-inline > dd {
+  display: inline;
+}
+
+#fork .f-inline > dt + dd::before {
+  content: " ";
+}
+
+#fork .f-inline > dd + dd::before {
+  content: ", ";
+}
+
+#fork .f-req::after {
+  content: " *";
+  color: red;
+}
+
+#fork .f-field-depth1 > dd {
+  padding-inline-start: 0.625rem;
+}
+
+#fork .f-field-depth2 > dd {
+  padding-inline-start: 1.25rem;
+}
+
+#fork .f-field-depth3 > dd {
+  padding-inline-start: 1.875rem;
+}
+
+#fork .f-field-depth4 > dd {
+  padding-inline-start: 2.5rem;
+}
+
+#fork .f-field-depth5 > dd {
+  padding-inline-start: 3.125rem;
+}
+
+/********/
+/* Меню */
+/********/
+#fork .f-menu-toggle::after {
+  display: block;
+  line-height: 1.25;
+  border: 0.0625rem solid;
+  border-radius: 0.25rem;
+  width: 2.75rem;
+  text-align: center;
+  padding: 0.25rem 0.125rem;
+  cursor: pointer;
+  font: 900 1.25rem "FontAwesomeFree";
+  content: "\f0c9";
+}
+
+#fork .f-menu-checkbox:checked + .f-menu-toggle::after {
+  content: "\f00d";
+}
+
+#fork .f-menu-checkbox:focus + .f-menu-toggle::after {
+  color: #D3B58D;
+  background-color: #583200;
+}
+
+#fork .f-menu-items {
+  overflow: hidden;
+  display: none;
+  flex-direction: column;
+}
+
+#fork .f-menu-item {
+  white-space: nowrap;
+}
+
+#fork .f-menu-checkbox:checked ~ .f-menu-items {
+  display: flex;
+}
+
+#fork .f-menu-a {
+  display: flex;
+  justify-content: center;
+  text-transform: uppercase;
+  padding: 0.625rem;
+}
+
+#fork .f-menu-a::before {
+  display: inline-block;
+  font-family: "FontAwesomeFree";
+  font-weight: 900;
+  padding-inline-end: 0.3125rem;
+}
+
+#fork .f-menu-span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+#fork .f-menu-checkbox {
+  display: none;
+}
+
+/****************/
+/* Главное меню */
+/****************/
+#fork #fork-nav {
+  border-bottom: 0.0625rem solid #AA7939;
+}
+
+#fork #fork-navdir {
+  width: 100%;
+  background-color: #F8F4E3;
+  display: flex;
+  flex-direction: column;
+}
+
+#fork-nav #id-mn-label {
+  color: #D3B58D;
+  position: absolute;
+  top: 0.625rem;
+  inset-inline-end: 0.9325rem;
+}
+
+#fork-nav .f-menu-items {
+  background-color: #F8F4E3;
+  border-bottom: 0.0625rem solid #AA7939;
+}
+
+#fork-nav .f-submenu-items {
+  background-color: #FFEBCD; /* #D3B58D; */
+}
+
+#fork-nav .f-submenu-items .f-menu-a {
+  text-transform: none;
+  padding: 0.3125rem 0.625rem;
+}
+
+#fork-nav .f-menu-a.active {
+  background-color: #814A00;
+  color: #F8F4E3;
+}
+
+#fork-nav .f-menu-a:hover,
+#fork-nav .f-menu-a:focus {
+  background-color: #583200;
+  color: #F8F4E3;
+}
+
+#fork-nav .f-menu-user-items {
+  background-color: #F8F4E3;
+  display: flex;
+  flex-grow: 1;
+  justify-content: flex-end;
+}
+
+#fork-nav .f-menu-user-items .f-menu-item {
+  min-width: 2.5rem;
+}
+
+#fork-nav .f-menu-user-items .f-menu-a {
+  text-transform: none;
+}
+
+#fork-nav-profile .f-menu-a::before {
+  content: "\f007";
+}
+
+#fork-nav-profile .f-menu-span {
+  font-weight: bold;
+}
+
+#fork-nav-pm .f-menu-a::before {
+  font-weight: 400;
+  content: "\f0e0";
+}
+
+#fork-nav-admin .f-menu-a::before {
+  content: "\f7d9";
+}
+
+#fork-nav-logout .f-menu-a::before {
+  content: "\f2f5";
+}
+
+#fork-nav-register .f-menu-a::before {
+  content: "\f234";
+}
+
+#fork-nav-login .f-menu-a::before {
+  content: "\f2f6";
+}
+
+#fork-nav-index .f-menu-a::before {
+  content: "\f015";
+}
+
+#fork-nav-userlist .f-menu-a::before {
+  content: "\f0c0";
+}
+
+#fork-nav-rules .f-menu-a::before {
+  content: "\f05a";
+}
+
+#fork-nav-search > .f-menu-a::before {
+  content: "\f002";
+}
+
+@media screen and (max-width: 34rem) {
+  #fork .f-spantxtpm,
+  #fork-nav-profile ~ .f-menu-item:not(.f-mi-pmnew) .f-menu-span {
+    display: none;
+  }
+
+  #fork-nav-profile ~ .f-menu-item:not(.f-mi-pmnew) .f-menu-a::before {
+    padding: 0;
+  }
+}
+
+@media screen and (min-width: 50rem) {
+  #fork #fork-navdir {
+    flex-direction: row;
+    flex-wrap: wrap;
+    border-bottom: 0.0625rem solid #AA7939;
+  }
+
+  #fork-nav #id-mn-label {
+    display: none;
+  }
+
+  #fork-nav .f-menu-items {
+    display: flex;
+    flex-direction: row;
+    border-bottom: 0;
+  }
+
+  #fork-nav .f-menu-item {
+    min-width: 4rem;
+  }
+
+  #fork-nav .f-menu-a {
+    text-transform: none;
+  }
+
+  #fork-nav.f-main-nav-search {
+    position: relative;
+    padding-bottom: 1.9375rem;
+  }
+
+  #fork-nav-search .f-submenu-items {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #FFFFFF;
+    display: flex;
+    font-size: 0.875rem;
+  }
+
+  #fork-nav-profile.f-menu-item {
+    min-width: 4rem;
+  }
+
+  #fork-nav-profile .f-menu-a::before {
+    content: none;
+    padding: 0;
+  }
+} /* @media screen and (min-width: 50rem) */
+
+/*********/
+/* Шапка */
+/*********/
+#fork #fork-header {
+  background-color: #AA7939;
+}
+
+#fork #id-fhth1 {
+  width: calc(100% - 4rem);
+  padding: 0.625rem;
+  font-size: 2rem;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+#fork #id-fhtdesc {
+  border-top: 0.0625rem dotted #D3B58D;
+  padding: 0.625rem;
+  color: #F8F4E3;
+}
+
+#fork #id-fhtha {
+  color: #D3B58D;
+}
+
+#fork #id-fhtha:hover,
+#fork #id-fhtha:focus {
+  background-color: #AA7939;
+}
+
+@media screen and (min-width: 50rem) {
+  #fork #id-fhth1 {
+    width: 100%;
+    padding: 0.625rem;
+    overflow: auto;
+    white-space: normal;
+  }
+}
+
+/*********/
+/* iswev */
+/*********/
+#fork main > .f-iswev-wrap {
+  margin: 1rem 0;
+}
+
+#fork .f-iswev {
+  border: 0.0625rem solid;
+  padding: 0.625rem;
+}
+
+#fork .f-iswev + .f-iswev {
+  margin-top: 1rem;
+}
+
+#fork .f-info,
+#fork .f-icontent > a  {
+  color: #00529B;
+  background-color: #BDE5F8;
+}
+
+#fork .f-success,
+#fork .f-scontent > a {
+  color: #4F8A10;
+  background-color: #DFF2BF;
+}
+
+#fork .f-warning,
+#fork .f-wcontent > a {
+  color: #9F6000;
+  background-color: #FEEFB3;
+}
+
+#fork .f-error,
+#fork .f-econtent > a {
+  color: #D8000C;
+  background-color: #FFBABA;
+}
+
+#fork .f-validation,
+#fork .f-vcontent > a {
+  color: #D63301;
+  background-color: #FFCCBA;
+}
+
+#fork .f-icontent > a,
+#fork .f-scontent > a,
+#fork .f-wcontent > a,
+#fork .f-econtent > a,
+#fork .f-vcontent > a {
+  text-decoration: underline;
+}
+
+/*********/
+/* Формы */
+/*********/
+#fork .f-fdiv {
+  max-width: 100%;
+  border: 0.0625rem solid #AA7939;
+  padding: 0.3125rem;
+}
+
+#fork .f-fdiv h2 {
+  padding: 0.3125rem;
+}
+
+#fork .f-fdiv h3 {
+  padding: 0.3125rem;
+}
+
+#fork .f-fdiv dl {
+  padding: 0.3125rem;
+}
+
+#fork .f-btns {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3125rem;
+  padding: 0.625rem 0.3125rem;
+}
+
+#fork .f-fleg {
+  width: 100%;
+  padding: 0.3125rem;
+  border-bottom: 0.0625rem dotted #AA7939;
+  font-weight: bold;
+}
+
+#fork .f-ctrl,
+#fork .f-ybtn,
+#fork .f-fbtn:not(.origin) {
+  line-height: 1.25rem;
+  padding: 0.5rem;
+  font-size: 1rem;
+  display: block;
+  width: 100%;
+}
+
+#fork .f-fbtn:not(.origin) {
+  min-width: 7rem;
+}
+
+#fork .f-fbtn[name="delete"]:not(.origin),
+#fork .f-fbtn[name="report"]:not(.origin) {
+  color: red;
+}
+
+#fork .f-flblr {
+  font-size: 1rem;
+  display: inline-block;
+  cursor: pointer;
+}
+
+#fork .f-field-block .f-flblr {
+  display: block;
+}
+
+#fork .f-yradio {
+  margin-inline-end: 0.3125rem;
+}
+
+#fork .f-flblr + .f-flblr {
+  margin-inline-start: 0.625rem;
+}
+
+#fork .f-field-block .f-flblr + .f-flblr {
+  margin: 0.3125rem 0 0;
+}
+
+#fork .f-flblch {
+  cursor: pointer;
+}
+
+#fork .f-ycaption,
+#fork .f-flblch,
+#fork .f-yhint,
+#fork .f-fbbul,
+#fork .f-yinfo {
+  display: block;
+  width: 100%;
+  /* overflow-wrap: break-word; */
+}
+
+#fork .f-ycaption {
+  font-weight: bold;
+}
+
+#fork .f-flblch,
+#fork .f-fbbul {
+  font-size: 0.875rem;
+}
+
+#fork .f-ychk {
+  margin-inline-end: 0.625rem;
+}
+
+#fork .f-yhint {
+  font-size: 0.8125rem;
+  margin-top: 0.3125rem;
+  text-align: justify;
+}
+
+#fork .f-fbbul {
+  padding-top: 0.3125rem;
+}
+
+#fork .f-yinfo {
+  padding: 0.3125rem;
+  text-align: justify;
+  font-size: 0.8125rem;
+}
+
+#fork .f-yinfo + .f-yinfo {
+  margin-top: -0.3125rem;
+}
+
+#fork .f-finform {
+  background-color: #AA7939;
+  padding: 0.625rem;
+  color: #F8F4E3;
+  text-align: justify;
+  margin: 0 -0.3125rem 0.3125rem;
+  overflow: hidden;
+}
+
+#fork .f-finform:first-child {
+  margin-top: -0.3125rem;
+}
+
+#fork .f-finform + .f-finform {
+  margin-top: -0.625rem;
+}
+
+#fork .f-ctrl {
+  border: 0.0625rem solid #AA7939;
+}
+
+#fork .f-ctrl:focus {
+  box-shadow: inset 0 0 0.5rem 0 rgba(170,121,57,0.75), 0 0 0.5rem 0 rgba(170,121,57,0.75);
+}
+
+#fork .f-field-hint .f-yhint {
+  overflow: hidden;
+  max-height: 0;
+  transition: max-height 0.5s, margin 0.5s;
+  transition-delay: 0.2s;
+}
+
+#fork .f-field-hint .f-ctrl:focus + .f-yhint,
+#fork .f-field-hint .f-ctrl:active + .f-yhint {
+  max-height: 10rem;
+}
+
+/**************/
+/* Объявление */
+/**************/
+#fork #fork-announce {
+  border-bottom: 0.0625rem solid #AA7939;
+  padding: 0.625rem;
+  position: relative;
+}
+
+/**********/
+/* Подвал */
+/**********/
+#fork #fork-footer {
+  border-bottom: 0.0625rem solid #AA7939;
+  border-top: 0.0625rem solid #AA7939;
+  background-color: #F8F4E3;
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  position: relative;
+}
+
+#fork-footer > h2 {
+  display: none;
+}
+
+#fork-footer > div {
+  padding: 0.625rem;
+}
+
+/*************************/
+/* Отладочная информация */
+/*************************/
+#fork #fork-debug {
+  font-size: 0.75rem;
+}
+
+#fork-debug #id-fdebugtime {
+  padding: 0.3125rem 0.625rem;
+  text-align: center;
+}
+
+#fork-debug #fork-dgtable {
+  width: 100%;
+  border: 0.0625rem solid #AA7939;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+#fork-dgtable #fork-dgthead {
+  background-color: #F8F4E3;
+}
+
+#fork-dgtable .f-tcl,
+#fork-dgtable .f-tcr {
+  padding: 0.3125rem 0.625rem;
+  border-bottom: 0.0625rem solid #AA7939;
+}
+
+#fork-dgtable .f-tcl {
+  width: 5rem;
+}
+
+/******************/
+/* Хлебные крошки */
+/******************/
+#fork .f-nav-links {
+  margin: 1rem 0;
+}
+
+#fork .f-crumbs {
+  display: flex;
+  flex-wrap: wrap;
+  padding: 0 0.625rem;
+  overflow: hidden;
+}
+
+#fork .f-crumb {
+  max-width: 100%;
+}
+
+#fork .f-crumb:last-child {
+  font-weight: bold;
+}
+
+#fork .f-crumb + .f-crumb::before {
+  display: inline-block;
+  color: #583200;
+  content: "/";
+  margin: 0 0.3125rem;
+}
+
+#fork .f-subscribed > .f-crumb-a::after {
+  display: inline-block;
+  font: 400 0.875rem "FontAwesomeFree";
+  content: "\f0f3"; /* f06e */
+  padding-inline-start: 0.3125rem;
+}
+
+#fork .f-crumb-a:not(.active) {
+  border-bottom: 0.0625rem solid;
+}
+
+#fork .f-nav-links .f-actions-links,
+#fork .f-nav-links .f-pages {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.3125rem;
+  padding: 0 0.625rem;
+}
+
+#fork .f-nlinks,
+#fork .f-nlinks-a,
+#fork .f-nlinks-b {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+#fork .f-nlinks-b {
+  margin-top: 0.625rem;
+  border-top: 0.0625rem dotted #AA7939;
+}
+
+#fork .f-nlinks-b .f-actions-links,
+#fork .f-nlinks-b .f-pages {
+  padding-top: 0.625rem;
+}
+
+#fork .f-nlinks-a {
+  margin-bottom: 0.625rem;
+  border-bottom: 0.0625rem dotted #AA7939;
+  flex-wrap: wrap-reverse;
+}
+
+#fork .f-nlinks-a .f-actions-links,
+#fork .f-nlinks-a .f-pages {
+  padding-bottom: 0.625rem;
+}
+
+#fork .f-nav-links .f-actions-links {
+  flex-grow: 1;
+  order: 1;
+  justify-content: flex-end;
+}
+
+#fork .f-nav-links .f-page {
+  border: 0.0625rem solid #AA7939;
+  padding: 0.125rem 0.375rem;
+  font-size: 0.875rem;
+  line-height: 1.125rem;
+}
+
+#fork .f-nav-links .f-pspacer {
+  border: 0;
+  padding: 0;
+}
+
+#fork .f-nav-links .f-page.active {
+  border-color: #814A00;
+  background-color: #814A00;
+  color: #F8F4E3;
+}
+
+#fork .f-pinfo {
+  display: none;
+}
+
+@media screen and (min-width: 50rem) {
+  #fork .f-pinfo {
+    font-size: 0.875rem;
+    line-height: 1.125rem;
+    display: inline;
+  }
+}
+
+/********/
+/* Тело */
+/********/
+#fork .f-main {
+  margin: 1rem 0;
+  position: relative;
+}
+
+/*************/
+/* Сообщение */
+/*************/
+#fork-bcklnk #id-bcklnk-p {
+  padding: 0.625rem;
+}
+
+/*******/
+/* Бан */
+/*******/
+#fork #fork-ban {
+  padding: 0 0.625rem;
+}
+
+/***********/
+/* Правила */
+/***********/
+#fork-rules #id-rules {
+  padding: 0.625rem;
+  border: 0.0625rem solid #AA7939;
+  background-color: #F8F4E3;
+}
+
+/************/
+/* Редирект */
+/************/
+#fork #fork-rdrct {
+  border: 0.0625rem solid #AA7939;
+}
+
+#fork-rdrct #id-rdrct-h2 {
+  display: block;
+  padding: 0.625rem;
+  background-color: #F8F4E3;
+  border-bottom: 0.0625rem solid #AA7939;
+}
+
+#fork-rdrct .f-rdrct-p {
+  padding: 0.625rem;
+}
+
+/*********************/
+/* Статистика форума */
+/*********************/
+#fork #fork-stats {
+  border-top: 0.0625rem solid #AA7939;
+  font-size: 0.875rem;
+  padding: 0.3125rem 0;
+}
+
+#fork-stats .f-stats-dt {
+  display: none;
+}
+
+#fork-stats #fork-stboard,
+#fork-stats #fork-stusers {
+  padding: 0.3125rem;
+}
+
+#fork-stats #fork-stboard {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  border-bottom: 0.0625rem dotted #AA7939;
+}
+
+#fork-stats .f-stats-dd {
+  padding: 0 0.3125rem;
+}
+
+#fork-stats #fork-onlinelist {
+  border-top: 0.0625rem dotted #AA7939;
+  padding: 0.3125rem 0.625rem;
+  width: 100%
+}
+
+#fork-onlinelist #id-onlst-dt {
+  font-weight: bold;
+}
+
+@media screen and (min-width: 45rem) {
+  #fork #fork-stats {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between
+  }
+
+  #fork-stats #fork-stboard {
+    flex-direction: column;
+    flex-wrap: nowrap;
+    align-items: flex-end;
+    border: 0;
+  }
+
+  #fork-stats #fork-stusers {
+    order: -1;
+  }
+}
+
+/*********************/
+/* Логин/Регистрация */
+/*********************/
+#fork .f-lrdiv {
+  margin: 1rem auto;
+  max-width: 20rem;
+  border-radius: 0.1875rem;
+}
+
+#fork .f-lrdiv > h2 {
+  text-align: center;
+}
+
+#fork #id-dl-passinlogin {
+  position: relative;
+}
+
+#fork #id-dl-passinlogin .f-yhint {
+  position: absolute;
+  top: 0.5rem;
+  inset-inline-end: 0.3125rem;
+  width: auto;
+  margin: 0;
+}
+
+/***************************************/
+/* Таблица разделов, подразделов и тем */
+/***************************************/
+#fork .f-ftlist .f-category {
+  margin-top: 0.625rem;
+}
+
+#fork .f-ftch2 {
+  padding: 0.625rem 0.625rem 0.3125rem;
+}
+
+#fork .f-ftlist .f-row {
+  border-bottom: 0.0625rem solid #AA7939;
+  padding: 0.3125rem;
+}
+
+#fork .f-ftlist .f-thead {
+  border-bottom: 0.125rem solid #AA7939;
+  padding: 0;
+}
+
+#fork .f-ftlist .f-cell {
+  padding: 0.3125rem;
+  overflow: hidden;
+}
+
+#fork .f-ftlist .f-cmain {
+  display: flex;
+  flex-wrap: nowrap;
+}
+
+#fork .f-ftlist .f-ficon {
+  width: 2rem;
+}
+
+#fork .f-ftlist .f-finfo {
+  width: calc(100% - 2rem);
+}
+
+#fork .f-ftlist .f-ftname {
+  max-width: 100%;
+}
+
+#fork .f-ftlist .f-cstats {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.3125rem;
+  flex-wrap: wrap;
+  font-size: 0.75rem;
+}
+
+#fork .f-ftlist .f-clast {
+  display: none;
+}
+
+#fork .f-ftlist .f-fdesc {
+  font-size: 0.875rem;
+}
+
+#fork .f-fsub {
+  margin-inline-start: 0.875rem;
+  font-size: 0.875rem;
+}
+
+#fork .f-fsub::before {
+  display: inline-block;
+  font-size: 0.875rem;
+  content: "└";
+  margin-inline-start: -0.875rem;
+}
+
+#fork-subforums .f-fsub::before {
+  margin-inline-start: 0.875rem;
+}
+
+#fork-subforums .f-frsname::before {
+  display: inline-block;
+  content: "└";
+}
+
+#fork .f-fsub > dt {
+  display: none;
+}
+
+#fork .f-modlist {
+  font-size: 0.875rem;
+}
+
+#fork .f-modlist > dt::before {
+  content: "(";
+}
+
+#fork .f-modlist:last-child::after {
+  content: ")";
+}
+
+#fork .f-ficon::before {
+  font: 400 1.5rem "FontAwesomeFree";
+  content: "\f15b"; /* "\f086"; */
+  color: #814A00;
+}
+
+#fork .f-fnew .f-ficon::before {
+  font-weight: 900;
+  content: "\f15b"; /* "\f086"; */
+}
+
+#fork .f-fredir .f-ficon::before {
+  content: "\f1d8"; /* "\f0c6"; */
+}
+
+#fork-forum .f-ficon::before {
+  font-size: 1.2rem;
+}
+
+#fork .f-frdrsub::before {
+  font: 400 0.875rem "FontAwesomeFree";
+  content: "\f1d8";
+  color: #814A00;
+  margin-inline-end: 0.3125rem;
+}
+
+#fork .f-tnew,
+#fork .f-tunread {
+  font: normal 0.875rem Arial, Helvetica, sans-serif;
+  white-space: nowrap;
+}
+
+#fork .f-newtxt,
+#fork .f-unreadtxt {
+  display: none;
+}
+
+#fork .f-fnew > a::before,
+#fork .f-tnew > a::before {
+  font: 900 0.875rem "FontAwesomeFree";
+  content: "\f086";
+  padding: 0 0.25rem;
+}
+
+#fork .f-tunread > a::before {
+  font: 900 0.875rem "FontAwesomeFree";
+  content: "\f06e"; /* f070 */
+  padding: 0 0.25rem;
+}
+
+@media screen and (min-width: 50rem) {
+  #fork .f-ftlist .f-row {
+    display: flex;
+    flex-wrap: nowrap;
+  }
+
+  #fork .f-ftlist .f-cmain {
+    flex-grow: 1;
+  }
+
+  #fork .f-ftlist .f-cstats {
+    justify-content: center;
+    flex-direction: column;
+    align-items: flex-end;
+    min-width: 8rem;
+    white-space: nowrap;
+  }
+
+  #fork .f-ftlist .f-clast {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: flex-end;
+    width: 15rem;
+    min-width: 15rem;
+    font-size: 0.875rem;
+  }
+
+  #fork .f-ftlist .f-cltopic,
+  #fork .f-ftlist .f-clposter,
+  #fork .f-ftlist .f-cltime {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    max-width: 100%;
+  }
+
+  #fork .f-ftlist .f-cltime {
+    font-size: 0.75rem;
+  }
+}
+
+#fork .f-ftlist .f-hcell,
+#fork .f-ftlist .f-clast small {
+  display: none;
+}
+
+/********************/
+/* Страница раздела */
+/********************/
+#fork #fork-subforums {
+  margin: 1rem 0;
+}
+
+#fork-subforums .f-ftch2 {
+  display: none;
+}
+
+#fork-forum .f-finfo-h3 {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3125rem;
+  align-items: center;
+  font-weight: normal;
+  position: relative;
+}
+
+#fork-forum .f-finfo-p {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+#fork .f-cmposted {
+  font-size: 0.875rem;
+  opacity: 0.4;
+}
+
+#fork .f-cmposter,
+#fork .f-cmforum {
+  font-size: 0.875rem;
+}
+
+#fork .f-cmposted::before,
+#fork .f-cmforum::before {
+  content: ", ";
+}
+
+#fork .f-tdot {
+  font-weight: bold;
+  position: absolute;
+  margin-inline-start: -0.5rem;
+}
+
+#fork .f-tpages .f-page {
+  border: 0.0625rem solid #AA7939;
+  padding: 0.0625rem 0.3125rem;
+  font-size: 0.875rem;
+  line-height: 1.125rem;
+}
+
+#fork .f-tpages .f-pspacer {
+  border: 0;
+  padding: 0;
+}
+
+#fork .f-tpages:not(:hover) .f-page:not(:focus),
+#fork .f-cmforum > a:not(:focus):not(:hover) {
+  opacity: 0.4;
+}
+
+#fork .f-tmoved,
+#fork .f-stickytxt,
+#fork .f-closedtxt,
+#fork .f-polltxt {
+  display: none;
+}
+
+#fork .f-fsticky .f-ficon::before {
+  color: #D8000C;
+}
+
+#fork .f-tsticky::before {
+  font: 900 0.875rem "FontAwesomeFree";
+  content: "\f35b";
+  color: #D8000C;
+}
+
+#fork .f-fclosed .f-ficon::before {
+  color: #C8CCD1;
+}
+
+#fork .f-tclosed::before {
+  font: 900 0.875rem "FontAwesomeFree";
+  content: "\f023";
+  color: #C8CCD1;
+}
+
+
+#fork .f-tpoll::before {
+  font: 900 0.875rem "FontAwesomeFree";
+  content: "\f681";
+  color: #9F6000;
+}
+
+/*****************/
+/* Страница темы */
+/*****************/
+#fork .f-btn-topic-closed {
+  pointer-events: none;
+  cursor: default;
+  color: #D8000C;
+  background-color: #FFBABA;
+}
+
+/********************/
+/* Сообщение в теме */
+/********************/
+#fork .f-post {
+  border-top: 0.0625rem solid #AA7939;
+  border-bottom: 0.0625rem solid #AA7939;
+  position: relative;
+  background-color: #FFFFFF;
+}
+
+#fork .f-post + .f-post {
+  margin-top: 0.625rem;
+}
+
+#fork .f-post-header {
+  display: flex;
+  flex-wrap: wrap;
+  padding: 0.625rem;
+  border-bottom: 0.0625rem solid #AA7939;
+  background-color: #D3B58D;
+  font-size: 0.875rem;
+}
+
+#fork-topic .f-phead-h3 {
+  display: none;
+}
+
+#fork .f-post-edited {
+  font-style: italic;
+  margin-inline-start: 0.625rem;
+  opacity: 0.5;
+}
+
+#fork .f-post-number {
+  margin-inline-start: auto;
+}
+
+#fork .f-post-user {
+  position: relative;
+  padding: 0.625rem;
+  background-color: #F8F4E3;
+  border-bottom: 0.0625rem solid #AA7939;
+  font-size: 0.875rem;
+}
+
+#fork .f-user-online .f-post-user::before {
+  display: block;
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 0;
+  height: 0;
+  content: "";
+  border-style: solid;
+  border-width: 1.25rem 1.25rem 0 0;
+  border-color: #7fba00 transparent transparent transparent;
+}
+
+#fork .f-post-usticky {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+#fork .f-user-info-first {
+  display: none;
+}
+
+#fork .f-avatar {
+  order: 1;
+  flex-grow: 0.5;
+  text-align: end;
+  margin-bottom: 0.3125rem;
+}
+
+#fork .f-avatar > img {
+  max-width: 4.6875rem;
+  height: auto;
+}
+
+#fork .f-user-info {
+  flex-grow: 0.5;
+  margin-bottom: 0.3125rem;
+}
+
+#fork .f-user-info-add {
+  width: 100%;
+  order: 2;
+}
+
+#fork .f-user-info > li:not(.f-username),
+#fork .f-user-info-add > li {
+  display: inline-block;
+}
+
+#fork .f-user-info > li:not(.f-username)::before,
+#fork .f-user-info-add > li::before {
+  display: inline-block;
+  content: "\2022";
+  padding-inline-end: 0.3125rem;
+}
+
+#fork .f-avatar + .f-user-info > li:not(.f-username) {
+  display: block;
+}
+
+#fork .f-avatar + .f-user-info > li:not(.f-username)::before {
+  display: none;
+}
+
+#fork .f-post-body img {
+  max-width: 100%;
+  height: auto;
+}
+
+#fork .f-username {
+  font-size: 1.25rem;
+  word-break: break-all;
+}
+
+#fork .f-user-male .f-username::before {
+  display: inline-block;
+  font: 900 1.25rem "FontAwesomeFree";
+  content: "\f222";
+  color: #46b4e7;
+  margin-inline-end: 0.125rem;
+}
+
+#fork .f-user-female .f-username::before {
+  display: inline-block;
+  font: 900 1.25rem "FontAwesomeFree";
+  content: "\f221";
+  color: #ef64ef;
+  margin-inline-end: 0.125rem;
+}
+
+#fork .f-user-online .f-userstatus {
+  font-weight: bold;
+}
+
+#fork .f-post-main {
+  padding: 0.625rem 0.625rem 0;
+}
+
+#fork .f-post-btns {
+  padding: 0 0.625rem 0.625rem;
+}
+
+#fork .f-post-btns:not(:hover) .f-btn:not(:focus) {
+  opacity: 0.4;
+}
+
+#fork .f-post-btns ul {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.3125rem;
+}
+
+#fork .f-post-footer-add {
+  display: none;
+}
+
+#fork .f-post-signature {
+  font-size: 0.875rem;
+  opacity: 0.5;
+  padding: 0 0.625rem;
+}
+
+#fork .f-admin-note {
+  color: #D8000C;
+}
+
+/*********************/
+/*#fork .f-bb-u {
+  text-decoration: underline;
+}*/
+
+#fork .f-bb-header {
+  font-weight: bold;
+  font-size: 1.25rem;
+}
+
+#fork .f-bb-after {
+  opacity: 0.5;
+  font-style: italic;
+  font-size: 0.875rem;
+}
+
+#fork .f-bb-quote {
+  border-inline-start: 0.1875rem solid #AA7939;
+  border-top: 0.0625rem solid #AA7939;
+}
+
+#fork .f-bb-q-header {
+  padding: 0.625rem;
+  background-color: #F8F4E3 /*#D3B58D*/;
+}
+
+#fork .f-bb-q-body {
+  padding: 0.625rem;
+}
+
+#fork .f-bb-code {
+  border: 0.0625rem solid #AA7939;
+  padding: 0.625rem;
+  background-color: #F8F4E3 /*#D3B58D*/;
+  overflow: auto;
+  max-height: 45rem;
+}
+
+#fork .f-bb-l-disc {
+  list-style-type: disc;
+  list-style-position: outside;
+  padding-inline-start: 1.5rem;
+}
+
+#fork .f-bb-l-dec {
+  list-style-type: decimal;
+  list-style-position: outside;
+  padding-inline-start: 1.5rem;
+}
+
+#fork .f-bb-l-lat {
+  list-style-type: lower-alpha;
+  list-style-position: outside;
+  padding-inline-start: 1.5rem;
+}
+
+#fork .f-bb-s-body {
+  padding: 0.625rem;
+  border-inline-start: 0.1875rem solid #AA7939;
+}
+
+#fork .f-bb-from {
+  font-size: 0.8rem;
+  font-style: italic;
+}
+
+#fork .f-bb-badlink {
+  color: #D8000C;
+  background-color: #FFBABA;
+}
+
+#fork .f-post-body p,
+#fork .f-post-body blockquote,
+#fork .f-post-body br,
+#fork .f-post-body pre,
+#fork .f-post-body ol,
+#fork .f-post-body ul {
+  margin-bottom: 0.625rem;
+}
+
+@media screen and (min-width: 50rem) {
+  #fork .f-post {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  #fork .f-post-header {
+    width: 100%;
+  }
+
+  #fork .f-post-user {
+    width: 13rem;
+    border-inline-end: 0.0625rem solid #AA7939;
+    border-bottom: 0;
+  }
+
+  #fork .f-post-usticky {
+    flex-direction: column;
+    position: sticky;
+    top: 0.625rem;
+  }
+
+  #fork .f-user-info-first {
+    display: block;
+    margin-bottom: 0.625rem;
+    width: 100%;
+  }
+
+  #fork .f-user-info .f-username {
+    display: none;
+  }
+
+  #fork .f-avatar {
+    flex-grow: 0;
+    order: 0;
+    text-align: center;
+  }
+
+  #fork .f-user-info {
+    flex-grow: 0;
+    width: 100%;
+  }
+
+  #fork .f-user-info > li:not(.f-username),
+  #fork .f-user-info-add > li {
+    display: block;
+  }
+
+  #fork .f-user-info > li:not(.f-username)::before,
+  #fork .f-user-info-add > li::before {
+    display: none;
+  }
+
+
+  #fork .f-post-body,
+  #fork .f-post-btns {
+    width: calc(100% - 13rem);
+    position: relative;
+  }
+
+  #fork .f-post-footer {
+    display: flex;
+    flex-wrap: nowrap;
+    width: 100%;
+  }
+
+  #fork .f-post-footer-add {
+    display: block;
+    width: 13rem;
+    padding: 0 0.625rem 0.625rem;
+    background-color: #F8F4E3;
+    border-inline-end: 0.0625rem solid #AA7939;
+  }
+
+  #fork .f-userstatus {
+    font-size: 0.875rem;
+  }
+
+  #fork .f-avatar > img {
+    max-width: 100%;
+  }
+} /* @media screen and (min-width: 50rem) */
+
+/****************/
+/* Предпросмотр */
+/****************/
+#fork .f-preview {
+  border-top: 0.0625rem solid #AA7939;
+  margin-bottom: 1rem;
+}
+
+#fork .f-preview > h2 {
+  display: block;
+  font-size: 1rem;
+  line-height: 1.5;
+  padding: 1rem 0.625rem 0.3125rem;
+}
+
+#fork .f-preview .f-post-body {
+  border-top: 0.125rem solid #AA7939;
+  border-inline-start: 0.125rem solid #AA7939;
+  width: 100%;
+}
+
+/*****************************/
+#fork .f-post-form {
+  border-top: 0.0625rem solid #AA7939;
+  margin-bottom: 1rem;
+}
+
+#fork .f-view-posts {
+  margin-bottom: 1rem;
+  margin-top: -1rem;
+}
+
+#fork .f-post-form > h2,
+#fork .f-view-posts > h2 {
+  display: block;
+  font-size: 1rem;
+  padding: 1rem 0.625rem 0.3125rem;
+}
+
+#fork .f-post-form > .f-fdiv {
+  background-color: #F8F4E3;
+}
+
+#fork .f-post-form .f-ycaption {
+  font-size: 0.875rem;
+}
+
+#fork .f-post-form .f-fbbul > li {
+  display: inline;
+}
+
+#fork .f-post-form .f-fbtn {
+  width: auto;
+}
+
+#fork textarea#id-message,
+#fork textarea#id-reason {
+  height: 15rem;
+}
+
+@media screen and (min-width: 50rem) {
+  #fork #id-fs-uesm {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  #fork .f-field-w0 {
+    width: 100%;
+  }
+
+  #fork .f-field-w1 {
+    width: 30%;
+  }
+
+  #fork .f-field-w2 {
+    width: 70%;
+  }
+}
+
+/*********/
+/* Опрос */
+/*********/
+#fork .f-post-poll {
+  margin: 0.625rem;
+  padding: 0.625rem 0.625rem 0;
+  background-color: #F8F4E3;
+  border: 0.0625rem solid #AA7939;
+}
+
+#fork .f-poll-q {
+  margin-bottom: 0.625rem;
+}
+
+#fork .f-poll-q + .f-poll-q {
+  border-top: 0.0625rem solid #AA7939;
+  padding-top: 0.625rem;
+}
+
+#fork .f-poll-ql,
+#fork .f-poll-ab-s2 {
+  display: none;
+}
+
+#fork .f-poll-qt {
+  margin-bottom: 0.625rem;
+  font-weight: bold;
+}
+
+#fork .f-poll-a {
+  margin-bottom: 0.625rem;
+}
+
+#fork .f-poll-al {
+  cursor: pointer;
+}
+
+#fork .f-poll-ai {
+  margin-inline-end: 0.625rem;
+}
+
+#fork .f-poll-mult,
+#fork .f-poll-total,
+#fork .f-poll-ap {
+  font-size: 0.8rem;
+  font-style: italic;
+}
+
+#fork .f-poll-mult {
+  text-decoration: underline;
+}
+
+#fork .f-poll-ab {
+  border: 0.0625rem solid #AA7939;
+  width: 60%;
+  height: 1rem;
+}
+
+#fork .f-poll-ab-s1 {
+  background-color: #AA7939;
+  height: 1rem;
+  display: block;
+  font-size: 0;
+  overflow: hidden;
+}
+
+#fork .f-poll-status {
+  font-size: 0.8rem;
+  font-style: italic;
+  text-align: center;
+  border-top: 0.0625rem solid #AA7939;
+  padding-top: 0.625rem;
+}
+
+#fork .f-poll-btns {
+  text-align: center;
+  border-top: 0.0625rem solid #AA7939;
+  padding-top: 0.625rem;
+}
+
+#fork .f-hide-poll {
+  display: none;
+}
+
+#fork .width0 {width: 0%;}
+#fork .width1 {width: 1%;}
+#fork .width2 {width: 2%;}
+#fork .width3 {width: 3%;}
+#fork .width4 {width: 4%;}
+#fork .width5 {width: 5%;}
+#fork .width6 {width: 6%;}
+#fork .width7 {width: 7%;}
+#fork .width8 {width: 8%;}
+#fork .width9 {width: 9%;}
+#fork .width10 {width: 10%;}
+#fork .width11 {width: 11%;}
+#fork .width12 {width: 12%;}
+#fork .width13 {width: 13%;}
+#fork .width14 {width: 14%;}
+#fork .width15 {width: 15%;}
+#fork .width16 {width: 16%;}
+#fork .width17 {width: 17%;}
+#fork .width18 {width: 18%;}
+#fork .width19 {width: 19%;}
+#fork .width20 {width: 20%;}
+#fork .width21 {width: 21%;}
+#fork .width22 {width: 22%;}
+#fork .width23 {width: 23%;}
+#fork .width24 {width: 24%;}
+#fork .width25 {width: 25%;}
+#fork .width26 {width: 26%;}
+#fork .width27 {width: 27%;}
+#fork .width28 {width: 28%;}
+#fork .width29 {width: 29%;}
+#fork .width30 {width: 30%;}
+#fork .width31 {width: 31%;}
+#fork .width32 {width: 32%;}
+#fork .width33 {width: 33%;}
+#fork .width34 {width: 34%;}
+#fork .width35 {width: 35%;}
+#fork .width36 {width: 36%;}
+#fork .width37 {width: 37%;}
+#fork .width38 {width: 38%;}
+#fork .width39 {width: 39%;}
+#fork .width40 {width: 40%;}
+#fork .width41 {width: 41%;}
+#fork .width42 {width: 42%;}
+#fork .width43 {width: 43%;}
+#fork .width44 {width: 44%;}
+#fork .width45 {width: 45%;}
+#fork .width46 {width: 46%;}
+#fork .width47 {width: 47%;}
+#fork .width48 {width: 48%;}
+#fork .width49 {width: 49%;}
+#fork .width50 {width: 50%;}
+#fork .width51 {width: 51%;}
+#fork .width52 {width: 52%;}
+#fork .width53 {width: 53%;}
+#fork .width54 {width: 54%;}
+#fork .width55 {width: 55%;}
+#fork .width56 {width: 56%;}
+#fork .width57 {width: 57%;}
+#fork .width58 {width: 58%;}
+#fork .width59 {width: 59%;}
+#fork .width60 {width: 60%;}
+#fork .width61 {width: 61%;}
+#fork .width62 {width: 62%;}
+#fork .width63 {width: 63%;}
+#fork .width64 {width: 64%;}
+#fork .width65 {width: 65%;}
+#fork .width66 {width: 66%;}
+#fork .width67 {width: 67%;}
+#fork .width68 {width: 68%;}
+#fork .width69 {width: 69%;}
+#fork .width70 {width: 70%;}
+#fork .width71 {width: 71%;}
+#fork .width72 {width: 72%;}
+#fork .width73 {width: 73%;}
+#fork .width74 {width: 74%;}
+#fork .width75 {width: 75%;}
+#fork .width76 {width: 76%;}
+#fork .width77 {width: 77%;}
+#fork .width78 {width: 78%;}
+#fork .width79 {width: 79%;}
+#fork .width80 {width: 80%;}
+#fork .width81 {width: 81%;}
+#fork .width82 {width: 82%;}
+#fork .width83 {width: 83%;}
+#fork .width84 {width: 84%;}
+#fork .width85 {width: 85%;}
+#fork .width86 {width: 86%;}
+#fork .width87 {width: 87%;}
+#fork .width88 {width: 88%;}
+#fork .width89 {width: 89%;}
+#fork .width90 {width: 90%;}
+#fork .width91 {width: 91%;}
+#fork .width92 {width: 92%;}
+#fork .width93 {width: 93%;}
+#fork .width94 {width: 94%;}
+#fork .width95 {width: 95%;}
+#fork .width96 {width: 96%;}
+#fork .width97 {width: 97%;}
+#fork .width98 {width: 98%;}
+#fork .width99 {width: 99%;}
+#fork .width100 {width: 100%;}
+#fork .text-align-left {text-align: left;}
+#fork .text-align-right {text-align: right;}
+#fork .text-align-center {text-align: center;}
+#fork .text-align-justify {text-align: justify;}
+
+/**********/
+/* Репорт */
+/**********/
+#id-fs-report .f-fleg {
+  display: none;
+}
+
+/*********/
+/* Email */
+/*********/
+#id-fs-send-email .f-fleg {
+  display: none;
+}
+
+/*****************/
+/* Модерирование */
+/*****************/
+#fork #fork-mod {
+  border-top: 0.0625rem solid #AA7939;
+  position: relative;
+}
+
+#fork-mod .f-fdivm {
+  padding: 0.3125rem;
+}
+
+#fork-mod .f-btns:not(:hover) .f-fbtn:not(:focus) {
+  opacity: 0.4;
+}
+
+#fork-modform .f-btns .f-fbtn {
+  width: auto;
+  display: inline-block;
+}
+
+#fork .f-ftlist .f-fch,
+#fork .f-post-checkbox {
+  display: none;
+}
+
+#fork .f-ftlist label.f-ficon {
+  position: relative;
+  cursor: pointer;
+}
+
+#fork .f-post-checkbox + .f-post-header {
+  position: relative;
+}
+
+#fork label.f-post-posted {
+  cursor: pointer;
+}
+
+#fork .f-ftlist .f-fch:checked + .f-ficon::after,
+#fork .f-post-checkbox:checked + .f-post-header::before {
+  font: 900 1rem "FontAwesomeFree";
+  content: "\f00c";
+  color: red;
+  position: absolute;
+  bottom: 0;
+  inset-inline-start: 0;
+}
+
+/*********/
+/* Поиск */
+/*********/
+#fork-search .f-yinfo:first-child {
+  text-align: end;
+  padding: 0 0.3125rem;
+  margin-bottom: -0.3125rem;
+}
+
+#fork-topic-ins .f-post-search-info {
+  display: none;
+}
+
+#fork-topic-ins .f-phead-h3 {
+  font-size: 0.875rem;
+  font-weight: normal;
+  display: flex;
+  flex-wrap: wrap;
+  word-break: break-all;
+}
+
+#fork-topic-ins .f-psh-topic::before,
+#fork-topic-ins .f-post-posted::before {
+  display: inline-block;
+  font-family: "FontAwesomeFree";
+  font-weight: 900;
+  content: "\f105";
+  padding: 0 0.3125rem;
+}
+
+@media screen and (min-width: 50rem) {
+  #fork #id-fs-what,
+  #fork #id-fs-where,
+  #fork #id-fs-how,
+  #fork #id-fs-users {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  #fork .f-field-w3 {
+    width: 50%;
+  }
+
+  #fork .f-field-w4 {
+    width: 33.33%;
+  }
+
+  #fork-search .f-flblr,
+  #fork-usrlstform .f-flblr {
+    padding: 0.5rem 0;
+  }
+
+  #fork-topic-ins .f-post-search-info {
+    display: block;
+    font-size: 0.875rem;
+    padding-top: 0.625rem;
+    width: 100%;
+  }
+}
+
+/************************/
+/* Список пользователей */
+/************************/
+#fork-usrlst .f-row {
+  border-bottom: 0.0625rem solid #AA7939;
+}
+
+#fork-usrlst .f-row {
+  padding: 0.625rem;
+  overflow: hidden;
+}
+
+#fork-usrlst .f-thead {
+  display: none;
+}
+
+#fork-usrlst .f-thead + .f-row {
+  border-top: 0.125rem solid #AA7939;
+}
+
+@media screen and (min-width: 50rem) {
+  #fork-usrlst .f-row {
+    padding: 0.3125rem;
+  }
+
+  #fork-usrlst .f-thead {
+    border-top: 0.125rem solid #AA7939;
+    border-bottom: 0.125rem solid #AA7939;
+    display: block;
+    padding: 0 0.3125rem;
+  }
+
+  #fork-usrlst .f-thead + .f-row {
+    border-top: 0;
+  }
+
+  #fork-usrlst .f-hcell,
+  #fork-usrlst .f-cell {
+    display: table-cell;
+    vertical-align: middle;
+    padding: 0.3125rem;
+  }
+
+  #fork-usrlst small {
+    display: none;
+  }
+
+  #fork-usrlst .f-hcell .f-hc-table {
+    display: table;
+    line-height: 1;
+  }
+
+  #fork-usrlst .f-hc-table .f-hc-tasc,
+  #fork-usrlst .f-hc-table .f-hc-tdesc {
+    font-size: 0.75rem;
+    display: block;
+    text-align: center;
+  }
+
+  #fork-usrlst .f-hc-table .f-hc-tname {
+    padding: 0.125rem 0;
+    display: block;
+  }
+
+  #fork-usrlst .f-hc-tasc > a,
+  #fork-usrlst .f-hc-tdesc > a {
+    padding: 0 0.25rem;
+  }
+
+  #fork-usrlst .f-hc-tasc > a.active,
+  #fork-usrlst .f-hc-tdesc > a.active {
+    border: 0.0625rem solid #814A00;
+  }
+
+  #fork-usrlst .f-cell > b,
+  #fork-usrlst .f-cell > i {
+    font-style: normal;
+    font-weight: normal;
+  }
+
+  #fork-usrlst .f-cusername {
+    width: 50%;
+  }
+
+  #fork-usrlst .f-ctitle {
+    width: 50%;
+    text-align: end;
+  }
+
+  #fork-usrlst .f-cnumposts {
+    width: 8rem;
+    min-width: 8rem;
+    text-align: center;
+  }
+
+  #fork-usrlst .f-cnumposts .f-hc-table {
+    margin: 0 auto;
+  }
+
+  #fork-usrlst .f-cdatereg {
+    width: 11rem;
+    min-width: 11rem;
+  }
+}
+
+/***********/
+/* Профиль */
+/***********/
+#fork .f-fs-header {
+  display: flex;
+  align-items: center;
+}
+
+#fork .f-field-pline .f-ycaption,
+#fork .f-field-pline .f-str,
+#fork .f-field-pline > dt,
+#fork .f-field-pline > dd {
+  display: inline;
+  border: 0;
+  padding: 0;
+  margin: 0;
+}
+
+#fork .f-field-pline .f-ycaption::after {
+  content: ": ";
+}
+
+#fork .f-fs-header .f-wrap-usertitle,
+#fork .f-fs-data {
+  display: flex;
+  flex-direction: column;
+}
+
+#fork .f-fs-header .f-wrap-usertitle {
+  width: 100%;
+}
+
+#fork .f-fs-header .f-avatar-img {
+  max-width: 4.6875rem;
+  height: auto;
+}
+
+#fork .f-fs-header #id-dl-username {
+  border-bottom: 0.0625rem solid #AA7939;
+}
+
+#fork .f-fs-header #id-username {
+  font-weight: bold;
+  font-size: 1.5rem;
+  text-align: center;
+  display: block;
+}
+
+#fork .f-fs-header #id-title {
+  font-size: 0.875rem;
+  text-align: center;
+  display: block;
+}
+
+#fork .f-fs-header .f-ycaption,
+#fork .f-fs-header .f-fleg,
+#fork .f-fs-data .f-fleg {
+  display: none;
+}
+
+#fork .f-fs-header,
+#fork .f-fs-data {
+  border-bottom: 0.0625rem dotted #AA7939;
+}
+
+#fork #id-fs-note.f-fs-data {
+  background-color: #FFBABA;
+}
+
+@media screen and (min-width: 40rem) {
+  #fork .f-fs-header .f-wrap-usertitle {
+    order: 1;
+    width: 67%;
+    margin-inline-start: auto;
+  }
+
+  #fork .f-fs-header #id-username {
+    text-align: start;
+  }
+
+  #fork .f-fs-header #id-title {
+    text-align: start;
+  }
+
+  #fork .f-fs-header #id-dl-username,
+  #fork .f-fs-header #id-dl-title {
+    padding-inline-start: 0;
+  }
+
+  #fork .f-fs-header .f-avatar-img {
+    max-width: 11.75rem;
+  }
+
+  #fork .f-fs-header #id-dl-avatar {
+    width: calc(33% - 0.625rem);
+    text-align: end;
+    padding: 0;
+  }
+
+  #fork .f-fs-data dl {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  #fork .f-fs-data dt {
+    width: calc(33% - 0.625rem);
+    text-align: end;
+  }
+
+  #fork .f-fs-data dd {
+    width: 67%
+  }
+
+  #fork .f-field-pline .f-ycaption::after {
+    content: none;
+  }
+}
+
+#fork .f-fs-modforum {
+  display: flex;
+  align-items: stretch;
+}
+
+#fork .f-fs-modforum > dl {
+  border-bottom: 0.0625rem dotted #AA7939;
+  margin-bottom: 0.3125rem;
+}
+
+#fork .f-fs-modforum .f-fleg,
+#fork .f-field-modforum > dt {
+  display: none;
+}
+
+#fork .f-fs-modforum .f-ychk {
+  margin: 0;
+}
+
+#fork .f-fs-modforum .f-ycaption {
+  font-weight: normal;
+}
+
+#fork .f-field-modforum.f-field-moderator {
+  width: 3rem;
+  overflow: hidden;
+  text-align: center;
+}
+
+#fork .f-field-modforum.f-field-name {
+  width: calc(100% - 3rem);
+}
+
+/****************************/
+/* Профиль - редактирование */
+/****************************/
+#fork .f-fs-header-edit > dl,
+#fork .f-fs-data-edit:not(#id-fs-activity) > dl,
+#fork #id-fs-activity.f-fs-data-edit {
+  border-bottom: 0.0625rem dotted #AA7939;
+}
+
+#fork .f-fs-header-edit,
+#fork .f-fs-data-edit {
+  padding: 0.3125rem 0;
+  margin-bottom: 0.3125rem;
+}
+
+#fork .f-fs-header-edit .f-avatar-img {
+  max-width: 11.75rem;
+  height: auto;
+}
+
+#fork .f-fs-data-edit .f-fleg {
+  display: none;
+}
+
+#fork .f-fs-data-edit #id-signature {
+  height: 11rem;
+}
+
+#fork .f-fs-data-edit #id-admin_note {
+  background-color: #FFBABA;
+}
+
+#fork #id-dl-delete_avatar .f-flblch {
+  font-size: 1rem;
+}
+
+@media screen and (min-width: 40rem) {
+  #fork .f-fs-header-edit > dl,
+  #fork .f-fs-data-edit > dl {
+    display: flex;
+  }
+
+  #fork .f-fs-header-edit dt,
+  #fork .f-fs-data-edit dt {
+    width: 33%;
+    text-align: end;
+    padding-inline-end: 0.625rem;
+  }
+
+  #fork .f-fs-header-edit dd,
+  #fork .f-fs-data-edit dd {
+    width: 67%
+  }
+}
+
+/***********************/
+/* Приватные сообщения */
+/***********************/
+#fork .f-mi-pmoff {
+  opacity: 0.4;
+}
+
+#fork .f-nav-pm-links {
+  margin-inline-end: 3.75rem;
+}
+
+#fork #fork-pm-nav {
+  position: sticky;
+  top: 1rem;
+}
+
+#fork-pm-menu a.f-menu-a.active {
+  background-color: #814A00;
+  color: #F8F4E3;
+}
+
+#fork-pm-menu a.f-menu-a:hover,
+#fork-pm-menu a.f-menu-a:focus {
+  background-color: #583200;
+  color: #F8F4E3;
+}
+
+#fork-pm-menu #id-pmn-label {
+  position: absolute;
+  top: -2.875rem;
+  inset-inline-end: 0.625rem;
+}
+
+#fork-pm-menu .f-menu-item:first-child .f-menu-a {
+  border-top: 0.0625rem dotted;
+}
+
+#id-form-pmview .f-btns {
+  padding: 0;
+}
+
+#fork .f-block-form .f-fbtn {
+  width: auto;
+}
+
+#forkpm #fork-pm-bl-ol {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3125rem;
+  padding-top: 0.3125rem;
+  border-top: 0.0625rem solid #AA7939;
+}
+
+#forkpm .f-pm-bl-li {
+  display: flex;
+  flex-wrap: wrap;
+  padding: 0.3125rem 0.625rem 0.625rem;
+  justify-content: space-between;
+  align-items: center;
+  flex: 1 1 25rem;
+  border-bottom: 0.0625rem dotted #AA7939;
+}
+
+@media screen and (min-width: 36rem) {
+  #forkpm > .f-pmconfig-form dl {
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 0.0625rem dotted #AA7939;
+    margin-bottom: 0.3125rem;
+    padding: 0.3125rem;
+  }
+
+  #forkpm > .f-pmconfig-form dt {
+    width: 14rem;
+  }
+
+  #forkpm > .f-pmconfig-form dd {
+    width: calc(100% - 14.625rem);
+  }
+
+  #forkpm > .f-pmconfig-form .f-ycaption {
+    font-weight: normal;
+  }
+}
+
+@media screen and (min-width: 50rem) {
+  #fork .f-nav-pm-links {
+    margin-inline-end: 0;
+  }
+
+  #fork .f-main-pm {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  #fork #fork-pm-menu {
+    width: 13rem;
+  }
+
+  #fork #forkpm {
+    width: calc(100% - 14rem);
+  }
+
+  #fork-pm-menu #id-pmn-label {
+    display: none;
+  }
+
+  #fork-pm-menu .f-menu-items {
+    display: flex;
+  }
+
+  #fork-pm-menu .f-menu-a {
+    text-transform: none;
+    border-bottom: 0.0625rem dotted;
+  }
+
+  #fork-pm-menu a.f-menu-a,
+  #fork-pm-menu span.f-menu-a {
+    justify-content: flex-start;
+  }
+
+  #forkpm > .f-preview,
+  #forkpm > .f-post-form:first-child {
+    border-top-style: dotted;
+  }
+
+  #forkpm > .f-pm:last-child,
+  #forkpm .f-nlbpm {
+    margin-bottom: 0;
+  }
+
+  #forkpm > .f-pm:first-child,
+  #forkpm .f-nlbpm {
+    margin-top: 0;
+  }
+}
+
+/****************************************/
+@media screen and (min-width: 81rem) {
+  #fork.f-with-nav {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+  }
+
+  #fork.f-with-nav #fork-header {
+    order: 0;
+    width: 100%;
+  }
+
+  #fork.f-with-nav main {
+    order: 1;
+    width: calc(100% - 17rem);
+  }
+
+  #fork.f-with-nav #fork-nav {
+    order: 2;
+    width: 16rem;
+    border-bottom: 0;
+    border-inline-start: 0.0625rem solid #AA7939;
+    padding: 0;
+    background-color: #F8F4E3;
+  }
+
+  #fork.f-with-nav #fork-footer {
+    order: 3;
+    width: 100%;
+  }
+
+  #fork.f-with-nav #fork-debug {
+    order: 4;
+    width: 100%;
+  }
+
+  #fork.f-with-nav #fork-navdir {
+    position: sticky;
+    top: 0;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    border: 0
+  }
+
+  #fork.f-with-nav #fork-nav .f-menu-items {
+    display: block;
+    padding: 2rem 0;
+  }
+
+  #fork.f-with-nav #fork-nav .f-menu-user-items {
+    order: -1;
+    display: block;
+    padding: 2rem 0;
+  }
+
+  #fork.f-with-nav #fork-nav .f-menu-a {
+    justify-content: flex-start;
+  }
+
+  #fork.f-with-nav #fork-nav .f-submenu-items .f-menu-a {
+    justify-content: flex-end;
+  }
+
+  #fork.f-with-nav #fork-nav .f-menu-items .f-menu-a {
+    border-top: 0.0625rem dotted;
+  }
+
+  #fork.f-with-nav #fork-nav .f-menu-user-items .f-menu-a {
+    border-bottom: 0.0625rem dotted;
+  }
+
+  #fork.f-with-nav #fork-nav .f-submenu-items {
+    display: block;
+    position: static;
+    background-color: #FFEBCD;
+  }
+}

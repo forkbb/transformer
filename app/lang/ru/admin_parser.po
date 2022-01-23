@@ -1,0 +1,331 @@
+#
+msgid ""
+msgstr ""
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"Project-Id-Version: ForkBB\n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: ForkBB <mio.visman@yandex.ru>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: ru\n"
+
+msgid "Parser settings updated redirect"
+msgstr "Настройки парсера изменены."
+
+msgid "Parser settings head"
+msgstr "Настройки парсера"
+
+msgid "BBCode subhead"
+msgstr "BBCode"
+
+msgid "BBCode label"
+msgstr "BBcode в сообщениях"
+
+msgid "BBCode help"
+msgstr "Разрешить BB-коды в сообщениях (рекомендуется)."
+
+msgid "BBCode sigs label"
+msgstr "BBcode в подписях"
+
+msgid "BBCode sigs help"
+msgstr "Разрешить BB-коды в подписях пользователей."
+
+msgid "Smilies subhead"
+msgstr "Смайлы"
+
+msgid "Smilies mess label"
+msgstr "Смайлы в сообщениях"
+
+msgid "Smilies mess help"
+msgstr "Преобразовывать смайлы из сообщений в графические иконки."
+
+msgid "Smilies sigs label"
+msgstr "Смайлы в подписях"
+
+msgid "Smilies sigs help"
+msgstr "Преобразовывать смайлы из подписей пользователей в графические иконки."
+
+msgid "Clickable links label"
+msgstr "Распознавать ссылки"
+
+msgid "Clickable links help"
+msgstr "Если включено, ForkBB будет автоматически распознавать URL-ы в сообщениях и делать их кликабельными гиперссылками."
+
+msgid "BBCode management"
+msgstr "Управление BB-кодами"
+
+msgid "Smilies management"
+msgstr "Управление смайлами"
+
+msgid "Smilies head"
+msgstr "Смайлы"
+
+msgid "Available images head"
+msgstr "Доступные изображения"
+
+msgid "Available images subhead"
+msgstr "Доступные изображения"
+
+msgid "Upload image head"
+msgstr "Загрузка изображения"
+
+msgid "Upload image subhead"
+msgstr "Загрузка"
+
+msgid "Picture label"
+msgstr "Изображение"
+
+msgid "<img src=\"%1$s\" alt=\"%2$s\">"
+msgstr "<img src=\"%1$s\" alt=\"%2$s\">"
+
+msgid "Name label"
+msgstr "Имя файла"
+
+msgid "File %s deleted redirect"
+msgstr "Файл '%s' удален."
+
+msgid "File %s not deleted redirect"
+msgstr "Файл '%s' не получилось удалить."
+
+msgid "Upload"
+msgstr "Загрузить"
+
+msgid "Upload image label"
+msgstr "Новое изображение"
+
+msgid "Upload image info"
+msgstr "Выберите файл изображения для загрузки."
+
+msgid "Image uploaded redirect"
+msgstr "Изображение загружено."
+
+msgid "Smilies list subhead"
+msgstr "Список смайлов"
+
+msgid "Smiley number %s"
+msgstr "Смайл #%s"
+
+msgid "Smiley code label"
+msgstr "Код"
+
+msgid "Position label"
+msgstr "Позиция"
+
+msgid "New smile subhead"
+msgstr "Новый смайл"
+
+msgid "Smilies updated redirect"
+msgstr "Смайлы обновлены."
+
+msgid "Smile deleted redirect"
+msgstr "Смайл удален."
+
+msgid "BBCode head"
+msgstr "BBCode"
+
+msgid "BBCode list subhead"
+msgstr "Список BB-кодов"
+
+msgid "BBCode tag label"
+msgstr "Тег"
+
+msgid "BBCode tag title"
+msgstr "Редактировать BB-код"
+
+msgid "BBCode %s"
+msgstr "BB-код '%s'"
+
+msgid "BBCode allowed"
+msgstr "Разрешен"
+
+msgid "BBCode display only"
+msgstr "Только отображение"
+
+msgid "BBCode not allowed"
+msgstr "Запрещен"
+
+msgid "BBCode mes label"
+msgstr "В сообщениях"
+
+msgid "BBCode sig label"
+msgstr "В подписях"
+
+msgid "BBCode deleted redirect"
+msgstr "BB-код удален."
+
+msgid "Add bbcode head"
+msgstr "Добавление BB-кода"
+
+msgid "Edit bbcode head"
+msgstr "Редактирование BB-кода"
+
+msgid "Delete bbcode head"
+msgstr "Удаление BB-кода"
+
+msgid "Delete bbcode btn"
+msgstr "Удалить BB-код"
+
+msgid "Tag label"
+msgstr "Tag"
+
+msgid "Tag info"
+msgstr "Имя BB-кода. Формат имени: <code>^[a-z\*][a-z\d-]{0,10}$</code>"
+
+msgid "Type label"
+msgstr "Type"
+
+msgid "Type info"
+msgstr "Тип BB-кода ..."
+
+msgid "New type info"
+msgstr "... или новый тип. Формат: <code>^[a-z][a-z\d-]{0,19}$</code>"
+
+msgid "Parents label"
+msgstr "Parents type"
+
+msgid "Parents info"
+msgstr "Типы родительского BB-кода. Можно указать несколько типов."
+
+msgid "Handler label"
+msgstr "Handler"
+
+msgid "Handler info"
+msgstr "Код PHP для преобразования BB-кода в HTML."
+
+msgid "Text handler label"
+msgstr "Text handler"
+
+msgid "Text handler info"
+msgstr "Код PHP для преобразования BB-кода в простой текст."
+
+msgid "Recursive label"
+msgstr "Recursive"
+
+msgid "Recursive info"
+msgstr "Это рекурсивный BB-код. До окончания рекурсии парсер не реагирует на другие BB-коды."
+
+msgid "Text only label"
+msgstr "Text only"
+
+msgid "Text only info"
+msgstr "Этот BB-код содержит только текст."
+
+msgid "Tags only label"
+msgstr "Tags only"
+
+msgid "Tags only info"
+msgstr "Этот BB-код содержит только другие bb-коды."
+
+msgid "Pre label"
+msgstr "Pre"
+
+msgid "Pre info"
+msgstr "В этом BB-коде символы перевода строки, табуляции и пробелы стоящие рядом не будут изменены."
+
+msgid "Single label"
+msgstr "Single"
+
+msgid "Single info"
+msgstr "Одиночный тег. В этом BB-коде нет тела и закрывающего тега."
+
+msgid "Auto label"
+msgstr "Auto"
+
+msgid "Auto info"
+msgstr "Автозакрытие тега другим BB-кодом."
+
+msgid "Self nesting label"
+msgstr "Self nesting"
+
+msgid "Self nesting info"
+msgstr "Сколько раз этот BB-код может быть вложен в такой же."
+
+msgid "No attr subhead"
+msgstr "Настройки для BB-кода вида [%s]..."
+
+msgid "Allowed label"
+msgstr "Allowed"
+
+msgid "Allowed no_attr info"
+msgstr "Разрешить использовать этот BB-код без атрибутов."
+
+msgid "Body format label"
+msgstr "Body format"
+
+msgid "Body format info"
+msgstr "Регулярное выражение, задает правило для тела BB-кода."
+
+msgid "Def attr subhead"
+msgstr "Настройки для BB-кода вида [%s=<i>значение</i>]..."
+
+msgid "Allowed def_attr info"
+msgstr "Разрешить использовать этот BB-код с первичным атрибутом."
+
+msgid "Required label"
+msgstr "Required"
+
+msgid "Required info"
+msgstr "Обязательный атрибут."
+
+msgid "Format label"
+msgstr "Format"
+
+msgid "Format info"
+msgstr "Регулярное выражение, задает правило для атрибута."
+
+msgid "Other attr subhead"
+msgstr "Настройки для BB-кода вида [%1$s %2$s=<i>значение</i>]..."
+
+msgid "Allowed %s attr info"
+msgstr "Разрешить использовать этот BB-код с атрибутом <b><code>%s</code></b>. Нет - атрибут буден удален."
+
+msgid "New attr subhead"
+msgstr "Новый атрибут"
+
+msgid "Allowed new_attr info"
+msgstr "Добавить новый атрибут"
+
+msgid "Attribute name label"
+msgstr "Имя нового атрибута"
+
+msgid "Attribute name info"
+msgstr "Формат: <code>^[a-z-]{2,15}$</code>"
+
+msgid "Tag name not specified"
+msgstr "Имя тега не указано."
+
+msgid "PHP code error in Handler: %s"
+msgstr "Ошибка PHP кода в Handler: %s"
+
+msgid "PHP code error in Text handler: %s"
+msgstr "Ошибка PHP кода в Text handler: %s"
+
+msgid "Recursive and Tags only are enabled at the same time"
+msgstr "Одновременно включены Recursive и Tags only."
+
+msgid "Recursive and Single are enabled at the same time"
+msgstr "Одновременно включены Recursive и Single."
+
+msgid "Text only and Tags only are enabled at the same time"
+msgstr "Одновременно включены Text only и Tags only."
+
+msgid "Attribute %1$s, %2$s - regular expression error"
+msgstr "Атрибут %1$s, поле %2$s - ошибка в регулярном выражении."
+
+msgid "Attribute name %s is not valid"
+msgstr "Имя %s для атрибута недопустимо."
+
+msgid "BBCode updated redirect"
+msgstr "BB-код обновлен."
+
+msgid "BBCode added redirect"
+msgstr "BB-код добавлен."
+
+msgid "New BBCode"
+msgstr "Новый BB-код"
+
+msgid "Default structure"
+msgstr "По умолчанию"

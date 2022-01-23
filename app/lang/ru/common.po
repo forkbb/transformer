@@ -1,0 +1,467 @@
+#
+msgid ""
+msgstr ""
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"Project-Id-Version: ForkBB\n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: ForkBB <mio.visman@yandex.ru>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: ru\n"
+
+msgid "lang_direction"
+msgstr "ltr"
+
+msgid "lang_identifier"
+msgstr "ru"
+
+msgid "lang_decimal_point"
+msgstr ","
+
+msgid "lang_thousands_sep"
+msgstr " "
+
+# date format short ([0])
+msgid "Y-m-d"
+msgstr "d.m.Y"
+
+# date format long ([1])
+msgid "d M Y"
+msgstr "j M Y г."
+
+# time format short ([1])
+msgid "H:i"
+msgstr "H:i"
+
+# time format long ([0])
+msgid "H:i:s"
+msgstr "H:i:s"
+
+msgid "Cancel"
+msgstr "Отменить"
+
+msgid "Cancel redirect"
+msgstr "Операция отменена."
+
+msgid "No confirm redirect"
+msgstr "Подтверждение не получено. Операция отменена."
+
+msgid "Confirm action"
+msgstr "Подтверждаю действие"
+
+msgid "Forum rules"
+msgstr "Правила форума"
+
+msgid "Redirecting to index"
+msgstr "Перенаправление на главную страницу форума."
+
+msgid "Error mail"
+msgstr "При отправке письма возникла ошибка. Пожалуйста, повторите попытку позже или свяжитесь с администратором форума по адресу <a href=\"mailto:%1$s\">%1$s</a>."
+
+msgid "Bad request"
+msgstr "Неверный запрос. Запрос содержит некорректные на данный момент данные."
+
+msgid "Not Found"
+msgstr "Не найдено. Ссылка является неверной или просроченной."
+
+msgid "No permission"
+msgstr "У вас нет прав на просмотр этой страницы."
+
+msgid "Bad token"
+msgstr "Неверный токен."
+
+msgid "Expired token"
+msgstr "Токен просрочен."
+
+msgid "Hidden text"
+msgstr "Скрытый текст"
+
+msgid "Announcement"
+msgstr "Объявление"
+
+msgid "Options"
+msgstr "Параметры"
+
+msgid "Submit"
+msgstr "Отправить"
+
+msgid "Ban message"
+msgstr "Ваша учетная запись заблокирована."
+
+msgid "Ban message 1"
+msgstr "Ваш IP заблокирован."
+
+msgid "Ban message 2"
+msgstr "Блокировка заканчивается %s"
+
+msgid "Ban message 3"
+msgstr "Администратор или модератор, установивший блокировку, оставил следующее сообщение:"
+
+msgid "Ban message 4"
+msgstr "Все возникшие вопросы отправляйте администратору форума по адресу <a href=\"mailto:%1$s\">%1$s</a>."
+
+msgid "Never"
+msgstr "Нет"
+
+msgid "Today"
+msgstr "Сегодня"
+
+msgid "Yesterday"
+msgstr "Вчера"
+
+msgid "Info"
+msgstr "Информация"
+
+msgid "Go back"
+msgstr "Назад"
+
+msgid "Maintenance"
+msgstr "Обслуживание"
+
+msgid "Redirecting"
+msgstr "Перенаправление"
+
+msgid "Redirecting..."
+msgstr "Переадресация …"
+
+msgid "Click redirect"
+msgstr "Кликните здесь, если не желаете ждать (или ваш браузер не поддерживает перенаправление)."
+
+msgid "on"
+msgstr "вкл."
+
+msgid "off"
+msgstr "выкл."
+
+msgid "Last post"
+msgstr "Последнее сообщение"
+
+msgid "by %s"
+msgstr "от %s"
+
+msgid "New posts"
+msgstr "Новые сообщения"
+
+msgid "New posts info"
+msgstr "Перейти к первому новому сообщению в теме"
+
+msgid "Unread posts"
+msgstr "Непрочитанные сообщения"
+
+msgid "Unread posts info"
+msgstr "Перейти к первому непрочитанному сообщению в теме"
+
+msgid "Username"
+msgstr "Имя"
+
+msgid "Passphrase"
+msgstr "Кодовая фраза"
+
+msgid "Email"
+msgstr "Email"
+
+msgid "Send email"
+msgstr "Отправить письмо"
+
+msgid "Registered"
+msgstr "Дата регистрации"
+
+msgid "Subject"
+msgstr "Заголовок"
+
+msgid "Message"
+msgstr "Сообщение"
+
+msgid "Topic"
+msgstr "Тема"
+
+msgid "Forum"
+msgstr "Раздел"
+
+msgid "Stats"
+msgstr "Статистика"
+
+msgid "Posts"
+msgstr "Сообщений"
+
+msgid "Replies"
+msgstr "Ответов"
+
+msgid "%s Reply"
+msgid_plural "%s Replies"
+msgstr[0] "<b>%s</b> Ответ"
+msgstr[1] "<b>%s</b> Ответа"
+msgstr[2] "<b>%s</b> Ответов"
+
+msgid "%s View"
+msgid_plural "%s Views"
+msgstr[0] "<b>%s</b> Просмотр"
+msgstr[1] "<b>%s</b> Просмотра"
+msgstr[2] "<b>%s</b> Просмотров"
+
+msgid "Pages"
+msgstr "Страницы"
+
+msgid "Page %s"
+msgstr "Страница %s"
+
+msgid "Page %1$s of %2$s"
+msgstr "Страница %1$s из %2$s ·"
+
+msgid "Image link"
+msgstr "картинка"
+
+msgid "wrote"
+msgstr "пишет:"
+
+msgid "Mailer"
+msgstr "%s"
+
+msgid "Previous"
+msgstr "Назад"
+
+msgid "Next"
+msgstr "Вперед"
+
+msgid "Spacer"
+msgstr "&hellip;"
+
+msgid "Title"
+msgstr "Титул"
+
+msgid "Member"
+msgstr "Участник"
+
+msgid "Moderator"
+msgstr "Модератор"
+
+msgid "Administrator"
+msgstr "Администратор"
+
+msgid "Banned"
+msgstr "Забанен"
+
+msgid "Guest"
+msgstr "Гость"
+
+msgid "Unverified"
+msgstr "Непроверенный"
+
+msgid "Index"
+msgstr "Форум"
+
+msgid "Home page"
+msgstr "Главная страница форума"
+
+msgid "User list"
+msgstr "Пользователи"
+
+msgid "List of users"
+msgstr "Список пользователей"
+
+msgid "Rules"
+msgstr "Правила"
+
+msgid "Board rules"
+msgstr "Правила форума"
+
+msgid "Search"
+msgstr "Поиск"
+
+msgid "Search topics and posts"
+msgstr "Поиск тем и сообщений"
+
+msgid "Register"
+msgstr "Регистрация"
+
+msgid "Login"
+msgstr "Вход"
+
+msgid "Profile"
+msgstr "Профиль"
+
+msgid "Your profile"
+msgstr "Ваш профиль"
+
+msgid "Logout"
+msgstr "Выход"
+
+msgid "Admin"
+msgstr "Админка"
+
+msgid "Administration functions"
+msgstr "Функции администрирования"
+
+msgid "Title separator"
+msgstr " - "
+
+msgid "PM"
+msgstr "ЛС"
+
+msgid "PM %s"
+msgstr "<span class="f-spantxtpm">ЛС </span><b>(%s)</b>"
+
+msgid "Private messages"
+msgstr "Личные сообщения"
+
+msgid "Send PM"
+msgstr "Отправить личное сообщение"
+
+msgid "Board footer"
+msgstr "Подвал форума"
+
+msgid "Powered by"
+msgstr "Под управлением <a href=\"https://github.com/forkbb\">ForkBB</a>"
+
+msgid "Debug table"
+msgstr "Отладочная информация"
+
+msgid "Querytime"
+msgstr "Сгенерировано за %1$s сек, %2$s запросов выполнено"
+
+msgid "Memory usage"
+msgstr "Использовано памяти: %1$s"
+
+msgid "Peak usage"
+msgstr "(Пик: %1$s)"
+
+msgid "Query times"
+msgstr "Время (s)"
+
+msgid "Query"
+msgstr "Запрос"
+
+msgid "The most recent posts at %s board"
+msgstr "Самые свежие сообщения на форуме \"%s\"."
+
+msgid "The most recent posts in %s forum"
+msgstr "Самые свежие сообщения в разделе \"%s\"."
+
+msgid "The most recent posts in %s topic"
+msgstr "Самые свежие сообщения в теме \"%s\"."
+
+msgid "RSS reply"
+msgstr "Re: "
+
+msgid "RSS active topics feed"
+msgstr "RSS лента активных тем"
+
+msgid "Atom active topics feed"
+msgstr "Atom лента активных тем"
+
+msgid "RSS forum feed"
+msgstr "RSS лента раздела"
+
+msgid "Atom forum feed"
+msgstr "Atom лента раздела"
+
+msgid "RSS topic feed"
+msgstr "RSS лента темы"
+
+msgid "Atom topic feed"
+msgstr "Atom лента темы"
+
+msgid "After time"
+msgstr "Добавлено спустя"
+
+msgid "After time s"
+msgstr " с"
+
+msgid "After time i"
+msgstr " мин"
+
+msgid "After time H"
+msgstr " ч"
+
+msgid "After time d"
+msgstr " дн"
+
+msgid "New reports"
+msgstr "<a href=\"%s\">Есть новые сигналы</a>"
+
+msgid "Maintenance mode enabled"
+msgstr "<a href=\"%s\">Включен режим обслуживания!</a>"
+
+msgid "%s B"
+msgstr "%s байт"
+
+msgid "%s KiB"
+msgstr "%s Кбайт"
+
+msgid "%s MiB"
+msgstr "%s Мбайт"
+
+msgid "%s GiB"
+msgstr "%s Гбайт"
+
+msgid "%s TiB"
+msgstr "%s Тбайт"
+
+msgid "%s PiB"
+msgstr "%s Пбайт"
+
+msgid "%s EiB"
+msgstr "%s Эбайт"
+
+msgid "Latest active topics"
+msgstr "Последние активные темы"
+
+msgid "Find latest active topics"
+msgstr "Найти последние активные темы"
+
+msgid "Unanswered topics"
+msgstr "Темы без ответа"
+
+msgid "Find unanswered topics"
+msgstr "Найти темы без ответа"
+
+msgid "Topics with your posts"
+msgstr "Темы с вашим участием"
+
+msgid "Find topics with your posts"
+msgstr "Найти темы с вашим участием"
+
+msgid "Male"
+msgstr "Мужской"
+
+msgid "Female"
+msgstr "Женский"
+
+msgid "Save changes"
+msgstr "Сохранить изменения"
+
+msgid "Save"
+msgstr "Сохранить"
+
+msgid "Yes"
+msgstr "Да"
+
+msgid "No"
+msgstr "Нет"
+
+msgid "Your passphrase"
+msgstr "Ваша кодовая фраза"
+
+msgid "Invalid passphrase"
+msgstr "Неверная кодовая фраза"
+
+msgid "User %s"
+msgstr "%s"
+
+msgid "Unsubscribe"
+msgstr "Отписаться"
+
+msgid "Subscribe"
+msgstr "Подписаться"
+
+msgid "Post from topic %s"
+msgstr "Это сообщение перенесено из темы &quot;%s&quot;"
+
+msgid "The search may be case sensitive"
+msgstr "Поиск может быть чувствителен к регистру символов не относящихся к основной латинице."
+
+msgid "%s"
+msgstr "%s"

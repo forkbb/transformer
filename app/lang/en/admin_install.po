@@ -1,0 +1,274 @@
+#
+msgid ""
+msgstr ""
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Project-Id-Version: ForkBB\n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: ForkBB <mio.visman@yandex.ru>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: en\n"
+
+msgid "Transformer"
+msgstr "Transformer"
+
+msgid "Welcome"
+msgstr "This script will help you migrate a third party board database to ForkBB. You can also merge boards."
+
+msgid "Choose install language"
+msgstr "Choose the install script language"
+
+msgid "Install language"
+msgstr "Language"
+
+msgid "Choose install language info"
+msgstr "The language used for this script."
+
+msgid "Select"
+msgstr "Select"
+
+msgid "Install"
+msgstr "Install ForkBB rev.%s"
+
+msgid "Database source setup"
+msgstr "<b>Database source setup</b>"
+
+msgid "Database receiver setup"
+msgstr "<b>Database receiver setup</b>"
+
+msgid "Info 1"
+msgstr "All information we need to create a connection with your database."
+
+msgid "Database type"
+msgstr "Database type"
+
+msgid "Info 2"
+msgstr "Select a database. We support SQLite, MySQL and PostgreSQL."
+
+msgid "Database server hostname"
+msgstr "Database server hostname"
+
+msgid "Info 3"
+msgstr "You should be able to get this info from your web host, if <code>localhost</code> does not work."
+
+msgid "Database name"
+msgstr "Database name"
+
+msgid "Info 4"
+msgstr "The name of the database you want to install ForkBB on."
+
+msgid "Database username"
+msgstr "Database username"
+
+msgid "Database password"
+msgstr "Database password"
+
+msgid "Info 5"
+msgstr "Your database username and password (ignore of SQLite)."
+
+msgid "Table prefix"
+msgstr "Table prefix"
+
+msgid "Info 6"
+msgstr "The prefix may contain the letters a to z, any numbers and the underscore character. They must however start with a letter. The maximum length is 40 characters."
+
+msgid "Administration setup"
+msgstr "<b>Administration setup</b>"
+
+msgid "Info 7"
+msgstr "Create the very first account on your board."
+
+msgid "Administrator username"
+msgstr "Administrator's username"
+
+msgid "Info 8"
+msgstr "The username must begin with a letter. May contain letters, numbers, spaces, dots, dashes and underscores."
+
+msgid "Administrator passphrase"
+msgstr "Administrator's passphrase"
+
+msgid "Info 9"
+msgstr "Passphrase must contain a few words. Passphrase must be at least 16 characters long. Passphrase are case sensitive."
+
+msgid "Administrator email"
+msgstr "Administrator's email"
+
+msgid "Info 10"
+msgstr "Please enter a valid email address."
+
+msgid "Board setup"
+msgstr "<b>Board setup</b>"
+
+msgid "Info 11"
+msgstr "Settings for your board. You can change this later."
+
+msgid "Board title"
+msgstr "Board title"
+
+msgid "Board description"
+msgstr "Board description (supports HTML)"
+
+msgid "Base URL"
+msgstr "The URL of your forum"
+
+msgid "Default language"
+msgstr "Default language"
+
+msgid "Default style"
+msgstr "Default style"
+
+msgid "Start install"
+msgstr "Start install"
+
+msgid "You are running error"
+msgstr "You are running %1$s version %2$s. ForkBB rev.%3$s requires at least %1$s %4$s to run properly. You must upgrade your %1$s installation before you can continue."
+
+msgid "Alert folder"
+msgstr "In order for ForkBB to function properly, the directory <em>%s</em> must be writable by PHP. Use chmod to set the appropriate directory permissions. If in doubt, chmod to 0777."
+
+msgid "No language packs"
+msgstr "No language packs."
+
+msgid "No styles"
+msgstr "No styles."
+
+msgid "No DB extensions"
+msgstr "This PHP environment does not have support for any of the databases that ForkBB supports. PDO must be enabled."
+
+msgid "No access to main.dist.php"
+msgstr "No access to main.dist.php."
+
+msgid "My ForkBB Forum"
+msgstr "My ForkBB Forum"
+
+msgid "Description"
+msgstr "Forum powered by open source software - ForkBB."
+
+msgid "Wrong email"
+msgstr "The administrator email address you entered is invalid."
+
+msgid "Table prefix error"
+msgstr "The table prefix '%s' does not match the format."
+
+msgid "Prefix reserved"
+msgstr "The 'sqlite_' and 'pg_' prefixes are reserved. Please choose a different prefix."
+
+msgid "Existing table error"
+msgstr "The database '%2$s' contains tables with the prefix '%1$s': <b>%3$s</b>."
+
+msgid "Administrators"
+msgstr "Administrators"
+
+msgid "Administrator "
+msgstr "Administrator"
+
+msgid "Moderators"
+msgstr "Moderators"
+
+msgid "Moderator "
+msgstr "Moderator"
+
+msgid "Guests"
+msgstr "Guests"
+
+msgid "Guest "
+msgstr "Guest"
+
+msgid "Members"
+msgstr "Members"
+
+msgid "New members"
+msgstr "New members"
+
+msgid "New member"
+msgstr "New member"
+
+msgid "Announcement "
+msgstr "Enter your announcement here."
+
+msgid "Rules "
+msgstr "Enter your rules here"
+
+msgid "Maintenance message "
+msgstr "The forums are temporarily down for maintenance. Please try again in a few minutes."
+
+msgid "Test post"
+msgstr "Test topic"
+
+msgid "Test message"
+msgstr "If you are looking at this (which I guess you are), the install of ForkBB appears to have worked! Now log in and head over to the administration control panel to configure your forum."
+
+msgid "Test category"
+msgstr "Test category"
+
+msgid "Test forum"
+msgstr "Test forum"
+
+msgid "This is just a test forum"
+msgstr "This is just a test forum"
+
+msgid "Bad database charset"
+msgstr "The database must be created with the character encoding <b>utf8mb4</b> (compare <b>utf8mb4_unicode_ci</b>)."
+
+msgid "Bad database encoding"
+msgstr "The database must be created with the character encoding <b>%s</b>."
+
+msgid "Bad database collate"
+msgstr "The database must be created with Collation order <b>C</b> (LC_COLLATE)."
+
+msgid "Bad database ctype"
+msgstr "The database must be created with Character classification <b>C</b> (LC_CTYPE)."
+
+msgid "Cookie setup"
+msgstr "<b>Cookie setup</b>"
+
+msgid "Info 12"
+msgstr "Cookies are a mechanism for storing data by the user's browser, which is used for its identification."
+
+msgid "Cookie Domain"
+msgstr "Cookie Domain"
+
+msgid "Cookie Domain info"
+msgstr "If you specify a (sub)domain, then the cookies set by the board will be available on it and <b>all its subdomains</b>! www.example.com and example.com <b>are not the same domain</b>. www.example.com is a subdomain of example.com. <b>Leave this field blank</b> if the cookie should only be set for the board domain."
+
+msgid "Cookie Path"
+msgstr "Cookie Path"
+
+msgid "Cookie Path info"
+msgstr "The path on the server in which the cookie will be available on. If set to <b>/</b>, the cookie will be available within the entire domain. If set to <b>/foo/</b>, the cookie will only be available within the <b>/foo/</b> directory and all sub-directories such as <b>/foo/bar/</b> of domain."
+
+msgid "Yes "
+msgstr "Yes"
+
+msgid "No "
+msgstr "No"
+
+msgid "Cookie Secure"
+msgstr "Cookie Secure"
+
+msgid "Cookie Secure info"
+msgstr "Indicates that the cookie should only be transmitted over a secure <b>HTTPS</b> connection from the client. When set to <b>YES</b>, the cookie will only be set if a secure connection exists."
+
+msgid "Script runs error"
+msgstr "It appears this script is already being ran by someone else. If it was you, then you can clear the cache so as not to wait for the end of the TTL."
+
+msgid "Script key error"
+msgstr "It appears someone cleared the cache while the script was running."
+
+msgid "Database belongs to unknown forum type"
+msgstr "Database belongs to unknown forum type."
+
+msgid "%s does not have required tables"
+msgstr "Driver '%s' does not have required tables."
+
+msgid "Current version '%1$s' is %2$s, need %3$s to %4$s"
+msgstr "The current version of database '%1$s' is %2$s, need %3$s to %4$s."
+
+msgid "This database is empty"
+msgstr "This database is empty. Or the prefix is incorrect."
+
+msgid "Step %1$s (%2$s)"
+msgstr "Step %1$s (%2$s)."

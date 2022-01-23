@@ -1,0 +1,298 @@
+#
+msgid ""
+msgstr ""
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Project-Id-Version: ForkBB\n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: ForkBB <mio.visman@yandex.ru>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: en\n"
+
+msgid "You must enter a group title"
+msgstr "You must enter a group title."
+
+msgid "Title already exists"
+msgstr "There is already a group with this title."
+
+msgid "Default group redirect"
+msgstr "Default group set."
+
+msgid "Group removed redirect"
+msgstr "Group removed."
+
+msgid "Group added redirect"
+msgstr "Group added."
+
+msgid "Group edited redirect"
+msgstr "Group edited."
+
+msgid "Add group subhead"
+msgstr "Add new group"
+
+msgid "New group label"
+msgstr "Base new group on"
+
+msgid "New group help"
+msgstr "Select a user group from which the new group will inherit its permission settings. The next page will let you fine-tune its settings."
+
+msgid "Default group subhead"
+msgstr "Set default group"
+
+msgid "Default group label"
+msgstr "Default group"
+
+msgid "Default group help"
+msgstr "This is the default user group, e.g. the group users are placed in when they register. For security reasons, users can't be placed in either the moderator or administrator user groups by default."
+
+msgid "Edit groups info"
+msgstr "The pre-defined groups Guests, Administrators, Moderators and Members cannot be removed. However, they can be edited. Please note that in some groups, some options are unavailable (e.g. the <em>edit posts</em> permission for guests). Administrators always have full permissions."
+
+msgid "Delete link"
+msgstr "Delete"
+
+msgid "Group delete"
+msgstr "Group delete"
+
+msgid "I want to delete this group"
+msgstr "Yes, I want to delete the group <b>%s</b>"
+
+msgid "Confirm delete"
+msgstr "Delete group?"
+
+msgid "Confirm delete warn"
+msgstr "<b>WARNING!</b> After you deleted a group you cannot restore it."
+
+msgid "Move users info"
+msgstr "The group <b>%1$s</b> currently has <b>%2$s</b> members. Please select a group to which these members will be assigned upon deletion."
+
+msgid "Move users label"
+msgstr "Move users to"
+
+msgid "Delete group"
+msgstr "Delete group"
+
+msgid "Group settings info"
+msgstr "Below options and permissions are the default permissions for the user group. These options apply if no forum specific permissions are in effect."
+
+msgid "Group title label"
+msgstr "Group title"
+
+msgid "User title label"
+msgstr "User title"
+
+msgid "User title help"
+msgstr "The rank users in this group have attained. Leave blank to use default title <b>%s</b>."
+
+msgid "Promote users label"
+msgstr "Promote users"
+
+msgid "Promote users help"
+msgstr "You can promote users to a new group automatically if they reach a certain number of posts. Select &quot;%s&quot; to disable. For security reasons, you are not allowed to select an administrator group here. Also note that group changes for users affected by this setting will take effect <b>immediately</b>."
+
+msgid "Number for promotion label"
+msgstr "Number of messages for promotion"
+
+msgid "Number for promotion help"
+msgstr "Note that the amount of posts you enter is the total amount of posts of a user, not the amount of posts made as a member of this group."
+
+msgid "Disable promotion"
+msgstr "Disable promoting"
+
+msgid "Mod privileges label"
+msgstr "Allow users moderator privileges"
+
+msgid "Mod privileges help"
+msgstr "In order for a user in this group to have moderator abilities, he/she must be assigned to moderate one or more forums. This is done via the user administration page of the user's profile."
+
+msgid "Edit profile label"
+msgstr "Allow moderators to edit user profiles"
+
+msgid "Edit profile help"
+msgstr "If moderator privileges are enabled, allow users in this group to edit user profiles."
+
+msgid "Rename users label"
+msgstr "Allow moderators to rename users"
+
+msgid "Rename users help"
+msgstr "If moderator privileges are enabled, allow users in this group to rename users."
+
+msgid "Change passwords label"
+msgstr "Allow moderators to change passwords"
+
+msgid "Change passwords help"
+msgstr "If moderator privileges are enabled, allow users in this group to change user passwords."
+
+msgid "Mod promote users label"
+msgstr "Allow moderators to promote users"
+
+msgid "Mod promote users help"
+msgstr "If moderator privileges are enabled, allow users in this group to promote users."
+
+msgid "Ban users label"
+msgstr "Allow moderators to ban users"
+
+msgid "Ban users help"
+msgstr "If moderator privileges are enabled, allow users in this group to ban users."
+
+msgid "Read board label"
+msgstr "Read board"
+
+msgid "Read board help"
+msgstr "Allow users in this group to view the board. This setting applies to every aspect of the board and can therefore not be overridden by forum specific settings. If this is set to &quot;No&quot;, users in this group will only be able to login/logout and register."
+
+msgid "View user info label"
+msgstr "View user information"
+
+msgid "View user info help"
+msgstr "Allow users to view the user list and user profiles."
+
+msgid "Post replies label"
+msgstr "Post replies"
+
+msgid "Post replies help"
+msgstr "Allow users in this group to post replies in topics."
+
+msgid "Post topics label"
+msgstr "Post topics"
+
+msgid "Post topics help"
+msgstr "Allow users in this group to post new topics."
+
+msgid "Edit posts label"
+msgstr "Edit posts"
+
+msgid "Edit posts help"
+msgstr "Allow users in this group to edit their own posts."
+
+msgid "Delete posts label"
+msgstr "Delete posts"
+
+msgid "Delete posts help"
+msgstr "Allow users in this group to delete their own posts."
+
+msgid "Delete topics label"
+msgstr "Delete topics"
+
+msgid "Delete topics help"
+msgstr "Allow users in this group to delete their own topics (<b>including any replies</b>)."
+
+msgid "Post links label"
+msgstr "Post links"
+
+msgid "Post links help"
+msgstr "Allow users in this group to include links in their posts. This setting also applies to signatures and the website field in users' profiles."
+
+msgid "Set own title label"
+msgstr "Set own user title"
+
+msgid "Set own title help"
+msgstr "Allow users in this group to set their own user title."
+
+msgid "User search label"
+msgstr "Use search"
+
+msgid "User search help"
+msgstr "Allow users in this group to use the search feature."
+
+msgid "User list search label"
+msgstr "Search user list"
+
+msgid "User list search help"
+msgstr "Allow users in this group to freetext search for users in the user list."
+
+msgid "Send e-mails label"
+msgstr "Send e-mails"
+
+msgid "Send e-mails help"
+msgstr "Allow users in this group to send e-mails to other users."
+
+msgid "Post flood label"
+msgstr "Post flood interval"
+
+msgid "Post flood help"
+msgstr "Number of seconds that users in this group have to wait between posts. Set to 0 to disable."
+
+msgid "Search flood label"
+msgstr "Search flood interval"
+
+msgid "Search flood help"
+msgstr "Number of seconds that users in this group have to wait between searches. Set to 0 to disable."
+
+msgid "E-mail flood label"
+msgstr "Email flood interval"
+
+msgid "E-mail flood help"
+msgstr "Number of seconds that users in this group have to wait between emails. Set to 0 to disable."
+
+msgid "Report flood label"
+msgstr "Report flood interval"
+
+msgid "Report flood help"
+msgstr "Number of seconds that users in this group have to wait between reports. Set to 0 to disable."
+
+msgid "Moderator info"
+msgstr "Please note that in order for a user in this group to have moderator abilities, he/she must be assigned to moderate one or more forums. This is done in user's profile (Edit profile - Configure moderator rights)."
+
+msgid "Delete-edit interval label"
+msgstr "Interval for editing/deleting"
+
+msgid "Delete-edit interval help"
+msgstr "Number of seconds to edit (delete) your messages or topics. Set to 0 to disable.<br>Moderators have no restrictions in the zone of responsibility."
+
+msgid "Create new group"
+msgstr "Create new group"
+
+msgid "Edit group"
+msgstr "Edit group"
+
+msgid "Invalid default group"
+msgstr "Invalid default group."
+
+msgid "Invalid group to create on base"
+msgstr "Invalid group to create on base."
+
+msgid "Signature subhead"
+msgstr "Signature"
+
+msgid "Max sig length label"
+msgstr "Maximum signature length"
+
+msgid "Max sig length help"
+msgstr "The maximum number of characters a user signature may contain. 0 - disables signatures."
+
+msgid "Max sig lines label"
+msgstr "Maximum signature lines"
+
+msgid "Max sig lines help"
+msgstr "The maximum number of lines a user signature may contain. 0 - disables signatures."
+
+msgid "Titles subhead"
+msgstr "Titles"
+
+msgid "Promotion subhead"
+msgstr "Promotion"
+
+msgid "Moderation subhead"
+msgstr "Moderation"
+
+msgid "Permissions subhead"
+msgstr "Permissions"
+
+msgid "Intervals subhead"
+msgstr "Intervals"
+
+msgid "PM subhead"
+msgstr "Private messages"
+
+msgid "Allow PM label"
+msgstr "Allow private messages"
+
+msgid "PM limit label"
+msgstr "Limit"
+
+msgid "PM limit help"
+msgstr "The maximum number of dialogs for a user in this group. Set to 0 to disable."

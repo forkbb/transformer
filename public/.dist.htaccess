@@ -1,0 +1,61 @@
+AddDefaultCharset UTF-8
+
+<IfModule mod_autoindex.c>
+    Options -Indexes
+</IfModule>
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  #RewriteBase /
+
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_URI} !^/style/
+  RewriteCond %{REQUEST_URI} !^/img/
+  RewriteCond %{REQUEST_URI} !^/js/
+  RewriteCond %{REQUEST_URI} !^/favicon\.ico$
+  RewriteCond %{REQUEST_URI} !^/robots\.txt$
+  RewriteRule . index.php [L]
+
+  RewriteRule \.dist\. index.php [L]
+
+  RewriteCond %{REQUEST_URI} \.v\.[0-9]
+  RewriteRule ^(.+)\.v\.[0-9]+\.([^.\\/]++)$ $1.$2 [L]
+</IfModule>
+
+# Set Cache-Control header for caching statics
+<ifModule mod_headers.c>
+  <FilesMatch "\.(css|js|gif|png|jpg|jpeg|webp|woff|woff2)$">
+    Header set Cache-Control "public,max-age=31536000,immutable"
+    Header unset ETag
+  </FilesMatch>
+  <FilesMatch "\.(ico)$">
+    Header set Cache-Control "public,max-age=604800"
+    Header unset ETag
+  </FilesMatch>
+</ifModule>
+
+<ifModule mod_headers.c>
+  # Set security headers if missing.
+  # ForkBB generates these headers, but only for php pages.
+  #
+  ### Only works in Apache 2.4.10+ (Reason, condition  -> "expr = -z% {resp: ...}") ###
+  #
+  Header always set Content-Security-Policy "default-src 'self';object-src 'none';frame-ancestors 'none';base-uri 'none';form-action 'self'" "expr=-z %{resp:Content-Security-Policy}"
+  Header always set Feature-Policy "accelerometer 'none';ambient-light-sensor 'none';autoplay 'none';battery 'none';camera 'none';document-domain 'self';fullscreen 'self';geolocation 'none';gyroscope 'none';magnetometer 'none';microphone 'none';midi 'none';payment 'none';picture-in-picture 'none';sync-xhr 'self';usb 'none'" "expr=-z %{resp:Feature-Policy}"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin" "expr=-z %{resp:Referrer-Policy}"
+#  Header set Strict-Transport-Security "max-age=31536000" "expr=-z %{resp:Strict-Transport-Security}"
+  Header always set X-Content-Type-Options "nosniff" "expr=-z %{resp:X-Content-Type-Options}"
+  Header always set X-Frame-Options "DENY" "expr=-z %{resp:X-Frame-Options}"
+  Header always set X-XSS-Protection "1; mode=block" "expr=-z %{resp:X-XSS-Protection}"
+  Header always set Permissions-Policy "accelerometer=(),ambient-light-sensor=(),autoplay=(),battery=(),camera=(),document-domain=(self),fullscreen=(self),geolocation=(),gyroscope=(),magnetometer=(),microphone=(),midi=(),payment=(),picture-in-picture=(),sync-xhr=(self),usb=()" "expr=-z %{resp:Permissions-Policy}"
+
+  # Remove headers containing php information
+  Header unset X-Powered-By
+  Header always unset X-Powered-By
+</ifModule>
+
+# Hiding information about the system
+ServerSignature Off
+#ServerTokens ProductOnly # Use only in server config, do not use in .htaccess
+
+# More info: https://github.com/h5bp/server-configs-apache/blob/master/dist/.htaccess
