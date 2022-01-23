@@ -34,10 +34,10 @@ msgid "Install"
 msgstr "Install ForkBB rev.%s"
 
 msgid "Database source setup"
-msgstr "<b>Database source setup</b>"
+msgstr "<b>Source</b>"
 
 msgid "Database receiver setup"
-msgstr "<b>Database receiver setup</b>"
+msgstr "<b>Receiver</b>"
 
 msgid "Info 1"
 msgstr "All information we need to create a connection with your database."
