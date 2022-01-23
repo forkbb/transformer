@@ -270,5 +270,5 @@ msgstr "Текущая версия базы данных '%1$s' равна %2$s
 msgid "This database is empty"
 msgstr "Эта база данных пустая. Или префикс указан неверно."
 
-msgid "Step %1$s (%2$s)"
-msgstr "Шаг %1$s (%2$s)."
+msgid "Step %1$s %3$s (%2$s)"
+msgstr "Шаг %1$s '%3$s' (%2$s)."

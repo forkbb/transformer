@@ -29,39 +29,6 @@ class Transformer extends Model
     /**
      * @var array
      */
-    protected $steps = [
-        1  => 'categories',
-        2  => 'groups',
-        3  => 'users',
-        4  => 'forums',
-        5  => 'forum_perms',
-        6  => 'bbcode',
-        7  => 'censoring',
-        8  => 'smilies',
-        9  => 'topics',
-        10 => 'posts',
-        11 => 'warnings',
-        12 => 'reports',
-        13 => 'forum_subscriptions',
-        14 => 'topic_subscriptions',
-        15 => 'mark_of_forum',
-        16 => 'mark_of_topic',
-        17 => 'poll',
-        18 => 'poll_voted',
-        19 => 'pm_topics',
-        20 => 'pm_posts',
-        21 => 'pm_block',
-        22 => 'bans',
-        23 => 'config',
-//      'online',
-//      'search_cache',
-//      'search_matches',
-//      'search_words',
-    ];
-
-    /**
-     * @var array
-     */
     protected $oldAdd = [
         'categories',
         'forums',
@@ -160,7 +127,7 @@ class Transformer extends Model
     public function step(int $step, int $id) /* : mixed */
     {
         $driver  = $this->loadDriver($this->c->SOURCE_TYPE);
-        $endStep = \max(\array_keys($this->steps)) + 1;
+        $endStep = \max(\array_keys($this->c->STEPS));
 
         switch ($step) {
             case 0:
@@ -182,13 +149,13 @@ class Transformer extends Model
 
                 break;
             default:
-                if (! isset($this->steps[$step])) {
+                if (! isset($this->c->STEPS[$step])) {
                     throw new RuntimeException("Step number {$step} is not specified");
                 }
 
                 $count = 0;
                 $newId = $id;
-                $name  = $this->steps[$step];
+                $name  = $this->c->STEPS[$step];
                 $pre   = $name . 'Pre';
                 $get   = $name . 'Get';
                 $set   = $name . 'Set';

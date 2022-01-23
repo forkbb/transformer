@@ -270,5 +270,5 @@ msgstr "The current version of database '%1$s' is %2$s, need %3$s to %4$s."
 msgid "This database is empty"
 msgstr "This database is empty. Or the prefix is incorrect."
 
-msgid "Step %1$s (%2$s)"
-msgstr "Step %1$s (%2$s)."
+msgid "Step %1$s %3$s (%2$s)"
+msgstr "Step %1$s '%3$s' (%2$s)."

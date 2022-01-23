@@ -30,12 +30,6 @@ class Install extends Admin
     const CACHE_KEY = 'transformer';
     const CACHE_TTL = 1800;
 
-    /**
-     * Для MySQL
-     * @var string
-     */
-    protected $DBEngine = '';
-
     protected $settings;
 
     public function __construct(Container $container)
@@ -321,9 +315,10 @@ class Install extends Admin
         if (isset($result['step'], $result['id'])) {
             if ($result['step'] >= 0) {
                 $result['key'] = $args['key'];
+                $name          = $this->c->STEPS[$args['step']] ?? '???';
 
                 return $this->c->Redirect->page('Step', $result)
-                    ->message(['Step %1$s (%2$s)', $args['step'], $args['id']]);
+                    ->message(['Step %1$s %3$s (%2$s)', $args['step'], $args['id'], $name]);
             }
         }
 
