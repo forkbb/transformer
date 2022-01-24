@@ -214,8 +214,9 @@ class Install extends Admin
             }
         }
 
-        $this->formTitle = 'Database source setup';
-        $this->form2     = $this->formDB($v, 'Source', $args);
+        $this->formTitle  = 'Database source setup';
+        $this->dbnameHelp = 'For SQLite, the database file...';
+        $this->form2      = $this->formDB($v, 'Source', $args);
 
         return $this;
     }
@@ -388,6 +389,7 @@ class Install extends Admin
                             'type'     => 'text',
                             'value'    => $v ? $v->dbname : '',
                             'caption'  => 'Database name',
+                            'help'     => $this->dbnameHelp,
                             'required' => true,
                         ],
                         'dbuser' => [

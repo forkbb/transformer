@@ -272,3 +272,6 @@ msgstr "This database is empty. Or the prefix is incorrect."
 
 msgid "Step %1$s %3$s (%2$s)"
 msgstr "Step %1$s '%3$s' (%2$s)."
+
+msgid "For SQLite, the database file..."
+msgstr "For SQLite, the database file must be located in the <b>/app/config/db/</b> directory."
