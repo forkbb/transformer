@@ -201,8 +201,8 @@ class Transformer extends Model
         switch ($id) {
             case 0:
                 if (
-                    TRANSFORMER_MOVE === $this->c->TR_METHOD
-                    || TRANSFORMER_COPY === $this->c->TR_METHOD
+                    TRANSFORMER_COPY === $this->c->TR_METHOD
+                    || TRANSFORMER_EXACT_COPY === $this->c->TR_METHOD
                 ) {
                     $this->schemaCreate();
                 }

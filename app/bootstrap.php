@@ -30,9 +30,9 @@ define('FORK_GROUP_MOD', 2);
 define('FORK_GROUP_GUEST', 3);
 define('FORK_GROUP_MEMBER', 4);
 
-define('TRANSFORMER_MOVE', 0);
+define('TRANSFORMER_COPY', 0);
 define('TRANSFORMER_MERGE', 1);
-define('TRANSFORMER_COPY', 2);
+define('TRANSFORMER_EXACT_COPY', 2);
 
 require __DIR__ . '/../vendor/autoload.php';
 
