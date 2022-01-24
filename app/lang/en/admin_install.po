@@ -296,3 +296,12 @@ msgstr "Start merge"
 
 msgid "Backup"
 msgstr "Hope you have a backup."
+
+msgid "Tables"
+msgstr "Tables"
+
+msgid "Rows"
+msgstr "Rows"
+
+msgid "Size"
+msgstr "Size"

@@ -17,7 +17,7 @@ use ForkBB\Models\Pages\Admin;
 use PDO;
 use PDOException;
 use RuntimeException;
-use function \ForkBB\__;
+use function \ForkBB\{__, num, size};
 
 class Install extends Admin
 {
@@ -498,6 +498,14 @@ class Install extends Admin
         ];
         list($method, $btn) = $modes[$this->settings['receiverInfo']['method']];
 
+        $this->createDBOptions($this->settings['source']);
+
+        $sStat = $this->c->DBSource->statistics();
+
+        $this->createDBOptions($this->settings['receiver']);
+
+        $rStat = $this->c->DB->statistics();
+
         return [
             'action' => $this->c->Router->link('Confirm', $args),
             'hidden' => [
@@ -532,31 +540,48 @@ class Install extends Admin
                             'caption' => 'Board type',
                             'value'   => $this->settings['sourceInfo']['type'],
                         ],
-                        'dbtype' => [
+                        'stype' => [
                             'class'   => ['pline'],
                             'type'    => 'str',
                             'caption' => 'Database type',
                             'value'   => $this->settings['source']['dbtype'],
                         ],
-                        'dbhost' => [
+                        'shost' => [
                             'class'   => ['pline'],
                             'type'    => 'str',
                             'caption' => 'Database server hostname',
                             'value'   => $this->settings['source']['dbhost'],
                         ],
-                        'dbname' => [
+                        'sname' => [
                             'class'   => ['pline'],
                             'type'    => 'str',
                             'caption' => 'Database name',
                             'value'   => $this->settings['source']['dbname'],
                         ],
-                        'dbprefix' => [
+                        'srefix' => [
                             'class'   => ['pline'],
                             'type'    => 'str',
                             'caption' => 'Table prefix',
                             'value'   => $this->settings['source']['dbprefix'],
                         ],
-
+                        'stables' => [
+                            'class'   => ['pline'],
+                            'type'    => 'str',
+                            'caption' => 'Tables',
+                            'value'   => $sStat['tables'],
+                        ],
+                        'srows' => [
+                            'class'   => ['pline'],
+                            'type'    => 'str',
+                            'caption' => 'Rows',
+                            'value'   => num($sStat['records']),
+                        ],
+                        'ssize' => [
+                            'class'   => ['pline'],
+                            'type'    => 'str',
+                            'caption' => 'Size',
+                            'value'   => size($sStat['size']),
+                        ],
                     ],
                 ],
                 'receiverinfo' => [
@@ -570,31 +595,48 @@ class Install extends Admin
                     'class'  => ['data'],
                     'legend' => 'Receiver legend',
                     'fields' => [
-                        'dbtype' => [
+                        'rtype' => [
                             'class'   => ['pline'],
                             'type'    => 'str',
                             'caption' => 'Database type',
                             'value'   => $this->settings['receiver']['dbtype'],
                         ],
-                        'dbhost' => [
+                        'rhost' => [
                             'class'   => ['pline'],
                             'type'    => 'str',
                             'caption' => 'Database server hostname',
                             'value'   => $this->settings['receiver']['dbhost'],
                         ],
-                        'dbname' => [
+                        'rname' => [
                             'class'   => ['pline'],
                             'type'    => 'str',
                             'caption' => 'Database name',
                             'value'   => $this->settings['receiver']['dbname'],
                         ],
-                        'dbprefix' => [
+                        'rprefix' => [
                             'class'   => ['pline'],
                             'type'    => 'str',
                             'caption' => 'Table prefix',
                             'value'   => $this->settings['receiver']['dbprefix'],
                         ],
-
+                        'rtables' => [
+                            'class'   => ['pline'],
+                            'type'    => 'str',
+                            'caption' => 'Tables',
+                            'value'   => $rStat['tables'] ?: '?',
+                        ],
+                        'rrows' => [
+                            'class'   => ['pline'],
+                            'type'    => 'str',
+                            'caption' => 'Rows',
+                            'value'   => $rStat['records'] ? num($rStat['records']) : '?',
+                        ],
+                        'rsize' => [
+                            'class'   => ['pline'],
+                            'type'    => 'str',
+                            'caption' => 'Size',
+                            'value'   => $rStat['size'] ? size($rStat['size']) : '?',
+                        ],
                     ],
                 ],
                 'optionsinfo' => [

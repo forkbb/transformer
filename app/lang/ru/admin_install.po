@@ -296,3 +296,12 @@ msgstr "Начать объединение"
 
 msgid "Backup"
 msgstr "Надеюсь, что у вас есть резервная копия."
+
+msgid "Tables"
+msgstr "Таблиц"
+
+msgid "Rows"
+msgstr "Строк"
+
+msgid "Size"
+msgstr "Размер"
