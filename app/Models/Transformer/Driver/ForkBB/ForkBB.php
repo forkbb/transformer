@@ -237,13 +237,13 @@ class ForkBB extends AbstractDriver
         $query = 'SELECT a.g_promote_next_group AS old, b.g_id AS new
             FROM ::groups AS a
             INNER JOIN ::groups AS b ON b.id_old=a.g_promote_next_group
-            WHERE a.id_old>0 AND a.g_id<5 AND a.g_promote_next_group>0';
+            WHERE a.id_old>0 AND a.g_id>4 AND a.g_promote_next_group>0';
 
         $stmt = $db->query($query);
 
         $query = 'UPDATE ::groups
             SET g_promote_next_group=?i:new
-            WHERE id_old>0 AND g_id<5 AND g_promote_next_group=?i:old';
+            WHERE id_old>0 AND g_id>4 AND g_promote_next_group=?i:old';
 
         while ($vars = $stmt->fetch()) {
             if (false === $db->exec($query, $vars)) {
