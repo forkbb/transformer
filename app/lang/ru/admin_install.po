@@ -275,3 +275,24 @@ msgstr "Шаг %1$s '%3$s' (%2$s)."
 
 msgid "For SQLite, the database file..."
 msgstr "Для SQLite файл базы данных должен находится в каталоге <b>/app/config/db/</b>."
+
+msgid "Source legend"
+msgstr "Источник"
+
+msgid "Receiver legend"
+msgstr "Получатель"
+
+msgid "Board type"
+msgstr "Тип форума"
+
+msgid "Working mode"
+msgstr "Режим работы"
+
+msgid "Start copy"
+msgstr "Начать копирование"
+
+msgid "Start merge"
+msgstr "Начать объединение"
+
+msgid "Backup"
+msgstr "Надеюсь, что у вас есть резервная копия."

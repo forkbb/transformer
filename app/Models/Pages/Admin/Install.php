@@ -116,6 +116,30 @@ class Install extends Admin
      */
     public function start(array $args, string $method): Page
     {
+        // доступность папок на запись
+        $folders = [
+            $this->c->DIR_APP . '/config',
+            $this->c->DIR_APP . '/config/db',
+            $this->c->DIR_CACHE,
+            $this->c->DIR_PUBLIC . '/img/avatars',
+        ];
+
+        foreach ($folders as $folder) {
+            if (! \is_writable($folder)) {
+                $folder       = \str_replace(\dirname($this->c->DIR_APP), '', $folder);
+                $this->fIswev = ['e', ['Alert folder', $folder]];
+            }
+        }
+
+        // доступность шаблона конфигурации
+        $config = \file_get_contents($this->c->DIR_APP . '/config/main.dist.php');
+
+        if (false === $config) {
+            $this->fIswev = ['e', 'No access to main.dist.php'];
+        }
+
+        unset($config);
+
         $langs = $this->c->Func->getNameLangs();
 
         if (empty($langs)) {
@@ -184,6 +208,7 @@ class Install extends Admin
                     'check_prefix' => [$this, 'vCheckPrefix'],
                     'check_host'   => [$this, 'vCheckHost'],
                 ])->addRules([
+                    'token'        => 'token:Source',
                     'dbtype'       => 'required|string:trim|in:' . \implode(',', \array_keys($this->dbTypes)),
                     'dbhost'       => 'required|string:trim|check_host',
                     'dbname'       => 'required|string:trim',
@@ -198,6 +223,7 @@ class Install extends Admin
                     'dbpass'       => 'Database password',
                     'dbprefix'     => 'Table prefix',
                 ])->addArguments([
+                    'token'        => $args,
                     'dbhost'       => true,
                 ])->addMessages([
                 ]);
@@ -245,6 +271,7 @@ class Install extends Admin
                     'check_prefix' => [$this, 'vCheckPrefix'],
                     'check_host'   => [$this, 'vCheckHost'],
                 ])->addRules([
+                    'token'        => 'token:Receiver',
                     'dbtype'       => 'required|string:trim|in:' . \implode(',', \array_keys($this->dbTypes)),
                     'dbhost'       => 'required|string:trim|check_host',
                     'dbname'       => 'required|string:trim',
@@ -259,6 +286,7 @@ class Install extends Admin
                     'dbpass'       => 'Database password',
                     'dbprefix'     => 'Table prefix',
                 ])->addArguments([
+                    'token'        => $args,
                     'dbhost'       => false,
                 ])->addMessages([
                 ]);
@@ -267,6 +295,46 @@ class Install extends Admin
                 $this->settings['receiver']     = $v->getData();
                 $this->settings['receiverInfo'] = $this->receiverInfo;
 
+                $this->toCache($this->settings);
+
+                return $this->c->Redirect->page('Confirm', $args);
+            } else {
+                $this->fIswev = $v->getErrors();
+            }
+        }
+
+        $this->formTitle = 'Database receiver setup';
+        $this->form2     = $this->formDB($v, 'Receiver', $args);
+
+        return $this;
+    }
+
+    public function confirm(array $args, string $method): Page
+    {
+        $this->verifyKey($args);
+
+        $v = null;
+
+        if (
+            'POST' === $method
+            && empty($this->fIswev['e'])
+        ) {
+            $v = $this->c->Validator->reset()
+                ->addValidators([
+                ])->addRules([
+                    'token'        => 'token:Confirm',
+                    'confirm'      => 'integer',
+                ])->addAliases([
+                ])->addArguments([
+                    'token'        => $args,
+                ])->addMessages([
+                ]);
+
+            if (
+                $v->validation($_POST)
+                && 1 === $v->confirm
+            ) {
+                // ??????
                 $this->toCache($this->settings);
 
                 $args = [
@@ -281,9 +349,8 @@ class Install extends Admin
             }
         }
 
-        $this->formTitle = 'Database receiver setup';
-        $this->form2     = $this->formDB($v, 'Receiver', $args);
-
+        $this->fIswev = ['i', 'Backup'];
+        $this->form1  = $this->formConfirm($v, $args);
         return $this;
     }
 
@@ -422,6 +489,144 @@ class Install extends Admin
 
     }
 
+    protected function formConfirm(?Validator $v, array $args): array
+    {
+        $modes = [
+            0 => ['COPY', 'Start copy'],
+            1 => ['MERGE', 'Start merge'],
+            2 => ['EXACT COPY', 'Start copy'],
+        ];
+        list($method, $btn) = $modes[$this->settings['receiverInfo']['method']];
+
+        return [
+            'action' => $this->c->Router->link('Confirm', $args),
+            'hidden' => [
+                'token' => $this->c->Csrf->create('Confirm', $args),
+            ],
+            'sets'   => [
+                'mode' => [
+                    'class'  => ['data'],
+                    'fields' => [
+                        'method' => [
+                            'class'   => ['pline'],
+                            'type'    => 'str',
+                            'caption' => 'Working mode',
+                            'value'   => $method,
+                        ],
+                    ],
+                ],
+                'sourceinfo' => [
+                    'info' => [
+                        [
+                            'value' => __('Source legend'),
+                        ],
+                    ],
+                ],
+                'source' => [
+                    'class'  => ['data'],
+                    'legend' => 'Source legend',
+                    'fields' => [
+                        'board_type' => [
+                            'class'   => ['pline'],
+                            'type'    => 'str',
+                            'caption' => 'Board type',
+                            'value'   => $this->settings['sourceInfo']['type'],
+                        ],
+                        'dbtype' => [
+                            'class'   => ['pline'],
+                            'type'    => 'str',
+                            'caption' => 'Database type',
+                            'value'   => $this->settings['source']['dbtype'],
+                        ],
+                        'dbhost' => [
+                            'class'   => ['pline'],
+                            'type'    => 'str',
+                            'caption' => 'Database server hostname',
+                            'value'   => $this->settings['source']['dbhost'],
+                        ],
+                        'dbname' => [
+                            'class'   => ['pline'],
+                            'type'    => 'str',
+                            'caption' => 'Database name',
+                            'value'   => $this->settings['source']['dbname'],
+                        ],
+                        'dbprefix' => [
+                            'class'   => ['pline'],
+                            'type'    => 'str',
+                            'caption' => 'Table prefix',
+                            'value'   => $this->settings['source']['dbprefix'],
+                        ],
+
+                    ],
+                ],
+                'receiverinfo' => [
+                    'info' => [
+                        [
+                            'value' => __('Receiver legend'),
+                        ],
+                    ],
+                ],
+                'receiver' => [
+                    'class'  => ['data'],
+                    'legend' => 'Receiver legend',
+                    'fields' => [
+                        'dbtype' => [
+                            'class'   => ['pline'],
+                            'type'    => 'str',
+                            'caption' => 'Database type',
+                            'value'   => $this->settings['receiver']['dbtype'],
+                        ],
+                        'dbhost' => [
+                            'class'   => ['pline'],
+                            'type'    => 'str',
+                            'caption' => 'Database server hostname',
+                            'value'   => $this->settings['receiver']['dbhost'],
+                        ],
+                        'dbname' => [
+                            'class'   => ['pline'],
+                            'type'    => 'str',
+                            'caption' => 'Database name',
+                            'value'   => $this->settings['receiver']['dbname'],
+                        ],
+                        'dbprefix' => [
+                            'class'   => ['pline'],
+                            'type'    => 'str',
+                            'caption' => 'Table prefix',
+                            'value'   => $this->settings['receiver']['dbprefix'],
+                        ],
+
+                    ],
+                ],
+                'optionsinfo' => [
+                    'info' => [
+                        [
+                            'value' => __('Options'),
+                        ],
+                    ],
+                ],
+                'options' => [
+                    'class'  => ['data'],
+                    'legend' => 'Options',
+                    'fields' => [
+                        'confirm' => [
+                            'class'   => ['pline'],
+                            'type'    => 'checkbox',
+                            'label'   => 'Confirm action',
+                            'checked' => false,
+                        ],
+                    ],
+                ],
+            ],
+            'btns'   => [
+                'submit' => [
+                    'type'  => 'submit',
+                    'value' => __($btn),
+                ],
+            ],
+        ];
+
+    }
+
     /**
      * Обработка base URL
      */
@@ -525,7 +730,7 @@ class Install extends Admin
             return $dbhost;
         } else {
             $this->receiverInfo = [
-                'method' => 0 === $result ? TRANSFORMER_MOVE : TRANSFORMER_MERGE,
+                'method' => 0 === $result ? TRANSFORMER_COPY : TRANSFORMER_MERGE,
             ];
         }
 
@@ -724,29 +929,6 @@ class Install extends Admin
             $this->fIswev = ['e', 'No DB extensions'];
         }
 
-        // доступность папок на запись
-        $folders = [
-            $this->c->DIR_APP . '/config',
-            $this->c->DIR_APP . '/config/db',
-            $this->c->DIR_CACHE,
-            $this->c->DIR_PUBLIC . '/img/avatars',
-        ];
-
-        foreach ($folders as $folder) {
-            if (! \is_writable($folder)) {
-                $folder       = \str_replace(\dirname($this->c->DIR_APP), '', $folder);
-                $this->fIswev = ['e', ['Alert folder', $folder]];
-            }
-        }
-
-        // доступность шаблона конфигурации
-        $config = \file_get_contents($this->c->DIR_APP . '/config/main.dist.php');
-
-        if (false === $config) {
-            $this->fIswev = ['e', 'No access to main.dist.php'];
-        }
-
-        unset($config);
 
         // языки
         $langs = $this->c->Func->getNameLangs();

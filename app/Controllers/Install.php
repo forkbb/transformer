@@ -60,6 +60,12 @@ class Install
         );
         $r->add(
             $r::DUO,
+            '/confirm/{key}',
+            'Install:confirm',
+            'Confirm'
+        );
+        $r->add(
+            $r::DUO,
             '/step/{key}/{step|i:0|[1-9]\d*}/{id|i:0|[1-9]\d*}',
             'Install:step',
             'Step'

@@ -275,3 +275,24 @@ msgstr "Step %1$s '%3$s' (%2$s)."
 
 msgid "For SQLite, the database file..."
 msgstr "For SQLite, the database file must be located in the <b>/app/config/db/</b> directory."
+
+msgid "Source legend"
+msgstr "Source"
+
+msgid "Receiver legend"
+msgstr "Receiver"
+
+msgid "Board type"
+msgstr "Board type"
+
+msgid "Working mode"
+msgstr "Working mode"
+
+msgid "Start copy"
+msgstr "Start copy"
+
+msgid "Start merge"
+msgstr "Start merge"
+
+msgid "Backup"
+msgstr "Hope you have a backup."
