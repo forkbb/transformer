@@ -121,26 +121,26 @@ class ForkBB extends AbstractDriver
 
     public function categoriesGet(int &$id): ?array
     {
-        $row = $this->stmt->fetch();
+        $vars = $this->stmt->fetch();
 
-        if (false === $row) {
+        if (false === $vars) {
             $this->stmt->closeCursor();
             $this->stmt = null;
 
             return null;
         }
 
-        $id            = (int) $row['id'];
-        $row['id_old'] = $id;
+        $id             = (int) $vars['id'];
+        $vars['id_old'] = $id;
 
-        unset($row['id']);
+        unset($vars['id']);
 
-        return $row;
+        return $vars;
     }
 
-    public function categoriesSet(DB $db, array $row): bool
+    public function categoriesSet(DB $db, array $vars): bool
     {
-        return false !== $db->exec($this->insertQuery, $row);
+        return false !== $db->exec($this->insertQuery, $vars);
     }
 
     public function categoriesEnd(DB $db): bool
@@ -199,26 +199,26 @@ class ForkBB extends AbstractDriver
 
     public function groupsGet(int &$id): ?array
     {
-        $row = $this->stmt->fetch();
+        $vars = $this->stmt->fetch();
 
-        if (false === $row) {
+        if (false === $vars) {
             $this->stmt->closeCursor();
             $this->stmt = null;
 
             return null;
         }
 
-        $id            = (int) $row['g_id'];
-        $row['id_old'] = $id;
+        $id             = (int) $vars['g_id'];
+        $vars['id_old'] = $id;
 
-        unset($row['g_id']);
+        unset($vars['g_id']);
 
-        return $row;
+        return $vars;
     }
 
-    public function groupsSet(DB $db, array $row): bool
+    public function groupsSet(DB $db, array $vars): bool
     {
-        if (isset($this->defGroups[$row['id_old']])) {
+        if (isset($this->defGroups[$vars['id_old']])) {
             if (TRANSFORMER_MERGE === $this->c->TR_METHOD) {
                 return true;
             }
@@ -229,7 +229,7 @@ class ForkBB extends AbstractDriver
             $query = $this->insertQuery;
         }
 
-        return false !== $db->exec($query, $row);
+        return false !== $db->exec($query, $vars);
     }
 
     public function groupsEnd(DB $db): bool
@@ -285,26 +285,26 @@ class ForkBB extends AbstractDriver
 
     public function usersGet(int &$id): ?array
     {
-        $row = $this->stmt->fetch();
+        $vars = $this->stmt->fetch();
 
-        if (false === $row) {
+        if (false === $vars) {
             $this->stmt->closeCursor();
             $this->stmt = null;
 
             return null;
         }
 
-        $id            = (int) $row['id'];
-        $row['id_old'] = $id;
+        $id             = (int) $vars['id'];
+        $vars['id_old'] = $id;
 
-        unset($row['id']);
+        unset($vars['id']);
 
-        return $row;
+        return $vars;
     }
 
-    public function usersSet(DB $db, array $row): bool
+    public function usersSet(DB $db, array $vars): bool
     {
-        return false !== $db->exec($this->insertQuery, $row);
+        return false !== $db->exec($this->insertQuery, $vars);
     }
 
     public function usersEnd(DB $db): bool
@@ -352,26 +352,26 @@ class ForkBB extends AbstractDriver
 
     public function forumsGet(int &$id): ?array
     {
-        $row = $this->stmt->fetch();
+        $vars = $this->stmt->fetch();
 
-        if (false === $row) {
+        if (false === $vars) {
             $this->stmt->closeCursor();
             $this->stmt = null;
 
             return null;
         }
 
-        $id            = (int) $row['id'];
-        $row['id_old'] = $id;
+        $id             = (int) $vars['id'];
+        $vars['id_old'] = $id;
 
-        unset($row['id']);
+        unset($vars['id']);
 
-        return $row;
+        return $vars;
     }
 
-    public function forumsSet(DB $db, array $row): bool
+    public function forumsSet(DB $db, array $vars): bool
     {
-        return false !== $db->exec($this->insertQuery, $row);
+        return false !== $db->exec($this->insertQuery, $vars);
     }
 
     public function forumsEnd(DB $db): bool
@@ -390,7 +390,7 @@ class ForkBB extends AbstractDriver
                 SET disp_position = disp_position + ?i:max
                 WHERE id_old>0';
 
-            if (false === $db->exec($query, $row)) {
+            if (false === $db->exec($query, $vars)) {
                 return false;
             }
         }
@@ -418,8 +418,8 @@ class ForkBB extends AbstractDriver
             SET parent_forum_id=?i:id
             WHERE id_old>0 AND parent_forum_id=?i:parent_forum_id';
 
-        while ($row = $stmt->fetch()) {
-            if (false === $db->exec($query, $row)) {
+        while ($vars = $stmt->fetch()) {
+            if (false === $db->exec($query, $vars)) {
                 return false;
             }
         }
@@ -489,9 +489,9 @@ class ForkBB extends AbstractDriver
 
     public function forum_permsGet(int &$id): ?array
     {
-        $row = $this->stmt->fetch();
+        $vars = $this->stmt->fetch();
 
-        if (false === $row) {
+        if (false === $vars) {
             $this->stmt->closeCursor();
             $this->stmt = null;
 
@@ -500,10 +500,10 @@ class ForkBB extends AbstractDriver
             return null;
         }
 
-        return $row;
+        return $vars;
     }
 
-    public function forum_permsSet(DB $db, array $row): bool
+    public function forum_permsSet(DB $db, array $vars): bool
     {
         if (null === $this->replGroups) {
             $query = 'SELECT id_old, g_id
@@ -519,10 +519,10 @@ class ForkBB extends AbstractDriver
             $this->replForums = $db->query($query)->fetchAll(PDO::FETCH_KEY_PAIR);
         }
 
-        $row['group_id'] = $this->replGroups[$row['group_id']] ?? $row['group_id'];
-        $row['forum_id'] = $this->replForums[$row['forum_id']];
+        $vars['group_id'] = $this->replGroups[$vars['group_id']] ?? $vars['group_id'];
+        $vars['forum_id'] = $this->replForums[$vars['forum_id']];
 
-        return false !== $db->exec($this->insertQuery, $row);
+        return false !== $db->exec($this->insertQuery, $vars);
     }
 
     public function forum_permsEnd(DB $db): bool
@@ -564,28 +564,28 @@ class ForkBB extends AbstractDriver
 
     public function bbcodeGet(int &$id): ?array
     {
-        $row = $this->stmt->fetch();
+        $vars = $this->stmt->fetch();
 
-        if (false === $row) {
+        if (false === $vars) {
             $this->stmt->closeCursor();
             $this->stmt = null;
 
             return null;
         }
 
-        $id = $row['id'];
+        $id = $vars['id'];
 
-        unset($row['id']);
+        unset($vars['id']);
 
-        return $row;
+        return $vars;
     }
 
-    public function bbcodeSet(DB $db, array $row): bool
+    public function bbcodeSet(DB $db, array $vars): bool
     {
         try {
-            return false !== $db->exec($this->insertQuery, $row);
+            return false !== $db->exec($this->insertQuery, $vars);
         } catch (PDOException $e) {
-            return false !== $db->exec($this->updateQuery, $row);
+            return false !== $db->exec($this->updateQuery, $vars);
         }
     }
 
@@ -623,25 +623,25 @@ class ForkBB extends AbstractDriver
 
     public function censoringGet(int &$id): ?array
     {
-        $row = $this->stmt->fetch();
+        $vars = $this->stmt->fetch();
 
-        if (false === $row) {
+        if (false === $vars) {
             $this->stmt->closeCursor();
             $this->stmt = null;
 
             return null;
         }
 
-        $id = $row['id'];
+        $id = $vars['id'];
 
-        unset($row['id']);
+        unset($vars['id']);
 
-        return $row;
+        return $vars;
     }
 
-    public function censoringSet(DB $db, array $row): bool
+    public function censoringSet(DB $db, array $vars): bool
     {
-        return false !== $db->exec($this->insertQuery, $row);
+        return false !== $db->exec($this->insertQuery, $vars);
     }
 
     public function censoringEnd(DB $db): bool
@@ -678,25 +678,25 @@ class ForkBB extends AbstractDriver
 
     public function smiliesGet(int &$id): ?array
     {
-        $row = $this->stmt->fetch();
+        $vars = $this->stmt->fetch();
 
-        if (false === $row) {
+        if (false === $vars) {
             $this->stmt->closeCursor();
             $this->stmt = null;
 
             return null;
         }
 
-        $id = $row['id'];
+        $id = $vars['id'];
 
-        unset($row['id']);
+        unset($vars['id']);
 
-        return $row;
+        return $vars;
     }
 
-    public function smiliesSet(DB $db, array $row): bool
+    public function smiliesSet(DB $db, array $vars): bool
     {
-        return false !== $db->exec($this->insertQuery, $row);
+        return false !== $db->exec($this->insertQuery, $vars);
     }
 
     public function smiliesEnd(DB $db): bool
@@ -733,26 +733,26 @@ class ForkBB extends AbstractDriver
 
     public function topicsGet(int &$id): ?array
     {
-        $row = $this->stmt->fetch();
+        $vars = $this->stmt->fetch();
 
-        if (false === $row) {
+        if (false === $vars) {
             $this->stmt->closeCursor();
             $this->stmt = null;
 
             return null;
         }
 
-        $id            = (int) $row['id'];
-        $row['id_old'] = $id;
+        $id             = (int) $vars['id'];
+        $vars['id_old'] = $id;
 
-        unset($row['id']);
+        unset($vars['id']);
 
-        return $row;
+        return $vars;
     }
 
-    public function topicsSet(DB $db, array $row): bool
+    public function topicsSet(DB $db, array $vars): bool
     {
-        return false !== $db->exec($this->insertQuery, $row);
+        return false !== $db->exec($this->insertQuery, $vars);
     }
 
     public function topicsEnd(DB $db): bool
@@ -810,8 +810,8 @@ class ForkBB extends AbstractDriver
             SET moved_to=?i:moved_to
             WHERE id=?i:id';
 
-        while ($row = $stmt->fetch()) {
-            if (false === $db->exec($query, $row)) {
+        while ($vars = $stmt->fetch()) {
+            if (false === $db->exec($query, $vars)) {
                 return false;
             }
         }
@@ -848,26 +848,26 @@ class ForkBB extends AbstractDriver
 
     public function postsGet(int &$id): ?array
     {
-        $row = $this->stmt->fetch();
+        $vars = $this->stmt->fetch();
 
-        if (false === $row) {
+        if (false === $vars) {
             $this->stmt->closeCursor();
             $this->stmt = null;
 
             return null;
         }
 
-        $id            = (int) $row['id'];
-        $row['id_old'] = $id;
+        $id             = (int) $vars['id'];
+        $vars['id_old'] = $id;
 
-        unset($row['id']);
+        unset($vars['id']);
 
-        return $row;
+        return $vars;
     }
 
-    public function postsSet(DB $db, array $row): bool
+    public function postsSet(DB $db, array $vars): bool
     {
-        return false !== $db->exec($this->insertQuery, $row);
+        return false !== $db->exec($this->insertQuery, $vars);
     }
 
     public function postsEnd(DB $db): bool
@@ -975,7 +975,7 @@ class ForkBB extends AbstractDriver
         return null;
     }
 
-    public function warningsSet(DB $db, array $row): bool
+    public function warningsSet(DB $db, array $vars): bool
     {
         return true;
     }
@@ -998,7 +998,7 @@ class ForkBB extends AbstractDriver
         return null;
     }
 
-    public function reportsSet(DB $db, array $row): bool
+    public function reportsSet(DB $db, array $vars): bool
     {
         return true;
     }
@@ -1058,23 +1058,23 @@ class ForkBB extends AbstractDriver
 
     public function forum_subscriptionsGet(int &$id): ?array
     {
-        $row = $this->stmt->fetch();
+        $vars = $this->stmt->fetch();
 
-        if (false === $row) {
+        if (false === $vars) {
             $this->stmt->closeCursor();
             $this->stmt = null;
 
             return null;
         }
 
-        $id = (int) $row['user_id'];
+        $id = (int) $vars['user_id'];
 
-        return $row;
+        return $vars;
     }
 
-    public function forum_subscriptionsSet(DB $db, array $row): bool
+    public function forum_subscriptionsSet(DB $db, array $vars): bool
     {
-        return false !== $db->exec($this->insertQuery, $row);
+        return false !== $db->exec($this->insertQuery, $vars);
     }
 
     public function forum_subscriptionsEnd(DB $db): bool
@@ -1132,23 +1132,23 @@ class ForkBB extends AbstractDriver
 
     public function topic_subscriptionsGet(int &$id): ?array
     {
-        $row = $this->stmt->fetch();
+        $vars = $this->stmt->fetch();
 
-        if (false === $row) {
+        if (false === $vars) {
             $this->stmt->closeCursor();
             $this->stmt = null;
 
             return null;
         }
 
-        $id = (int) $row['user_id'];
+        $id = (int) $vars['user_id'];
 
-        return $row;
+        return $vars;
     }
 
-    public function topic_subscriptionsSet(DB $db, array $row): bool
+    public function topic_subscriptionsSet(DB $db, array $vars): bool
     {
-        return false !== $db->exec($this->insertQuery, $row);
+        return false !== $db->exec($this->insertQuery, $vars);
     }
 
     public function topic_subscriptionsEnd(DB $db): bool
@@ -1207,23 +1207,23 @@ class ForkBB extends AbstractDriver
 
     public function mark_of_forumGet(int &$id): ?array
     {
-        $row = $this->stmt->fetch();
+        $vars = $this->stmt->fetch();
 
-        if (false === $row) {
+        if (false === $vars) {
             $this->stmt->closeCursor();
             $this->stmt = null;
 
             return null;
         }
 
-        $id = (int) $row['uid'];
+        $id = (int) $vars['uid'];
 
-        return $row;
+        return $vars;
     }
 
-    public function mark_of_forumSet(DB $db, array $row): bool
+    public function mark_of_forumSet(DB $db, array $vars): bool
     {
-        return false !== $db->exec($this->insertQuery, $row);
+        return false !== $db->exec($this->insertQuery, $vars);
     }
 
     public function mark_of_forumEnd(DB $db): bool
@@ -1282,23 +1282,23 @@ class ForkBB extends AbstractDriver
 
     public function mark_of_topicGet(int &$id): ?array
     {
-        $row = $this->stmt->fetch();
+        $vars = $this->stmt->fetch();
 
-        if (false === $row) {
+        if (false === $vars) {
             $this->stmt->closeCursor();
             $this->stmt = null;
 
             return null;
         }
 
-        $id = (int) $row['uid'];
+        $id = (int) $vars['uid'];
 
-        return $row;
+        return $vars;
     }
 
-    public function mark_of_topicSet(DB $db, array $row): bool
+    public function mark_of_topicSet(DB $db, array $vars): bool
     {
-        return false !== $db->exec($this->insertQuery, $row);
+        return false !== $db->exec($this->insertQuery, $vars);
     }
 
     public function mark_of_topicEnd(DB $db): bool
@@ -1353,23 +1353,23 @@ class ForkBB extends AbstractDriver
 
     public function pollGet(int &$id): ?array
     {
-        $row = $this->stmt->fetch();
+        $vars = $this->stmt->fetch();
 
-        if (false === $row) {
+        if (false === $vars) {
             $this->stmt->closeCursor();
             $this->stmt = null;
 
             return null;
         }
 
-        $id = (int) $row['tid'];
+        $id = (int) $vars['tid'];
 
-        return $row;
+        return $vars;
     }
 
-    public function pollSet(DB $db, array $row): bool
+    public function pollSet(DB $db, array $vars): bool
     {
-        return false !== $db->exec($this->insertQuery, $row);
+        return false !== $db->exec($this->insertQuery, $vars);
     }
 
     public function pollEnd(DB $db): bool
@@ -1428,23 +1428,23 @@ class ForkBB extends AbstractDriver
 
     public function poll_votedGet(int &$id): ?array
     {
-        $row = $this->stmt->fetch();
+        $vars = $this->stmt->fetch();
 
-        if (false === $row) {
+        if (false === $vars) {
             $this->stmt->closeCursor();
             $this->stmt = null;
 
             return null;
         }
 
-        $id = (int) $row['tid'];
+        $id = (int) $vars['tid'];
 
-        return $row;
+        return $vars;
     }
 
-    public function poll_votedSet(DB $db, array $row): bool
+    public function poll_votedSet(DB $db, array $vars): bool
     {
-        return false !== $db->exec($this->insertQuery, $row);
+        return false !== $db->exec($this->insertQuery, $vars);
     }
 
     public function poll_votedEnd(DB $db): bool
@@ -1481,26 +1481,26 @@ class ForkBB extends AbstractDriver
 
     public function pm_topicsGet(int &$id): ?array
     {
-        $row = $this->stmt->fetch();
+        $vars = $this->stmt->fetch();
 
-        if (false === $row) {
+        if (false === $vars) {
             $this->stmt->closeCursor();
             $this->stmt = null;
 
             return null;
         }
 
-        $id            = (int) $row['id'];
-        $row['id_old'] = $id;
+        $id             = (int) $vars['id'];
+        $vars['id_old'] = $id;
 
-        unset($row['id']);
+        unset($vars['id']);
 
-        return $row;
+        return $vars;
     }
 
-    public function pm_topicsSet(DB $db, array $row): bool
+    public function pm_topicsSet(DB $db, array $vars): bool
     {
-        return false !== $db->exec($this->insertQuery, $row);
+        return false !== $db->exec($this->insertQuery, $vars);
     }
 
     public function pm_topicsEnd(DB $db): bool
@@ -1567,26 +1567,26 @@ class ForkBB extends AbstractDriver
 
     public function pm_postsGet(int &$id): ?array
     {
-        $row = $this->stmt->fetch();
+        $vars = $this->stmt->fetch();
 
-        if (false === $row) {
+        if (false === $vars) {
             $this->stmt->closeCursor();
             $this->stmt = null;
 
             return null;
         }
 
-        $id            = (int) $row['id'];
-        $row['id_old'] = $id;
+        $id             = (int) $vars['id'];
+        $vars['id_old'] = $id;
 
-        unset($row['id']);
+        unset($vars['id']);
 
-        return $row;
+        return $vars;
     }
 
-    public function pm_postsSet(DB $db, array $row): bool
+    public function pm_postsSet(DB $db, array $vars): bool
     {
-        return false !== $db->exec($this->insertQuery, $row);
+        return false !== $db->exec($this->insertQuery, $vars);
     }
 
     public function pm_postsEnd(DB $db): bool
@@ -1701,23 +1701,23 @@ class ForkBB extends AbstractDriver
 
     public function pm_blockGet(int &$id): ?array
     {
-        $row = $this->stmt->fetch();
+        $vars = $this->stmt->fetch();
 
-        if (false === $row) {
+        if (false === $vars) {
             $this->stmt->closeCursor();
             $this->stmt = null;
 
             return null;
         }
 
-        $id = (int) $row['bl_first_id'];
+        $id = (int) $vars['bl_first_id'];
 
-        return $row;
+        return $vars;
     }
 
-    public function pm_blockSet(DB $db, array $row): bool
+    public function pm_blockSet(DB $db, array $vars): bool
     {
-        return false !== $db->exec($this->insertQuery, $row);
+        return false !== $db->exec($this->insertQuery, $vars);
     }
 
     public function pm_blockEnd(DB $db): bool
@@ -1754,23 +1754,23 @@ class ForkBB extends AbstractDriver
 
     public function bansGet(int &$id): ?array
     {
-        $row = $this->stmt->fetch();
+        $vars = $this->stmt->fetch();
 
-        if (false === $row) {
+        if (false === $vars) {
             $this->stmt->closeCursor();
             $this->stmt = null;
 
             return null;
         }
 
-        $id = (int) $row['id'];
+        $id = (int) $vars['id'];
 
-        return $row;
+        return $vars;
     }
 
-    public function bansSet(DB $db, array $row): bool
+    public function bansSet(DB $db, array $vars): bool
     {
-        return false !== $db->exec($this->insertQuery, $row);
+        return false !== $db->exec($this->insertQuery, $vars);
     }
 
     public function bansEnd(DB $db): bool
@@ -1798,9 +1798,9 @@ class ForkBB extends AbstractDriver
 
     public function configGet(int &$id): ?array
     {
-        $row = $this->stmt->fetch();
+        $vars = $this->stmt->fetch();
 
-        if (false === $row) {
+        if (false === $vars) {
             $this->stmt->closeCursor();
             $this->stmt = null;
 
@@ -1809,12 +1809,12 @@ class ForkBB extends AbstractDriver
             return null;
         }
 
-        return $row;
+        return $vars;
     }
 
-    public function configSet(DB $db, array $row): bool
+    public function configSet(DB $db, array $vars): bool
     {
-        return false !== $db->exec($this->insertQuery, $row);
+        return false !== $db->exec($this->insertQuery, $vars);
     }
 
     public function configEnd(DB $db): bool
