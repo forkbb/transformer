@@ -305,3 +305,15 @@ msgstr "Строк"
 
 msgid "Size"
 msgstr "Размер"
+
+msgid "Invalid DB status flag"
+msgstr "Неверный флаг состояния DB."
+
+msgid "Database ready"
+msgstr "База данных готова."
+
+msgid "Config file is generated"
+msgstr "Файл конфигурации <b>main.php</b> сформирован в каталоге <b>/app/config/</b>."
+
+msgid "Instruction"
+msgstr "После запуска ForkBB с новой базой данных в первую очередь перепроверьте все настройки в админке. Сделайте перестройку поискового индекса."

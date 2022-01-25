@@ -305,3 +305,15 @@ msgstr "Rows"
 
 msgid "Size"
 msgstr "Size"
+
+msgid "Invalid DB status flag"
+msgstr "Invalid DB status flag."
+
+msgid "Database ready"
+msgstr "Database ready."
+
+msgid "Config file is generated"
+msgstr "The <b>main.php</b> configuration file is generated in the <b>/app/config/</b> directory."
+
+msgid "Instruction"
+msgstr "After starting ForkBB with a new database, first of all, double-check all the settings in the admin panel. Rebuild search index."

@@ -70,6 +70,18 @@ class Install
             'Install:step',
             'Step'
         );
+        $r->add(
+            $r::DUO,
+            '/config/{key}',
+            'Install:config',
+            'Config'
+        );
+        $r->add(
+            $r::GET,
+            '/end/{key}',
+            'Install:end',
+            'End'
+        );
 
         $method = $_SERVER['REQUEST_METHOD'];
 

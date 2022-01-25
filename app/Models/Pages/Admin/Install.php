@@ -63,13 +63,24 @@ class Install extends Admin
         }
     }
 
-    protected function verifyKey(array $args): void
+    protected function verifyKey(array $args, string $dbFlag = null): void
     {
         if (
             ! isset($args['key'], $this->settings['key'])
             || $args['key'] !== $this->settings['key']
         ) {
             $this->fIswev = ['e', 'Script key error'];
+        } elseif (
+            (
+                isset($this->settings['db'])
+                && $this->settings['db'] !== $dbFlag
+            )
+            || (
+                ! isset($this->settings['db'])
+                && null !== $dbFlag
+            )
+        ) {
+            $this->fIswev = ['e', 'Invalid DB status flag'];
         } else {
             $this->toCache($this->settings);
         }
@@ -170,6 +181,7 @@ class Install extends Admin
                     [
                         'key'  => $key,
                         'lang' => $this->user->language,
+                        'db'   => 'pre',
                     ]
                 );
 
@@ -189,7 +201,7 @@ class Install extends Admin
      */
     public function source(array $args, string $method): Page
     {
-        $this->verifyKey($args);
+        $this->verifyKey($args, 'pre');
 
         $this->dbTypes = $this->DBTypes(true);
 
@@ -232,6 +244,8 @@ class Install extends Admin
                 $this->settings['source']     = $v->getData();
                 $this->settings['sourceInfo'] = $this->sourceInfo;
 
+                unset($this->settings['source']['token']);
+
                 $this->toCache($this->settings);
 
                 return $this->c->Redirect->page('Receiver', $args);
@@ -252,7 +266,7 @@ class Install extends Admin
      */
     public function receiver(array $args, string $method): Page
     {
-        $this->verifyKey($args);
+        $this->verifyKey($args, 'pre');
 
         $this->dbTypes = $this->DBTypes();
 
@@ -295,6 +309,8 @@ class Install extends Admin
                 $this->settings['receiver']     = $v->getData();
                 $this->settings['receiverInfo'] = $this->receiverInfo;
 
+                unset($this->settings['receiver']['token']);
+
                 $this->toCache($this->settings);
 
                 return $this->c->Redirect->page('Confirm', $args);
@@ -311,7 +327,7 @@ class Install extends Admin
 
     public function confirm(array $args, string $method): Page
     {
-        $this->verifyKey($args);
+        $this->verifyKey($args, 'pre');
 
         $v = null;
 
@@ -335,6 +351,8 @@ class Install extends Admin
                 && 1 === $v->confirm
             ) {
                 // ??????
+                unset($this->settings['db']);
+
                 $this->toCache($this->settings);
 
                 $args = [
@@ -381,14 +399,128 @@ class Install extends Admin
         $result               = $this->c->Transformer->step($args['step'], $args['id']);
 
         if (isset($result['step'], $result['id'])) {
-            if ($result['step'] >= 0) {
-                $result['key'] = $args['key'];
-                $name          = $this->c->STEPS[$args['step']] ?? '???';
+            $result['key'] = $args['key'];
+            $name          = $this->c->STEPS[$args['step']] ?? '???';
+            $marker        = $result['step'] < 0 ? 'Config' : 'Step';
 
-                return $this->c->Redirect->page('Step', $result)
-                    ->message(['Step %1$s %3$s (%2$s)', $args['step'], $args['id'], $name]);
+            if (-1 === $result['step']) {
+                $this->settings['db'] = 'config';
+
+                $this->toCache($this->settings);
+            }
+
+            return $this->c->Redirect->page($marker, $result)
+                ->message(['Step %1$s %3$s (%2$s)', $args['step'], $args['id'], $name]);
+        }
+
+        return $this;
+    }
+
+    public function config(array $args, string $method): Page
+    {
+        $this->verifyKey($args, 'config');
+
+        if (! empty($this->fIswev['e'])) {
+            return $this;
+        } elseif (TRANSFORMER_MERGE === $this->settings['receiverInfo']['method']) {
+            $this->settings['db'] = 'ok';
+
+            $this->toCache($this->settings);
+
+            return $this->c->Redirect->page('End', $args);
+        }
+
+        $this->createDBOptions($this->settings['receiver']);
+
+        $v = null;
+
+        if (
+            'POST' === $method
+            && empty($this->fIswev['e'])
+        ) {
+            $v = $this->c->Validator->reset()
+                ->addValidators([
+                    'rtrim_url'     => [$this, 'vRtrimURL']
+                ])->addRules([
+                    'token'         => 'token:Config',
+                    'baseurl'       => 'required|string:trim|rtrim_url|max:128',
+                    'cookie_domain' => 'exist|string:trim|max:128',
+                    'cookie_path'   => 'required|string:trim|max:1024',
+                    'cookie_secure' => 'required|integer|in:0,1',
+                ])->addAliases([
+                    'baseurl'       => 'Base URL',
+                    'cookie_domain' => 'Cookie Domain',
+                    'cookie_path'   => 'Cookie Path',
+                    'cookie_secure' => 'Cookie Secure',
+                ])->addArguments([
+                    'token'        => $args,
+                ])->addMessages([
+                ]);
+
+            if ($v->validation($_POST)) {
+                $config = \file_get_contents($this->c->DIR_APP . '/config/main.dist.php');
+
+                if (false === $config) {
+                    throw new RuntimeException('No access to main.dist.php.');
+                }
+
+                $repl = [ //????
+                    '_BASE_URL_'      => $v->baseurl,
+                    '_DB_DSN_'        => $this->c->DB_DSN,
+                    '_DB_USERNAME_'   => $this->c->DB_USERNAME,
+                    '_DB_PASSWORD_'   => $this->c->DB_PASSWORD,
+                    '_DB_PREFIX_'     => $this->c->DB_PREFIX,
+                    '_SALT_FOR_HMAC_' => $this->c->Secury->randomPass(\mt_rand(20,30)),
+                    '_COOKIE_PREFIX_' => 'fork' . $this->c->Secury->randomHash(7) . '_',
+                    '_COOKIE_DOMAIN_' => $v->cookie_domain,
+                    '_COOKIE_PATH_'   => $v->cookie_path,
+                    '_COOKIE_SECURE_' => 1 === $v->cookie_secure ? 'true' : 'false',
+                    '_COOKIE_KEY1_'   => $this->c->Secury->randomPass(\mt_rand(20,30)),
+                    '_COOKIE_KEY2_'   => $this->c->Secury->randomPass(\mt_rand(20,30)),
+                ];
+
+                foreach ($repl as $key => $val) {
+                    $config = \str_replace($key, \addslashes($val), $config);
+                }
+
+                $config = \str_replace('_DB_OPTIONS_', $this->c->DB_OPTS_AS_STR, $config);
+                $result = \file_put_contents($this->c->DIR_APP . '/config/main.php', $config);
+
+                if (false === $result) {
+                    throw new RuntimeException('No write to main.php');
+                }
+
+                $this->settings['db'] = 'ok';
+
+                $this->toCache($this->settings);
+
+                return $this->c->Redirect->page('End', $args);
+            } else {
+                $this->fIswev = $v->getErrors();
             }
         }
+
+        $this->fIswev = ['i', 'Database ready'];
+        $this->form1  = $this->formConfig($v, $args);
+
+        return $this;
+    }
+
+    public function end(array $args, string $method): Page
+    {
+        $this->verifyKey($args, 'ok');
+
+        if (! empty($this->fIswev['e'])) {
+            return $this;
+        }
+
+        $this->fIswev = ['s', 'Database ready'];
+
+        if (TRANSFORMER_MERGE !== $this->settings['receiverInfo']['method']) {
+            $this->fIswev = ['i', 'Config file is generated'];
+        }
+
+        $this->fIswev = ['w', 'Instruction'];
 
         return $this;
     }
@@ -669,6 +801,92 @@ class Install extends Admin
 
     }
 
+    protected function formConfig(?Validator $v, array $args): array
+    {
+        return [
+            'action' => $this->c->Router->link('Config', $args),
+            'hidden' => [
+                'token'       => $this->c->Csrf->create('Config', $args),
+            ],
+            'sets'   => [
+                'board-info' => [
+                    'info' => [
+                        [
+                            'value' => __('Board setup'),
+                            'html'  => true,
+                        ],
+                        [
+                            'value' => __('Info 11'),
+                        ],
+                    ],
+                ],
+                'board' => [
+                    'fields' => [
+                        'baseurl' => [
+                            'type'      => 'text',
+                            'maxlength' => '128',
+                            'value'     => $v ? $v->baseurl : $this->c->BASE_URL,
+                            'caption'   => 'Base URL',
+                            'required'  => true,
+                        ],
+                    ],
+                ],
+                'cookie-info' => [
+                    'info' => [
+                        [
+                            'value' => __('Cookie setup'),
+                            'html'  => true,
+                        ],
+                        [
+                            'value' => __('Info 12'),
+                        ],
+                    ],
+                ],
+                'cookie' => [
+                    'fields' => [
+                        'cookie_domain' => [
+                            'type'      => 'text',
+                            'maxlength' => '128',
+                            'value'     => $v ? $v->cookie_domain : '',
+                            'caption'   => 'Cookie Domain',
+                            'help'      => 'Cookie Domain info',
+                        ],
+                        'cookie_path' => [
+                            'type'      => 'text',
+                            'maxlength' => '1024',
+                            'value'     => $v
+                                ? $v->cookie_path
+                                : \rtrim((string) \parse_url($this->c->BASE_URL, \PHP_URL_PATH), '/') . '/',
+                            'caption'   => 'Cookie Path',
+                            'help'      => 'Cookie Path info',
+                            'required'  => true,
+                        ],
+                        'cookie_secure' => [
+                            'type'    => 'radio',
+                            'value'   => $v
+                                ? $v->cookie_secure
+                                : (
+                                    \preg_match('%^https%i', $this->c->BASE_URL)
+                                    ? 1
+                                    : 0
+                                ),
+                            'values'  => [1 => __('Yes '), 0 => __('No ')],
+                            'caption' => 'Cookie Secure',
+                            'help'    => 'Cookie Secure info',
+                        ],
+
+                    ],
+                ],
+            ],
+            'btns'   => [
+                'submit'  => [
+                    'type'  => 'submit',
+                    'value' => __('Save'),
+                ],
+            ],
+        ];
+    }
+
     /**
      * Обработка base URL
      */
@@ -882,404 +1100,5 @@ class Install extends Admin
         }
 
         $this->c->DBEngine = $DBEngine;
-    }
-
-    /**
-     * Завершение установки форума
-     */
-    protected function installEnd(Validator $v): Page
-    {
-        if (\function_exists('\\set_time_limit')) {
-            \set_time_limit(0);
-        }
-
-        if (true !== $this->c->Cache->clear()) {
-            throw new RuntimeException('Unable to clear cache');
-        }
-
-
-        $config = \file_get_contents($this->c->DIR_APP . '/config/main.dist.php');
-
-        if (false === $config) {
-            throw new RuntimeException('No access to main.dist.php.');
-        }
-
-        $repl = [ //????
-            '_BASE_URL_'      => $v->baseurl,
-            '_DB_DSN_'        => $this->c->DB_DSN,
-            '_DB_USERNAME_'   => $this->c->DB_USERNAME,
-            '_DB_PASSWORD_'   => $this->c->DB_PASSWORD,
-            '_DB_PREFIX_'     => $this->c->DB_PREFIX,
-            '_SALT_FOR_HMAC_' => $this->c->Secury->randomPass(\mt_rand(20,30)),
-            '_COOKIE_PREFIX_' => 'fork' . $this->c->Secury->randomHash(7) . '_',
-            '_COOKIE_DOMAIN_' => $v->cookie_domain,
-            '_COOKIE_PATH_'   => $v->cookie_path,
-            '_COOKIE_SECURE_' => 1 === $v->cookie_secure ? 'true' : 'false',
-            '_COOKIE_KEY1_'   => $this->c->Secury->randomPass(\mt_rand(20,30)),
-            '_COOKIE_KEY2_'   => $this->c->Secury->randomPass(\mt_rand(20,30)),
-        ];
-
-        foreach ($repl as $key => $val) {
-            $config = \str_replace($key, \addslashes($val), $config);
-        }
-
-        $config = \str_replace('_DB_OPTIONS_', $this->c->DB_OPTS_AS_STR, $config);
-        $result = \file_put_contents($this->c->DIR_APP . '/config/main.php', $config);
-
-        if (false === $result) {
-            throw new RuntimeException('No write to main.php');
-        }
-
-        return $this->c->Redirect->toIndex();
-    }
-
-    /**
-     * Подготовка данных для страницы установки форума
-     */
-    public function install(array $args, string $method): Page
-    {
-        $changeLang = false;
-
-        if ('POST' === $method) {
-            $v = $this->c->Validator->reset()
-                ->addRules([
-                    'token'       => 'token:Install',
-                    'installlang' => 'required|string:trim',
-                    'changelang'  => 'string', // не нужно required
-                ]);
-
-            if ($v->validation($_POST)) {
-                $this->user->language = $v->installlang;
-                $changeLang           = (bool) $v->changelang;
-            }
-        }
-
-        $v = null;
-
-        $this->c->Lang->load('validator');
-        $this->c->Lang->load('admin_install');
-
-        // версия PHP
-        if (\version_compare(\PHP_VERSION, self::PHP_MIN, '<')) {
-            $this->fIswev = ['e', ['You are running error', 'PHP', \PHP_VERSION, $this->c->FORK_REVISION, self::PHP_MIN]];
-        }
-
-        // типы БД
-        $this->dbTypes = $this->DBTypes();
-
-        if (empty($this->dbTypes)) {
-            $this->fIswev = ['e', 'No DB extensions'];
-        }
-
-
-        // языки
-        $langs = $this->c->Func->getNameLangs();
-
-        if (empty($langs)) {
-            $this->fIswev = ['e', 'No language packs'];
-        }
-
-        // стили
-        $styles = $this->c->Func->getStyles();
-
-        if (empty($styles)) {
-            $this->fIswev = ['e', 'No styles'];
-        }
-
-        if (
-            'POST' === $method
-            && ! $changeLang
-            && empty($this->fIswev['e'])
-        ) { //????
-            $v = $this->c->Validator->reset()
-                ->addValidators([
-                    'check_prefix'  => [$this, 'vCheckPrefix'],
-                    'check_host'    => [$this, 'vCheckHost'],
-                    'rtrim_url'     => [$this, 'vRtrimURL']
-                ])->addRules([
-                    'dbtype'        => 'required|string:trim|in:' . \implode(',', \array_keys($this->dbTypes)),
-                    'dbhost'        => 'required|string:trim|check_host',
-                    'dbname'        => 'required|string:trim',
-                    'dbuser'        => 'exist|string:trim',
-                    'dbpass'        => 'exist|string:trim',
-                    'dbprefix'      => 'required|string:trim|min:1|max:40|check_prefix',
-                    'username'      => 'required|string:trim|min:2|max:25',
-                    'password'      => 'required|string|min:16|max:100000|password',
-                    'email'         => 'required|string:trim|email',
-                    'title'         => 'required|string:trim|max:255',
-                    'descr'         => 'exist|string:trim,empty|max:65000 bytes|html',
-                    'baseurl'       => 'required|string:trim|rtrim_url|max:128',
-                    'defaultlang'   => 'required|string:trim|in:' . \implode(',', $this->c->Func->getLangs()),
-                    'defaultstyle'  => 'required|string:trim|in:' . \implode(',', $this->c->Func->getStyles()),
-                    'cookie_domain' => 'exist|string:trim|max:128',
-                    'cookie_path'   => 'required|string:trim|max:1024',
-                    'cookie_secure' => 'required|integer|in:0,1',
-                ])->addAliases([
-                    'dbtype'        => 'Database type',
-                    'dbhost'        => 'Database server hostname',
-                    'dbname'        => 'Database name',
-                    'dbuser'        => 'Database username',
-                    'dbpass'        => 'Database password',
-                    'dbprefix'      => 'Table prefix',
-                    'username'      => 'Administrator username',
-                    'password'      => 'Administrator passphrase',
-                    'title'         => 'Board title',
-                    'descr'         => 'Board description',
-                    'baseurl'       => 'Base URL',
-                    'defaultlang'   => 'Default language',
-                    'defaultstyle'  => 'Default style',
-                    'cookie_domain' => 'Cookie Domain',
-                    'cookie_path'   => 'Cookie Path',
-                    'cookie_secure' => 'Cookie Secure',
-                ])->addMessages([
-                    'email'        => 'Wrong email',
-                ]);
-
-            if ($v->validation($_POST)) {
-                return $this->installEnd($v);
-            } else {
-                $this->fIswev = $v->getErrors();
-            }
-        }
-
-        if (\count($langs) > 1) {
-            $this->form1 = [
-                'action' => $this->c->Router->link('Install'),
-                'hidden' => [
-                    'token' => $this->c->Csrf->create('Install'),
-                ],
-                'sets'   => [
-                    'dlang' => [
-                        'fields' => [
-                            'installlang' => [
-                                'type'    => 'select',
-                                'options' => $langs,
-                                'value'   => $this->user->language,
-                                'caption' => 'Install language',
-                                'help'    => 'Choose install language info',
-                            ],
-                        ],
-                    ],
-                ],
-                'btns'   => [
-                    'changelang'  => [
-                        'type'  => 'submit',
-                        'value' => __('Change language'),
-                    ],
-                ],
-            ];
-        }
-
-        $this->form2 = [
-            'action' => $this->c->Router->link('Install'),
-            'hidden' => [
-                'token'       => $this->c->Csrf->create('Install'),
-                'installlang' => $this->user->language,
-            ],
-            'sets'   => [
-                'db-info' => [
-                    'info' => [
-                        [
-                            'value' => __('Database setup'),
-                            'html'  => true,
-                        ],
-                        [
-                            'value' => __('Info 1'),
-                        ],
-                    ],
-                ],
-                'db' => [
-                    'fields' => [
-                        'dbtype' => [
-                            'type'     => 'select',
-                            'options'  => $this->dbTypes,
-                            'value'    => $v ? $v->dbtype : 'mysql_innodb',
-                            'caption'  => 'Database type',
-                            'help'     => 'Info 2',
-                        ],
-                        'dbhost' => [
-                            'type'     => 'text',
-                            'value'    => $v ? $v->dbhost : 'localhost',
-                            'caption'  => 'Database server hostname',
-                            'help'     => 'Info 3',
-                            'required' => true,
-                        ],
-                        'dbname' => [
-                            'type'     => 'text',
-                            'value'    => $v ? $v->dbname : '',
-                            'caption'  => 'Database name',
-                            'help'     => 'Info 4',
-                            'required' => true,
-                        ],
-                        'dbuser' => [
-                            'type'    => 'text',
-                            'value'   => $v ? $v->dbuser : '',
-                            'caption' => 'Database username',
-                        ],
-                        'dbpass' => [
-                            'type'    => 'password',
-                            'value'   => '',
-                            'caption' => 'Database password',
-                            'help'    => 'Info 5',
-                        ],
-                        'dbprefix' => [
-                            'type'      => 'text',
-                            'maxlength' => '40',
-                            'value'     => $v ? $v->dbprefix : '',
-                            'caption'   => 'Table prefix',
-                            'help'      => 'Info 6',
-                            'required' => true,
-                        ],
-                    ],
-                ],
-                'adm-info' => [
-                    'info' => [
-                        [
-                            'value' => __('Administration setup'),
-                            'html'  => true,
-                        ],
-                        [
-                            'value' => __('Info 7'),
-                        ],
-                    ],
-                ],
-                'adm' => [
-                    'fields' => [
-                        'username' => [
-                            'type'      => 'text',
-                            'maxlength' => '25',
-                            'pattern'   => '^.{2,25}$',
-                            'value'     => $v ? $v->username : '',
-                            'caption'   => 'Administrator username',
-                            'help'      => 'Info 8',
-                            'required'  => true,
-                        ],
-                        'password' => [
-                            'type'     => 'password',
-                            'pattern'  => '^.{16,}$',
-                            'value'    => '',
-                            'caption'  => 'Administrator passphrase',
-                            'help'     => 'Info 9',
-                            'required' => true,
-                        ],
-                        'email' => [
-                            'type'      => 'text',
-                            'maxlength' => '80',
-                            'pattern'   => '.+@.+',
-                            'value'     => $v ? $v->email : '',
-                            'caption'   => 'Administrator email',
-                            'help'      => 'Info 10',
-                            'required'  => true,
-                        ],
-
-                    ],
-                ],
-                'board-info' => [
-                    'info' => [
-                        [
-                            'value' => __('Board setup'),
-                            'html'  => true,
-                        ],
-                        [
-                            'value' => __('Info 11'),
-                        ],
-                    ],
-                ],
-                'board' => [
-                    'fields' => [
-                        'title' => [
-                            'type'      => 'text',
-                            'maxlength' => '255',
-                            'value'     => $v ? $v->title : __('My ForkBB Forum'),
-                            'caption'   => 'Board title',
-                            'required'  => true,
-                        ],
-                        'descr' => [
-                            'type'      => 'text',
-                            'maxlength' => '16000',
-                            'value'     => $v ? $v->descr : __('Description'),
-                            'caption'   => 'Board description',
-                        ],
-                        'baseurl' => [
-                            'type'      => 'text',
-                            'maxlength' => '128',
-                            'value'     => $v ? $v->baseurl : $this->c->BASE_URL,
-                            'caption'   => 'Base URL',
-                            'required'  => true,
-                        ],
-                        'defaultlang' => [
-                            'type'      => 'select',
-                            'options'   => $langs,
-                            'value'     => $v ? $v->defaultlang : $this->user->language,
-                            'caption'   => 'Default language',
-                        ],
-                        'defaultstyle' => [
-                            'type'      => 'select',
-                            'options'   => $styles,
-                            'value'     => $v ? $v->defaultstyle : $this->user->style,
-                            'caption'   => 'Default style',
-                        ],
-                    ],
-                ],
-                'cookie-info' => [
-                    'info' => [
-                        [
-                            'value' => __('Cookie setup'),
-                            'html'  => true,
-                        ],
-                        [
-                            'value' => __('Info 12'),
-                        ],
-                    ],
-                ],
-                'cookie' => [
-                    'fields' => [
-                        'cookie_domain' => [
-                            'type'      => 'text',
-                            'maxlength' => '128',
-                            'value'     => $v ? $v->cookie_domain : '',
-                            'caption'   => 'Cookie Domain',
-                            'help'      => 'Cookie Domain info',
-                        ],
-                        'cookie_path' => [
-                            'type'      => 'text',
-                            'maxlength' => '1024',
-                            'value'     => $v
-                                ? $v->cookie_path
-                                : \rtrim((string) \parse_url($this->c->BASE_URL, \PHP_URL_PATH), '/') . '/',
-                            'caption'   => 'Cookie Path',
-                            'help'      => 'Cookie Path info',
-                            'required'  => true,
-                        ],
-                        'cookie_secure' => [
-                            'type'    => 'radio',
-                            'value'   => $v
-                                ? $v->cookie_secure
-                                : (
-                                    \preg_match('%^https%i', $this->c->BASE_URL)
-                                    ? 1
-                                    : 0
-                                ),
-                            'values'  => [1 => __('Yes '), 0 => __('No ')],
-                            'caption' => 'Cookie Secure',
-                            'help'    => 'Cookie Secure info',
-                        ],
-
-                    ],
-                ],
-            ],
-            'btns'   => [
-                'submit'  => [
-                    'type'  => 'submit',
-                    'value' => __('Start install'),
-                ],
-            ],
-        ];
-
-        $this->nameTpl    = 'layouts/install';
-        $this->onlinePos  = null;
-        $this->rev        = $this->c->FORK_REVISION;
-
-        return $this;
     }
 }
