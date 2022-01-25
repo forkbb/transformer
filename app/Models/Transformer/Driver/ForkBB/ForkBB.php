@@ -162,7 +162,7 @@ class ForkBB extends AbstractDriver
             SET disp_position = disp_position + ?i:max
             WHERE id_old>0';
 
-        return false !== $db->exec($query, $row);
+        return false !== $db->exec($query, $vars);
     }
 
     /*************************************************************************/
