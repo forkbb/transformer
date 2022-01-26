@@ -161,6 +161,13 @@ class Transformer extends Model
                 $set   = $name . 'Set';
                 $end   = $name . 'End';
 
+                if (
+                    TRANSFORMER_MERGE === $this->c->TR_METHOD
+                    && 'config' === $name
+                ) {
+                    return $this->step($step + 1, 0);
+                }
+
                 if (false === $driver->$pre($this->c->DBSource, $id)) {
                     throw new RuntimeException("The {$pre} method returned false");
                 }
