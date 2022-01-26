@@ -269,12 +269,11 @@ class ForkBB extends AbstractDriver
         $vars = [
             ':id'    => $id,
             ':limit' => $this->c->LIMIT,
-            ':unv'   => FORK_GROUP_UNVERIFIED,
-            ':guest' => FORK_GROUP_GUEST,
+            ':not'   => [FORK_GROUP_UNVERIFIED, FORK_GROUP_GUEST],
         ];
         $query = 'SELECT *
             FROM ::users
-            WHERE id>=?i:id AND group_id!=?i:unv AND group_id!=?i:guest
+            WHERE id>=?i:id AND group_id NOT IN (?ai:not)
             ORDER BY id
             LIMIT ?i:limit';
 
@@ -304,7 +303,25 @@ class ForkBB extends AbstractDriver
 
     public function usersSet(DB $db, array $vars): bool
     {
-        return false !== $db->exec($this->insertQuery, $vars);
+        try {
+            return false !== $db->exec($this->insertQuery, $vars);
+        } catch (PDOException $e) {
+            if ('23000' === $e->getCode()) {
+                if (false !== \strpos($e->getMessage(), 'username')) {
+                    if (\preg_match('%^(.+)\.(\d+)$%', $vars['username'], $matches)) {
+                        $vars['username'] = $matches[1] . '.' . ($matches[2] + 1);
+                    } else {
+                        $vars['username'] .= '.2';
+                    }
+
+                    $vars['username_normal'] = $this->c->users->normUsername($vars['username']);
+
+                    return $this->usersSet($db, $vars);
+                }
+            }
+
+            throw $e;
+        }
     }
 
     public function usersEnd(DB $db): bool
