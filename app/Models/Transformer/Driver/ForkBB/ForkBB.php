@@ -323,6 +323,8 @@ class ForkBB extends AbstractDriver
             if ('23000' === $e->getCode()) {
                 // username
                 if (false !== \strpos($e->getMessage(), 'username')) {
+                    $old = $vars['username'];
+
                     if (\preg_match('%^(.+?)\.(\d+)$%', $vars['username'], $m)) {
                         $vars['username']  = $m[1] . '.' . ($m[2] + 1);
                     } else {
@@ -331,9 +333,13 @@ class ForkBB extends AbstractDriver
 
                     $vars['username_normal'] = $this->c->users->normUsername($vars['username']);
 
+                    $this->c->Log->info("[{$vars['id_old']}] username: '{$old}' > '{$vars['username']}'");
+
                     return $this->usersSet($db, $vars);
                 // email
                 } elseif (false !== \strpos($e->getMessage(), 'email')) {
+                    $old = $vars['email'];
+
                     if (\preg_match('%^(.+?)(?:\.n(\d+))?(\.local)$%', $vars['email'], $m)) {
                         $m[2]           = isset($m[2][0]) ? $m[2] + 1 : 2;
                         $vars['email']  = "{$m[1]}.n{$m[2]}{$m[3]}";
@@ -342,6 +348,8 @@ class ForkBB extends AbstractDriver
                     }
 
                     $vars['email_normal'] = $this->c->NormEmail->normalize($vars['email']);
+
+                    $this->c->Log->info("[{$vars['id_old']}] email: '{$old}' > '{$vars['email']}'");
 
                     return $this->usersSet($db, $vars);
                 }
