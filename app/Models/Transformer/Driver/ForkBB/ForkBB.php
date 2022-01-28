@@ -52,6 +52,16 @@ class ForkBB extends AbstractDriver
         'warnings',
     ];
 
+    /**
+     * @var string
+     */
+    protected $min = '42';
+
+    /**
+     * @var string
+     */
+    protected $max = '48';
+
     public function getType(): string
     {
         return 'ForkBB';
@@ -79,17 +89,21 @@ class ForkBB extends AbstractDriver
         ) {
             return false;
         } else {
-            $rev = (int) $rev;
+            if (
+                \version_compare($rev, $this->min, '<')
+                || \version_compare($rev, $this->max, '>')
+            ) {
+                return [
+                    'Current version \'%1$s\' is %2$s, need %3$s to %4$s',
+                    $this->getType(),
+                    "rev.{$rev}",
+                    "rev.{$this->min}",
+                    "rev.{$this->max}",
+                ];
+            }
+
+            return true;
         }
-
-        if ($rev !== $this->c->FORK_REVISION) {
-            $rev         = 'rev.' . $rev;
-            $need        = 'rev.' . $this->c->FORK_REVISION;
-
-            return ['Current version \'%1$s\' is %2$s, need %3$s to %4$s', $this->getType(), $rev, $need, $need];
-        }
-
-        return true;
     }
 
     /*************************************************************************/
