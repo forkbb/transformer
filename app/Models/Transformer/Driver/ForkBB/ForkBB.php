@@ -333,11 +333,11 @@ class ForkBB extends AbstractDriver
 
                     $vars['username_normal'] = $this->c->users->normUsername($vars['username']);
 
-                    $this->c->Log->info("[{$vars['id_old']}] username: '{$old}' > '{$vars['username']}'");
+                    $this->c->Log->info("[{$vars['id_old']}] username: '{$old}' >> '{$vars['username']}'");
 
                     return $this->usersSet($db, $vars);
                 // email
-                } elseif (false !== \strpos($e->getMessage(), 'email')) {
+                } elseif (false !== \strpos($e->getMessage(), 'email_normal')) {
                     $old = $vars['email'];
 
                     if (\preg_match('%^(.+?)(?:\.n(\d+))?(\.local)$%', $vars['email'], $m)) {
@@ -349,7 +349,7 @@ class ForkBB extends AbstractDriver
 
                     $vars['email_normal'] = $this->c->NormEmail->normalize($vars['email']);
 
-                    $this->c->Log->info("[{$vars['id_old']}] email: '{$old}' > '{$vars['email']}'");
+                    $this->c->Log->info("[{$vars['id_old']}] email: '{$old}' >> '{$vars['email']}'");
 
                     return $this->usersSet($db, $vars);
                 }
@@ -423,6 +423,31 @@ class ForkBB extends AbstractDriver
 
     public function forumsSet(DB $db, array $vars): bool
     {
+        if ('' !== $vars['moderators']) {
+            $mods = \json_decode($vars['moderators'], true);
+
+            if (\is_array($mods)) {
+                $vars2 = [
+                    ':ids' => \array_keys($mods),
+                ];
+                $query2 = 'SELECT id, username
+                    FROM ::users
+                    WHERE id_old>0 AND id_old IN (?ai:ids)';
+
+                $stmt = $db->query($query2, $vars2);
+
+                $mods = [];
+
+                while ($row = $stmt->fetch()) {
+                    $mods[$row['id']] = $row['username'];
+                }
+
+                $vars['moderators'] = \json_encode($mods);
+            } else {
+                $vars['moderators'] = '';
+            }
+        }
+
         return false !== $db->exec($this->insertQuery, $vars);
     }
 
@@ -471,48 +496,6 @@ class ForkBB extends AbstractDriver
             WHERE id_old>0 AND parent_forum_id=?i:parent_forum_id';
 
         while ($vars = $stmt->fetch()) {
-            if (false === $db->exec($query, $vars)) {
-                return false;
-            }
-        }
-
-        $query = 'SELECT id, moderators
-            FROM ::forums
-            WHERE id_old>0 AND moderators!=\'\'';
-
-        $data = $db->query($query)->fetchAll(PDO::FETCH_KEY_PAIR);
-
-        foreach ($data as $id => $mods) {
-            $moderators = \json_decode($mods, true);
-
-            if (\is_array($moderators)) {
-                $vars = [
-                    ':ids' => \array_keys($moderators),
-                ];
-                $query = 'SELECT id_old, id
-                    FROM ::users
-                    WHERE id_old IN (?ai:ids)';
-
-                $repl = $db->query($query, $vars)->fetchAll(PDO::FETCH_KEY_PAIR);
-                $mods = [];
-
-                foreach ($moderators as $old => $name) {
-                    $mods[$repl[$old]] = $name;
-                }
-
-                $mods = \json_encode($mods);
-            } else {
-                $mods = '';
-            }
-
-            $vars = [
-                ':id'   => $id,
-                ':mods' => $mods,
-            ];
-            $query = 'UPDATE ::forums
-                SET moderators=?s:mods
-                WHERE id=?i:id';
-
             if (false === $db->exec($query, $vars)) {
                 return false;
             }
