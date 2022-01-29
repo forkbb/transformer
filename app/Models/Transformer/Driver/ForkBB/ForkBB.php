@@ -804,36 +804,6 @@ class ForkBB extends AbstractDriver
             return false;
         }
 
-        $query = 'UPDATE ::topics
-            SET poster_id=COALESCE(
-                (
-                    SELECT u.id
-                    FROM ::users AS u
-                    WHERE u.id_old=poster_id
-                ),
-                0
-            )
-            WHERE id_old>0 AND poster_id>0';
-
-        if (false === $db->exec($query)) {
-            return false;
-        }
-
-        $query = 'UPDATE ::topics
-            SET last_poster_id=COALESCE(
-                (
-                    SELECT u.id
-                    FROM ::users AS u
-                    WHERE u.id_old=last_poster_id
-                ),
-                0
-            )
-            WHERE id_old>0 AND last_poster_id>0';
-
-        if (false === $db->exec($query)) {
-            return false;
-        }
-
         $query = 'SELECT t.id, o.id AS moved_to
             FROM ::topics AS t
             LEFT JOIN ::topics AS o ON o.id_old=t.moved_to
@@ -935,6 +905,21 @@ class ForkBB extends AbstractDriver
         }
 
         $query = 'UPDATE ::posts
+            SET poster=COALESCE(
+                (
+                    SELECT u.username
+                    FROM ::users AS u
+                    WHERE u.id=poster_id
+                ),
+                poster
+            )
+            WHERE id_old>0 AND poster_id>0';
+
+        if (false === $db->exec($query)) {
+            return false;
+        }
+
+        $query = 'UPDATE ::posts
             SET editor_id=COALESCE(
                 (
                     SELECT u.id
@@ -942,6 +927,21 @@ class ForkBB extends AbstractDriver
                     WHERE u.id_old=editor_id
                 ),
                 0
+            )
+            WHERE id_old>0 AND editor_id>0';
+
+        if (false === $db->exec($query)) {
+            return false;
+        }
+
+        $query = 'UPDATE ::posts
+            SET editor=COALESCE(
+                (
+                    SELECT u.username
+                    FROM ::users AS u
+                    WHERE u.id=editor_id
+                ),
+                editor
             )
             WHERE id_old>0 AND editor_id>0';
 
@@ -979,16 +979,88 @@ class ForkBB extends AbstractDriver
             return false;
         }
 
+        $query = 'UPDATE ::topics
+            SET poster_id=(
+                SELECT p.poster_id
+                FROM ::posts AS p
+                WHERE p.id=::topics.first_post_id
+            )
+            WHERE id_old>0';
+
+        if (false === $db->exec($query)) {
+            return false;
+        }
+
+        $query = 'UPDATE ::topics
+            SET poster=(
+                SELECT p.poster
+                FROM ::posts AS p
+                WHERE p.id=::topics.first_post_id
+            )
+            WHERE id_old>0';
+
+        if (false === $db->exec($query)) {
+            return false;
+        }
+
+        $query = 'UPDATE ::topics
+            SET last_poster_id=(
+                SELECT p.poster_id
+                FROM ::posts AS p
+                WHERE p.id=::topics.last_post_id
+            )
+            WHERE id_old>0 AND last_poster_id>0';
+
+        if (false === $db->exec($query)) {
+            return false;
+        }
+
+        $query = 'UPDATE ::topics
+            SET last_poster=(
+                SELECT p.poster
+                FROM ::posts AS p
+                WHERE p.id=::topics.last_post_id
+            )
+            WHERE id_old>0 AND last_poster_id>0';
+
+        if (false === $db->exec($query)) {
+            return false;
+        }
+
         $query = 'UPDATE ::forums
             SET last_post_id=COALESCE(
                 (
-                    SELECT t.last_post_id
+                    SELECT MAX(t.last_post_id)
                     FROM ::topics AS t
                     WHERE t.forum_id=::forums.id
                 ),
                 0
             )
             WHERE id_old>0';
+
+        if (false === $db->exec($query)) {
+            return false;
+        }
+
+        $query = 'UPDATE ::forums
+            SET last_poster_id=(
+                SELECT p.poster_id
+                FROM ::posts AS p
+                WHERE p.id=::forums.last_post_id
+            )
+            WHERE id_old>0 AND last_poster_id>0';
+
+        if (false === $db->exec($query)) {
+            return false;
+        }
+
+        $query = 'UPDATE ::forums
+            SET last_poster=(
+                SELECT p.poster
+                FROM ::posts AS p
+                WHERE p.id=::forums.last_post_id
+            )
+            WHERE id_old>0 AND last_poster_id>0';
 
         if (false === $db->exec($query)) {
             return false;
