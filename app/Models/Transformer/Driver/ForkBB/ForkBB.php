@@ -952,13 +952,13 @@ class ForkBB extends AbstractDriver
         $query = 'UPDATE ::topics
             SET first_post_id=COALESCE(
                 (
-                    SELECT p.id
+                    SELECT MIN(p.id)
                     FROM ::posts AS p
-                    WHERE p.id_old=first_post_id
+                    WHERE p.topic_id=::topics.id
                 ),
                 0
             )
-            WHERE id_old>0 AND first_post_id>0';
+            WHERE id_old>0';
 
         if (false === $db->exec($query)) {
             return false;
@@ -967,13 +967,13 @@ class ForkBB extends AbstractDriver
         $query = 'UPDATE ::topics
             SET last_post_id=COALESCE(
                 (
-                    SELECT p.id
+                    SELECT MAX(p.id)
                     FROM ::posts AS p
-                    WHERE p.id_old=last_post_id
+                    WHERE p.topic_id=::topics.id
                 ),
                 0
             )
-            WHERE id_old>0 AND last_post_id>0';
+            WHERE id_old>0';
 
         if (false === $db->exec($query)) {
             return false;
@@ -982,13 +982,13 @@ class ForkBB extends AbstractDriver
         $query = 'UPDATE ::forums
             SET last_post_id=COALESCE(
                 (
-                    SELECT p.id
-                    FROM ::posts AS p
-                    WHERE p.id_old=last_post_id
+                    SELECT t.last_post_id
+                    FROM ::topics AS t
+                    WHERE t.forum_id=::forums.id
                 ),
                 0
             )
-            WHERE id_old>0 AND last_post_id>0';
+            WHERE id_old>0';
 
         if (false === $db->exec($query)) {
             return false;
