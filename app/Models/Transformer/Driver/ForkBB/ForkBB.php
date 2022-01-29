@@ -949,6 +949,29 @@ class ForkBB extends AbstractDriver
             return false;
         }
 
+        return true;
+    }
+
+    /*************************************************************************/
+    /* topics_again                                                          */
+    /*************************************************************************/
+    public function topics_againPre(DB $db, int $id): bool
+    {
+        return true;
+    }
+
+    public function topics_againGet(int &$id): ?array
+    {
+        return null;
+    }
+
+    public function topics_againSet(DB $db, array $vars): bool
+    {
+        return true;
+    }
+
+    public function topics_againEnd(DB $db): bool
+    {
         $query = 'UPDATE ::topics
             SET first_post_id=COALESCE(
                 (
@@ -985,7 +1008,7 @@ class ForkBB extends AbstractDriver
                 FROM ::posts AS p
                 WHERE p.id=::topics.first_post_id
             )
-            WHERE id_old>0';
+            WHERE id_old>0 AND first_post_id>0';
 
         if (false === $db->exec($query)) {
             return false;
@@ -997,7 +1020,7 @@ class ForkBB extends AbstractDriver
                 FROM ::posts AS p
                 WHERE p.id=::topics.first_post_id
             )
-            WHERE id_old>0';
+            WHERE id_old>0 AND first_post_id>0';
 
         if (false === $db->exec($query)) {
             return false;
@@ -1027,6 +1050,29 @@ class ForkBB extends AbstractDriver
             return false;
         }
 
+        return true;
+    }
+
+    /*************************************************************************/
+    /* forums_again                                                          */
+    /*************************************************************************/
+    public function forums_againPre(DB $db, int $id): bool
+    {
+        return true;
+    }
+
+    public function forums_againGet(int &$id): ?array
+    {
+        return null;
+    }
+
+    public function forums_againSet(DB $db, array $vars): bool
+    {
+        return true;
+    }
+
+    public function forums_againEnd(DB $db): bool
+    {
         $query = 'UPDATE ::forums
             SET last_post_id=COALESCE(
                 (
@@ -1068,6 +1114,7 @@ class ForkBB extends AbstractDriver
 
         return true;
     }
+
 
     /*************************************************************************/
     /* warnings                                                              */
