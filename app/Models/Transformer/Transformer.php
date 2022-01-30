@@ -232,9 +232,6 @@ class Transformer extends Model
 
     protected function schemaCreate(): void
     {
-        //$this->c->SOURCE_TYPE
-        //$this->c->TR_METHOD
-
         // bans
         $schema = [
             'FIELDS' => [

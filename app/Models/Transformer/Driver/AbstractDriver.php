@@ -17,6 +17,8 @@ use RuntimeException;
 
 abstract class AbstractDriver extends Model
 {
+    const JSON_OPTIONS = \JSON_UNESCAPED_SLASHES | \JSON_UNESCAPED_UNICODE | \JSON_THROW_ON_ERROR;
+
     /**
      * @var DB
      */

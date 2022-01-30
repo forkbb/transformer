@@ -19,8 +19,6 @@ use RuntimeException;
 
 class FluxBB_by_Visman extends AbstractDriver
 {
-    const JSON_OPTIONS = \JSON_UNESCAPED_SLASHES | \JSON_UNESCAPED_UNICODE | \JSON_THROW_ON_ERROR;
-
     /**
      * @var array
      */
