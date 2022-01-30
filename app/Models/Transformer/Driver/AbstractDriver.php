@@ -55,7 +55,6 @@ abstract class AbstractDriver extends Model
         FORK_GROUP_MEMBER     => true,
     ];
 
-
     abstract public function getType(): string;
     abstract public function test(DB $db) /* : bool|string|array */;
 

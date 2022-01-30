@@ -51,6 +51,7 @@ return [
         'o_smtp_user'      => '',
         'o_smtp_pass'      => '',
         'b_smtp_ssl'       => 0,
+        'o_avatars_dir'    => '/img/avatars',
     ],
 
     'DRIVERS' => [

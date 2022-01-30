@@ -326,6 +326,21 @@ class FluxBB_by_Visman extends AbstractDriver
         return false !== $this->stmt;
     }
 
+    protected function avatarName(int $id): string
+    {
+        $path = $this->c->DIR_PUBLIC . $this->c->config->o_avatars_dir . '/';
+
+        foreach (['jpg', 'gif', 'png'] as $ext) {
+            $file = "{$id}.{$ext}";
+
+            if (\is_file($path . $file)) {
+                return $file;
+            }
+        }
+
+        return '';
+    }
+
     public function usersGet(int &$id): ?array
     {
         $vars = $this->stmt->fetch();
@@ -350,7 +365,7 @@ class FluxBB_by_Visman extends AbstractDriver
             'email_normal'     => $this->c->NormEmail->normalize($vars['email']),
             'email_confirmed'  => 0,
             'title'            => (string) $vars['title'],
-            'avatar'           => '', // ????
+            'avatar'           => $this->avatarName($id),
             'realname'         => (string) $vars['realname'],
             'url'              => (string) $vars['url'],
             'jabber'           => (string) $vars['jabber'],
