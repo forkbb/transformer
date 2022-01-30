@@ -9,8 +9,8 @@ Transformer is a script to convert/merge another forum's database to/with ForkBB
 ### For now, just a sketch. On development stage.
 
 Supports (convert/merge):
-1. ForkBB rev.42-48
-2. FluxBB_by_Visman rev.83
+1. ForkBB rev.42 - rev.48
+2. FluxBB_by_Visman rev.78 - rev.83
 
 ## Requirements
 

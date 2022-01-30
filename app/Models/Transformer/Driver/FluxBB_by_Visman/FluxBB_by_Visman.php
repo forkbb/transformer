@@ -52,7 +52,7 @@ class FluxBB_by_Visman extends AbstractDriver
     /**
      * @var string
      */
-    protected $min = '83';
+    protected $min = '78';
 
     /**
      * @var string
