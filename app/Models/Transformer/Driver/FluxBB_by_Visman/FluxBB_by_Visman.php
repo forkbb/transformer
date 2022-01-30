@@ -406,7 +406,7 @@ class FluxBB_by_Visman extends AbstractDriver
             'warning_flag'     => (int) $vars['warning_flag'],
             'warning_all'      => (int) $vars['warning_all'],
             'gender'           => (int) $vars['gender'],
-            'u_mark_all_read'  => $now - $now % 86400,
+            'u_mark_all_read'  => (int) $vars['last_visit'] ?: $now - $now % 86400,
             'last_report_id'   => 0,
             'ip_check_type'    => 0, // ????
             'login_ip_cache'   => '',
