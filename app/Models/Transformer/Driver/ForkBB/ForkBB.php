@@ -1816,6 +1816,29 @@ class ForkBB extends AbstractDriver
             return false;
         }
 
+        return true;
+    }
+
+    /*************************************************************************/
+    /* pm_topics_again                                                       */
+    /*************************************************************************/
+    public function pm_topics_againPre(DB $db, int $id): bool
+    {
+        return true;
+    }
+
+    public function pm_topics_againGet(int &$id): ?array
+    {
+        return null;
+    }
+
+    public function pm_topics_againSet(DB $db, array $vars): bool
+    {
+        return true;
+    }
+
+    public function pm_topics_againEnd(DB $db): bool
+    {
         $query = 'UPDATE ::pm_topics
             SET first_post_id=COALESCE(
                 (
