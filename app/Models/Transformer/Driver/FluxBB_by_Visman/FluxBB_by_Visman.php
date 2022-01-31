@@ -623,7 +623,7 @@ class FluxBB_by_Visman extends AbstractDriver
 
         $query = 'UPDATE ::forums
             SET parent_forum_id=?i:new
-            WHERE id_old>0 AND parent_forum_id>0 AND parent_forum_id=?i:old';
+            WHERE id_old>0 AND parent_forum_id=?i:old';
 
         foreach ($parents as $old => $new) {
             $vars = [
