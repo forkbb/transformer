@@ -419,12 +419,28 @@ class FluxBB_by_Visman extends AbstractDriver
     public function usersSet(DB $db, array $vars): bool
     {
         try {
-            return false !== $db->exec($this->insertQuery, $vars);
+            $result = $db->exec($this->insertQuery, $vars);
+
+            if (null !== $this->oldUsername) {
+                $this->c->Log->info("[{$vars['id_old']}] username: '{$this->oldUsername}' >> '{$vars['username']}'");
+
+                $this->oldUsername = null;
+            }
+
+            if (null !== $this->oldEmail) {
+                $this->c->Log->info("[{$vars['id_old']}] email: '{$this->oldEmail}' >> '{$vars['email']}'");
+
+                $this->oldEmail = null;
+            }
+
+            return false !== $result;
         } catch (PDOException $e) {
             if ('23000' === $e->getCode()) {
                 // username
                 if (false !== \strpos($e->getMessage(), 'username')) {
-                    $old = $vars['username'];
+                    if (null === $this->oldUsername) {
+                        $this->oldUsername = $vars['username'];
+                    }
 
                     if (\preg_match('%^(.+?)\.(\d+)$%', $vars['username'], $m)) {
                         $vars['username']  = $m[1] . '.' . ($m[2] + 1);
@@ -434,12 +450,12 @@ class FluxBB_by_Visman extends AbstractDriver
 
                     $vars['username_normal'] = $this->c->users->normUsername($vars['username']);
 
-                    $this->c->Log->info("[{$vars['id_old']}] username: '{$old}' >> '{$vars['username']}'");
-
                     return $this->usersSet($db, $vars);
                 // email
                 } elseif (false !== \strpos($e->getMessage(), 'email_normal')) {
-                    $old = $vars['email'];
+                    if (null === $this->oldEmail) {
+                        $this->oldEmail = $vars['email'];
+                    }
 
                     if (\preg_match('%^(.+?)(?:\.n(\d+))?(\.local)$%', $vars['email'], $m)) {
                         $m[2]           = isset($m[2][0]) ? $m[2] + 1 : 2;
@@ -449,8 +465,6 @@ class FluxBB_by_Visman extends AbstractDriver
                     }
 
                     $vars['email_normal'] = $this->c->NormEmail->normalize($vars['email']);
-
-                    $this->c->Log->info("[{$vars['id_old']}] email: '{$old}' >> '{$vars['email']}'");
 
                     return $this->usersSet($db, $vars);
                 }
