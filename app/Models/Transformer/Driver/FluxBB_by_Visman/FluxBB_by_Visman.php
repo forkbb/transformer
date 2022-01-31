@@ -1253,21 +1253,89 @@ class FluxBB_by_Visman extends AbstractDriver
     /*************************************************************************/
     public function warningsPre(DB $db, int $id): bool
     {
-        return true;
+        $this->insertQuery = 'INSERT INTO ::warnings (id, poster, poster_id, posted, message)
+            SELECT (
+                    SELECT id
+                    FROM ::posts
+                    WHERE id_old=?i:id
+                ), ?s:poster, ?i:poster_id, ?i:posted, ?s:message';
+
+
+        $vars = [
+            ':id'    => $id,
+            ':limit' => $this->c->LIMIT,
+        ];
+        $query = 'SELECT *
+            FROM ::warnings
+            WHERE id>=?i:id
+            ORDER BY id
+            LIMIT ?i:limit';
+
+        $this->stmt = $db->query($query, $vars);
+
+        return false !== $this->stmt;
+
     }
 
     public function warningsGet(int &$id): ?array
     {
-        return null;
+        $vars = $this->stmt->fetch();
+
+        if (false === $vars) {
+            $this->stmt->closeCursor();
+            $this->stmt = null;
+
+            return null;
+        }
+
+        $id = (int) $vars['id'];
+
+        return [
+            'id'        => $id,
+            'poster'    => (string) $vars['poster'],
+            'poster_id' => (int) $vars['poster_id'],
+            'posted'    => (int) $vars['posted'],
+            'message'   => (string) $vars['message'],
+        ];
     }
 
     public function warningsSet(DB $db, array $vars): bool
     {
-        return true;
+        return false !== $db->exec($this->insertQuery, $vars);
     }
 
     public function warningsEnd(DB $db): bool
     {
+        $query = 'UPDATE ::warnings
+            SET poster_id=COALESCE(
+                (
+                    SELECT u.id
+                    FROM ::users AS u
+                    WHERE u.id_old=poster_id
+                ),
+                0
+            )
+            WHERE poster_id>0';
+
+        if (false === $db->exec($query)) {
+            return false;
+        }
+
+        $query = 'UPDATE ::warnings
+            SET poster=COALESCE(
+                (
+                    SELECT u.username
+                    FROM ::users AS u
+                    WHERE u.id=poster_id
+                ),
+                poster
+            )
+            WHERE poster_id>0';
+
+        if (false === $db->exec($query)) {
+            return false;
+        }
+
         return true;
     }
 
