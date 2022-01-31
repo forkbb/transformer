@@ -1674,11 +1674,41 @@ class ForkBB extends AbstractDriver
         }
 
         $query = 'UPDATE ::pm_topics
+            SET poster=COALESCE(
+                (
+                    SELECT u.username
+                    FROM ::users AS u
+                    WHERE u.id=poster_id
+                ),
+                poster
+            )
+            WHERE id_old>0 AND poster_id>0';
+
+        if (false === $db->exec($query)) {
+            return false;
+        }
+
+        $query = 'UPDATE ::pm_topics
             SET target_id=COALESCE(
                 (
                     SELECT u.id
                     FROM ::users AS u
                     WHERE u.id_old=target_id
+                ),
+                0
+            )
+            WHERE id_old>0 AND target_id>0';
+
+        if (false === $db->exec($query)) {
+            return false;
+        }
+
+        $query = 'UPDATE ::pm_topics
+            SET target=COALESCE(
+                (
+                    SELECT u.username
+                    FROM ::users AS u
+                    WHERE u.id=target_id
                 ),
                 0
             )
@@ -1771,16 +1801,31 @@ class ForkBB extends AbstractDriver
             return false;
         }
 
+        $query = 'UPDATE ::pm_posts
+            SET poster=COALESCE(
+                (
+                    SELECT u.username
+                    FROM ::users AS u
+                    WHERE u.id=poster_id
+                ),
+                poster
+            )
+            WHERE id_old>0 AND poster_id>0';
+
+        if (false === $db->exec($query)) {
+            return false;
+        }
+
         $query = 'UPDATE ::pm_topics
             SET first_post_id=COALESCE(
                 (
-                    SELECT p.id
+                    SELECT MIN(p.id)
                     FROM ::pm_posts AS p
-                    WHERE p.id_old=first_post_id
+                    WHERE p.topic_id=::pm_topics.id
                 ),
                 0
             )
-            WHERE id_old>0 AND first_post_id>0';
+            WHERE id_old>0';
 
         if (false === $db->exec($query)) {
             return false;
@@ -1789,13 +1834,13 @@ class ForkBB extends AbstractDriver
         $query = 'UPDATE ::pm_topics
             SET last_post_id=COALESCE(
                 (
-                    SELECT p.id
+                    SELECT MAX(p.id)
                     FROM ::pm_posts AS p
-                    WHERE p.id_old=last_post_id
+                    WHERE p.topic_id=::pm_topics.id
                 ),
                 0
             )
-            WHERE id_old>0 AND last_post_id>0';
+            WHERE id_old>0';
 
         if (false === $db->exec($query)) {
             return false;
