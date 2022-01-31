@@ -500,16 +500,21 @@ class ForkBB extends AbstractDriver
 
         $query = 'SELECT f.parent_forum_id, o.id
             FROM ::forums AS f
-            INNER JOIN ::forums AS o ON o.id_old=f.parent_forum_id
+            LEFT JOIN ::forums AS o ON o.id_old=f.parent_forum_id
             WHERE f.id_old>0 AND f.parent_forum_id>0';
 
-        $stmt = $db->query($query);
+        $parents = $db->query($query)->fetchAll(PDO::FETCH_KEY_PAIR);;
 
         $query = 'UPDATE ::forums
-            SET parent_forum_id=?i:id
-            WHERE id_old>0 AND parent_forum_id=?i:parent_forum_id';
+            SET parent_forum_id=?i:new
+            WHERE id_old>0 AND parent_forum_id>0 AND parent_forum_id=?i:old';
 
-        while ($vars = $stmt->fetch()) {
+        foreach ($parents as $old => $new) {
+            $vars = [
+                ':old' => $old,
+                ':new' => $new,
+            ];
+
             if (false === $db->exec($query, $vars)) {
                 return false;
             }
