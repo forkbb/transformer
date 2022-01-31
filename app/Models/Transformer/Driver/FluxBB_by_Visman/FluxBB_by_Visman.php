@@ -303,7 +303,7 @@ class FluxBB_by_Visman extends AbstractDriver
     {
         $map = $this->c->dbMapArray['users'];
 
-        unset($map['id'], $map['msn'], $map['aim'], $map['yahoo']);
+        unset($map['id']);
 
         $sub               = $this->subQInsert($map);
         $this->insertQuery = "INSERT INTO ::users ({$sub['fields']}) VALUES ({$sub['values']})";
@@ -358,7 +358,7 @@ class FluxBB_by_Visman extends AbstractDriver
             'group_id'         => (int) $vars['group_id'],
             'username'         => $vars['username'],
             'username_normal'  => $this->c->users->normUsername($vars['username']),
-            'password'         => $vars['password'], // ????
+            'password'         => $vars['password'],
             'email'            => $vars['email'],
             'email_normal'     => $this->c->NormEmail->normalize($vars['email']),
             'email_confirmed'  => 0,
@@ -368,6 +368,9 @@ class FluxBB_by_Visman extends AbstractDriver
             'url'              => (string) $vars['url'],
             'jabber'           => (string) $vars['jabber'],
             'icq'              => (string) $vars['icq'],
+            'msn'              => '',
+            'aim'              => '',
+            'yahoo'            => '',
             'location'         => (string) $vars['location'],
             'signature'        => (string) $vars['signature'],
             'disp_topics'      => (int) $vars['disp_topics'],
@@ -408,7 +411,7 @@ class FluxBB_by_Visman extends AbstractDriver
             'gender'           => (int) $vars['gender'],
             'u_mark_all_read'  => (int) $vars['last_visit'] ?: $now - $now % 86400,
             'last_report_id'   => 0,
-            'ip_check_type'    => 0, // ????
+            'ip_check_type'    => 0,
             'login_ip_cache'   => '',
         ];
     }
@@ -694,8 +697,6 @@ class FluxBB_by_Visman extends AbstractDriver
 
     public function bbcodeGet(int &$id): ?array
     {
-        $id = -1;
-
         return null;
     }
 
@@ -1031,7 +1032,7 @@ class FluxBB_by_Visman extends AbstractDriver
         if (false === $db->exec($query)) {
             return false;
         }
-/*
+
         $query = 'UPDATE ::posts
             SET editor_id=COALESCE(
                 (
@@ -1061,7 +1062,7 @@ class FluxBB_by_Visman extends AbstractDriver
         if (false === $db->exec($query)) {
             return false;
         }
-*/
+
         return true;
     }
 
@@ -1733,11 +1734,41 @@ class FluxBB_by_Visman extends AbstractDriver
         }
 
         $query = 'UPDATE ::pm_topics
+            SET poster=COALESCE(
+                (
+                    SELECT u.username
+                    FROM ::users AS u
+                    WHERE u.id=poster_id
+                ),
+                poster
+            )
+            WHERE id_old>0 AND poster_id>0';
+
+        if (false === $db->exec($query)) {
+            return false;
+        }
+
+        $query = 'UPDATE ::pm_topics
             SET target_id=COALESCE(
                 (
                     SELECT u.id
                     FROM ::users AS u
                     WHERE u.id_old=target_id
+                ),
+                0
+            )
+            WHERE id_old>0 AND target_id>0';
+
+        if (false === $db->exec($query)) {
+            return false;
+        }
+
+        $query = 'UPDATE ::pm_topics
+            SET target=COALESCE(
+                (
+                    SELECT u.username
+                    FROM ::users AS u
+                    WHERE u.id=target_id
                 ),
                 0
             )
@@ -1830,6 +1861,21 @@ class FluxBB_by_Visman extends AbstractDriver
                     WHERE u.id_old=poster_id
                 ),
                 0
+            )
+            WHERE id_old>0 AND poster_id>0';
+
+        if (false === $db->exec($query)) {
+            return false;
+        }
+
+        $query = 'UPDATE ::pm_posts
+            SET poster=COALESCE(
+                (
+                    SELECT u.username
+                    FROM ::users AS u
+                    WHERE u.id=poster_id
+                ),
+                poster
             )
             WHERE id_old>0 AND poster_id>0';
 
