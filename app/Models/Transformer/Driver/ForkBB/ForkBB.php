@@ -321,6 +321,11 @@ class ForkBB extends AbstractDriver
             $result = $db->exec($this->insertQuery, $vars);
 
             if (null !== $this->oldUsername) {
+                $usernames           = $this->c->rUsernames;
+                $key                 = \mb_strtolower($this->oldUsername, 'UTF-8');
+                $usernames[$key]     = $vars['username'];
+                $this->c->rUsernames = $usernames;
+
                 $this->c->Log->info("[{$vars['id_old']}] username: '{$this->oldUsername}' >> '{$vars['username']}'");
 
                 $this->oldUsername = null;

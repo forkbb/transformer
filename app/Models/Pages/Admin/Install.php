@@ -393,7 +393,15 @@ class Install extends Admin
         $this->c->SOURCE_TYPE = $this->settings['sourceInfo']['type'];
         $this->c->TR_METHOD   = $this->settings['receiverInfo']['method'];
         $this->c->dbMapArray  = $db->getMap();
+        $this->c->rUsernames  = $this->settings['usernames'] ?? [];
+        $count                = \count($this->c->rUsernames);
         $result               = $this->c->Transformer->step($args['step'], $args['id']);
+
+        if ($count !== \count($this->c->rUsernames)) {
+            $this->settings['usernames'] = $this->c->rUsernames;
+
+            $this->toCache($this->settings);
+        }
 
         if (isset($result['step'], $result['id'])) {
             $result['key'] = $args['key'];
