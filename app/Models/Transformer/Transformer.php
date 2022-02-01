@@ -168,15 +168,17 @@ class Transformer extends Model
                     return $this->step($step + 1, 0);
                 }
 
-                if (false === $driver->$pre($this->c->DBSource, $id)) {
+                $resultPre = $driver->$pre($this->c->DBSource, $id);
+
+                if (false === $resultPre) {
                     throw new RuntimeException("The {$pre} method returned false");
-                }
+                } elseif (true === $resultPre) {
+                    while (\is_array($row = $driver->$get($newId))) {
+                        ++$count;
 
-                while (\is_array($row = $driver->$get($newId))) {
-                    ++$count;
-
-                    if (false === $driver->$set($this->c->DB, $row)) {
-                        throw new RuntimeException("The {$set} method returned false");
+                        if (false === $driver->$set($this->c->DB, $row)) {
+                            throw new RuntimeException("The {$set} method returned false");
+                        }
                     }
                 }
 
