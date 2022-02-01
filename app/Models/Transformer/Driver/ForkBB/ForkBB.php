@@ -1056,7 +1056,7 @@ class ForkBB extends AbstractDriver
                 FROM ::posts AS p
                 WHERE p.id=::topics.last_post_id
             )
-            WHERE id_old>0 AND last_poster_id>0';
+            WHERE id_old>0 AND last_post_id>0';
 
         if (false === $db->exec($query)) {
             return false;
@@ -1068,7 +1068,7 @@ class ForkBB extends AbstractDriver
                 FROM ::posts AS p
                 WHERE p.id=::topics.last_post_id
             )
-            WHERE id_old>0 AND last_poster_id>0';
+            WHERE id_old>0 AND last_post_id>0';
 
         if (false === $db->exec($query)) {
             return false;
@@ -1118,7 +1118,7 @@ class ForkBB extends AbstractDriver
                 FROM ::posts AS p
                 WHERE p.id=::forums.last_post_id
             )
-            WHERE id_old>0 AND last_poster_id>0';
+            WHERE id_old>0 AND last_post_id>0';
 
         if (false === $db->exec($query)) {
             return false;
@@ -1130,7 +1130,7 @@ class ForkBB extends AbstractDriver
                 FROM ::posts AS p
                 WHERE p.id=::forums.last_post_id
             )
-            WHERE id_old>0 AND last_poster_id>0';
+            WHERE id_old>0 AND last_post_id>0';
 
         if (false === $db->exec($query)) {
             return false;
