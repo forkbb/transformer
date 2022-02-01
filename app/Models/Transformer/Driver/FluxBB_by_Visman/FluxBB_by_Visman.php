@@ -2160,6 +2160,12 @@ class FluxBB_by_Visman extends AbstractDriver
 
     public function bansSet(DB $db, array $vars): bool
     {
+        $key = \mb_strtolower($vars['username'], 'UTF-8');
+
+        if (isset($this->c->rUsernames[$key])) {
+            $vars['username'] = $this->c->rUsernames[$key];
+        }
+
         return false !== $db->exec($this->insertQuery, $vars);
     }
 
