@@ -546,7 +546,7 @@ class FluxBB_by_Visman extends AbstractDriver
             'last_post'       => (int) $vars['last_post'],
             'last_post_id'    => (int) $vars['last_post_id'],
             'last_poster'     => (string) $vars['last_poster'],
-            'last_poster_id'  => 0, // ????
+            'last_poster_id'  => 0,
             'last_topic'      => (string) $vars['last_topic'],
             'sort_by'         => (int) $vars['sort_by'],
             'disp_position'   => (int) $vars['disp_position'],
@@ -890,14 +890,14 @@ class FluxBB_by_Visman extends AbstractDriver
         return [
             'id_old'         => $id,
             'poster'         => (string) $vars['poster'],
-            'poster_id'      => 0, // ????
+            'poster_id'      => 0,
             'subject'        => (string) $vars['subject'],
             'posted'         => (int) $vars['posted'],
             'first_post_id'  => (int) $vars['first_post_id'],
             'last_post'      => (int) $vars['last_post'],
             'last_post_id'   => (int) $vars['last_post_id'],
             'last_poster'    => (string) $vars['last_poster'],
-            'last_poster_id' => 0, // ?????
+            'last_poster_id' => 0,
             'num_views'      => (int) $vars['num_views'],
             'num_replies'    => (int) $vars['num_replies'],
             'closed'         => (int) $vars['closed'],
