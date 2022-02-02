@@ -29,6 +29,7 @@ define('FORK_GROUP_ADMIN', 1);
 define('FORK_GROUP_MOD', 2);
 define('FORK_GROUP_GUEST', 3);
 define('FORK_GROUP_MEMBER', 4);
+define('FORK_GROUP_NEW_MEMBER', 5);
 
 define('TRANSFORMER_COPY', 0);
 define('TRANSFORMER_MERGE', 1);

@@ -2122,6 +2122,10 @@ class ForkBB extends AbstractDriver
             return null;
         }
 
+        if ('i_default_user_group' === $vars['conf_name']) {
+            $vars['conf_value'] = FORK_GROUP_NEW_MEMBER;
+        }
+
         return $vars;
     }
 

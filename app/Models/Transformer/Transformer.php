@@ -792,6 +792,7 @@ class Transformer extends Model
             [FORK_GROUP_MOD,        __('Moderators'),     __('Moderator '),     1,          1,                1,                  1,                      1,               1,                   1,            1,            1,              1,             1,            1,              1,               1,            1,           1,        1,              1,            0,            0,              0,             0,              0,                   0,                     ],
             [FORK_GROUP_GUEST,      __('Guests'),         '',                   0,          0,                0,                  0,                      0,               0,                   1,            1,            0,              0,             0,            0,              0,               0,            0,           1,        1,              0,            120,          60,             0,             0,              0,                   0,                     ],
             [FORK_GROUP_MEMBER,     __('Members'),        '',                   0,          0,                0,                  0,                      0,               0,                   1,            1,            1,              1,             1,            1,              1,               1,            0,           1,        1,              1,            30,           30,             60,            60,             0,                   0,                     ],
+            [FORK_GROUP_NEW_MEMBER, __('New members'),    __('New member'),     0,          0,                0,                  0,                      0,               0,                   1,            1,            1,              1,             1,            1,              1,               0,            0,           1,        1,              1,            60,           30,             120,           60,             5,                   FORK_GROUP_MEMBER,     ],
         ];
 
         foreach ($groups as $group) {
@@ -802,7 +803,7 @@ class Transformer extends Model
         $this->c->DB->exec('UPDATE ::groups SET g_pm=0, g_sig_length=0, g_sig_lines=0 WHERE g_id=?i', [FORK_GROUP_GUEST]);
 
         if ('pgsql' === $this->c->DB->getType()) {
-            $this->c->DB->exec('ALTER SEQUENCE ::groups_g_id_seq RESTART WITH ' . (FORK_GROUP_MEMBER + 1));
+            $this->c->DB->exec('ALTER SEQUENCE ::groups_g_id_seq RESTART WITH ' . (FORK_GROUP_NEW_MEMBER + 1));
         }
 
 /*

@@ -2176,7 +2176,7 @@ class FluxBB extends AbstractDriver
             ['b_make_links'            , '1' == $old['o_make_links'] ? 1 : 0],
             ['o_default_lang'          , 'Russian' == $old['o_default_lang'] ? 'ru' : 'en'],
             ['o_default_style'         , 'ForkBB'],
-            ['i_default_user_group'    , FORK_GROUP_MEMBER],
+            ['i_default_user_group'    , FORK_GROUP_NEW_MEMBER],
             ['i_topic_review'          , (int) $old['o_topic_review']],
             ['i_disp_topics_default'   , (int) $old['o_disp_topics_default']],
             ['i_disp_posts_default'    , (int) $old['o_disp_posts_default']],
