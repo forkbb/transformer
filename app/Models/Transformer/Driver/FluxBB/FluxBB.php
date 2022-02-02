@@ -67,38 +67,31 @@ class FluxBB extends AbstractDriver
             return false;
         }
 
-        $query = 'SELECT conf_value
-            FROM ::config
-            WHERE conf_name=\'o_searchindex_revision\'';
-        $rev   = $db->query($query)->fetchColumn();
+        $query = 'SELECT conf_name, conf_value
+            FROM ::config';
 
-        if (empty($rev)) {
+        $config = $db->query($query)->fetchAll(PDO::FETCH_KEY_PAIR);
+
+        if (
+            isset($config['o_cur_ver_revision'])
+            || empty($config['o_searchindex_revision'])
+            || empty($config['o_cur_version'])
+        ) {
             return false;
+        } elseif (
+            \version_compare($config['o_cur_version'], $this->min, '<')
+            || \version_compare($config['o_cur_version'], $this->max, '>')
+        ) {
+            return [
+                'Current version \'%1$s\' is %2$s, need %3$s to %4$s',
+                $this->getType(),
+                $config['o_cur_version'],
+                $this->min,
+                $this->max,
+            ];
         }
 
-        $query = 'SELECT conf_value
-            FROM ::config
-            WHERE conf_name=\'o_cur_version\'';
-        $ver   = $db->query($query)->fetchColumn();
-
-        if (empty($ver)) {
-            return false;
-        } else {
-            if (
-                \version_compare($ver, $this->min, '<')
-                || \version_compare($ver, $this->max, '>')
-            ) {
-                return [
-                    'Current version \'%1$s\' is %2$s, need %3$s to %4$s',
-                    $this->getType(),
-                    $ver,
-                    $this->min,
-                    $this->max,
-                ];
-            }
-
-            return true;
-        }
+        return true;
     }
 
     /*************************************************************************/
