@@ -191,18 +191,13 @@ class ForkBB extends AbstractDriver
         $sub               = $this->subQInsert($map);
         $this->insertQuery = "INSERT INTO ::groups ({$sub['fields']}) VALUES ({$sub['values']})";
 
-        unset($map['id_old']); // дефолтовые группы не меняются для ForkBB->ForkBB
-
-        $sub               = $this->subQUpdate($map);
-        $this->updateQuery = "UPDATE ::groups SET {$sub['sets']} WHERE g_id=?i:id_old";
-
         $vars = [
             ':id'    => $id,
             ':limit' => $this->c->LIMIT,
         ];
         $query = 'SELECT *
             FROM ::groups
-            WHERE g_id>=?i:id
+            WHERE g_id>4 AND g_id>=?i:id
             ORDER BY g_id
             LIMIT ?i:limit';
 
@@ -232,18 +227,7 @@ class ForkBB extends AbstractDriver
 
     public function groupsSet(DB $db, array $vars): bool
     {
-        if (isset($this->defGroups[$vars['id_old']])) {
-            if (TRANSFORMER_MERGE === $this->c->TR_METHOD) {
-                return true;
-            }
-
-            $query = $this->updateQuery;
-        } else {
-
-            $query = $this->insertQuery;
-        }
-
-        return false !== $db->exec($query, $vars);
+        return false !== $db->exec($this->insertQuery, $vars);
     }
 
     public function groupsEnd(DB $db): bool
@@ -251,13 +235,13 @@ class ForkBB extends AbstractDriver
         $query = 'SELECT a.g_promote_next_group AS old, b.g_id AS new
             FROM ::groups AS a
             INNER JOIN ::groups AS b ON b.id_old=a.g_promote_next_group
-            WHERE a.id_old>0 AND a.g_id>4 AND a.g_promote_next_group>0';
+            WHERE a.id_old>0 AND a.g_id>5 AND a.g_promote_next_group>0';
 
         $stmt = $db->query($query);
 
         $query = 'UPDATE ::groups
             SET g_promote_next_group=?i:new
-            WHERE id_old>0 AND g_id>4 AND g_promote_next_group=?i:old';
+            WHERE id_old>0 AND g_id>5 AND g_promote_next_group=?i:old';
 
         while ($vars = $stmt->fetch()) {
             if (false === $db->exec($query, $vars)) {
