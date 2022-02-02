@@ -12,8 +12,6 @@ declare(strict_types=1);
 \ini_set('display_errors', '1');
 \ini_set('log_errors', '1');
 
-define('FORK_GROUP_NEW_MEMBER', 5);
-
 function forkGetBaseURL()
 {
     $file    = \str_replace(\realpath($_SERVER['DOCUMENT_ROOT']), '', \realpath($_SERVER['SCRIPT_FILENAME']));
