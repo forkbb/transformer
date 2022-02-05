@@ -282,7 +282,7 @@ abstract class AbstractDriver extends Model
             return false;
         }
 
-        $query = 'SELECT f.parent_forum_id, o.id
+        $query = 'SELECT f.id, o.id AS new_parent
             FROM ::forums AS f
             LEFT JOIN ::forums AS o ON o.id_old=f.parent_forum_id
             WHERE f.id_old>0 AND f.parent_forum_id>0';
@@ -291,11 +291,11 @@ abstract class AbstractDriver extends Model
 
         $query = 'UPDATE ::forums
             SET parent_forum_id=?i:new
-            WHERE id_old>0 AND parent_forum_id=?i:old';
+            WHERE id=?i:id';
 
-        foreach ($parents as $old => $new) {
+        foreach ($parents as $id => $new) {
             $vars = [
-                ':old' => $old,
+                ':id'  => $id,
                 ':new' => $new,
             ];
 
