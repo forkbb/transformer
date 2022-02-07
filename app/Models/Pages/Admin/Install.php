@@ -23,6 +23,7 @@ class Install extends Admin
 {
     const MYSQL_MIN  = '5.5.3';
     const SQLITE_MIN = '3.25.0';
+    const PGSQL_MIN  = '10.0';
 
     const CACHE_KEY = 'transformer';
     const CACHE_TTL = 1800;
@@ -961,7 +962,12 @@ class Install extends Admin
                 $progName    = 'SQLite';
 
                 break;
-        }
+            case 'pgsql':
+                $versionNeed = self::PGSQL_MIN;
+                $progName    = 'PostgreSQL';
+
+                break;
+            }
 
         if (\version_compare($version, $versionNeed, '<')) {
             $v->addError(['You are running error', $progName, $version, $this->c->FORK_REVISION, $versionNeed]);
