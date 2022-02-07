@@ -234,6 +234,15 @@ class Transformer extends Model
 
     protected function schemaCreate(): void
     {
+        if ('pgsql' === $this->c->DB->getType()) {
+            $query = 'CREATE COLLATION IF NOT EXISTS fork_icu (
+                provider = icu,
+                locale = \'und-u-ks-level2\'
+            )';
+
+            $this->c->DB->exec($query);
+        }
+
         // bans
         $schema = [
             'FIELDS' => [
