@@ -45,7 +45,7 @@ class FluxBB extends AbstractDriver
     /**
      * @var string
      */
-    protected $min = '1.5.7';
+    protected $min = '1.5.0';
 
     /**
      * @var string
