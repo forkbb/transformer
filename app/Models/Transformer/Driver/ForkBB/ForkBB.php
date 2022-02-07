@@ -407,11 +407,10 @@ class ForkBB extends AbstractDriver
 
     public function bbcodeSet(DB $db, array $vars): bool
     {
-        try {
-            return false !== $db->exec($this->insertQuery, $vars);
-        } catch (PDOException $e) {
-            return false !== $db->exec($this->updateQuery, $vars);
-        }
+        $exist = (int) $db->query('SELECT 1 FROM ::bbcode WHERE bb_tag=?s:bb_tag', $vars)->fetchColumn();
+        $query = 1 === $exist ? $this->updateQuery : $this->insertQuery;
+
+        return false !== $db->exec($query, $vars);
     }
 
     /*************************************************************************/
