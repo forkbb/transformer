@@ -902,7 +902,7 @@ abstract class AbstractDriver extends Model
                     FROM ::users AS u
                     WHERE u.id=target_id
                 ),
-                0
+                target
             )
             WHERE id_old>0 AND target_id>0';
 
