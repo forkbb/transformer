@@ -45,7 +45,7 @@ class FluxBB extends AbstractDriver
     /**
      * @var string
      */
-    protected $min = '1.5.8';
+    protected $min = '1.5.7';
 
     /**
      * @var string
@@ -192,7 +192,7 @@ class FluxBB extends AbstractDriver
             'g_mod_rename_users'     => (int) $vars['g_mod_rename_users'],
             'g_mod_change_passwords' => (int) $vars['g_mod_change_passwords'],
             'g_mod_ban_users'        => (int) $vars['g_mod_ban_users'],
-            'g_mod_promote_users'    => (int) $vars['g_mod_promote_users'],
+            'g_mod_promote_users'    => (int) ($vars['g_mod_promote_users'] ?? 0),
             'g_read_board'           => (int) $vars['g_read_board'],
             'g_view_users'           => (int) $vars['g_view_users'],
             'g_post_replies'         => (int) $vars['g_post_replies'],
