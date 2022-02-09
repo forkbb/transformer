@@ -52,7 +52,7 @@ class FluxBB_by_Visman extends AbstractDriver
     /**
      * @var string
      */
-    protected $min = '78';
+    protected $min = '51';
 
     /**
      * @var string
@@ -398,12 +398,12 @@ class FluxBB_by_Visman extends AbstractDriver
             'last_post_id'    => (int) $vars['last_post_id'],
             'last_poster'     => (string) $vars['last_poster'],
             'last_poster_id'  => 0,
-            'last_topic'      => (string) $vars['last_topic'],
+            'last_topic'      => (string) ($vars['last_topic'] ?? '???'),
             'sort_by'         => (int) $vars['sort_by'],
             'disp_position'   => (int) $vars['disp_position'],
             'cat_id'          => (int) $vars['cat_id'],
             'no_sum_mess'     => (int) $vars['no_sum_mess'],
-            'parent_forum_id' => (int) $vars['parent_forum_id'],
+            'parent_forum_id' => (int) ($vars['parent_forum_id'] ?? 0),
         ];
     }
 
@@ -1381,8 +1381,8 @@ class FluxBB_by_Visman extends AbstractDriver
             ['b_poll_guest'            , '1' == $old['o_poll_guest'] ? 1 : 0],
             ['a_max_users'             , \json_encode(
                 [
-                    'number' => (int) $old['st_max_users'],
-                    'time'   => (int) $old['st_max_users_time'],
+                    'number' => (int) ($old['st_max_users'] ?? 1),
+                    'time'   => (int) ($old['st_max_users_time'] ?? \time()),
                 ], self::JSON_OPTIONS
             )],
             ['a_bb_white_mes'          , \json_encode([], self::JSON_OPTIONS)],
