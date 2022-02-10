@@ -60,7 +60,7 @@ class ForkBB extends AbstractDriver
     /**
      * @var string
      */
-    protected $max = '48';
+    protected $max = '49';
 
     public function getType(): string
     {

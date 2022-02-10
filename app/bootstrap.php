@@ -59,20 +59,13 @@ if (
 } else {
     $c->BASE_URL = \str_replace('https://', 'http://', $c->BASE_URL);
 }
-$c->PUBLIC_URL = $c->BASE_URL . $forkPublicPrefix;
 
-$c->FORK_REVISION = 48;
+$c->FORK_REVISION = 49;
 $c->START         = $forkStart;
-$c->DIR_APP       = __DIR__;
-$c->DIR_PUBLIC    = \realpath(__DIR__ . '/../public');
-$c->DIR_CACHE     = __DIR__ . '/cache';
-$c->DIR_VIEWS     = __DIR__ . '/templates';
-$c->DIR_LANG      = __DIR__ . '/lang';
-$c->DIR_LOG       = __DIR__ . '/log';
-$c->DATE_FORMATS  = ['Y-m-d', 'd M Y', 'Y-m-d', 'Y-d-m', 'd-m-Y', 'm-d-Y', 'M j Y', 'jS M Y'];
-$c->TIME_FORMATS  = ['H:i:s', 'H:i', 'H:i:s', 'H:i', 'g:i:s a', 'g:i a'];
+$c->PUBLIC_URL    = $c->BASE_URL . $forkPublicPrefix;
 
 $controllers = ['Primary', 'Routing'];
+
 foreach ($controllers as $controller) {
     $page = $c->{$controller};
 

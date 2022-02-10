@@ -1060,7 +1060,7 @@ class Transformer extends Model
 
         $query   = 'INSERT INTO ::bbcode (bb_tag, bb_edit, bb_delete, bb_structure)
             VALUES(?s:tag, 1, 0, ?s:structure)';
-        $bbcodes = include $this->c->DIR_APP . '/config/defaultBBCode.php';
+        $bbcodes = include $this->c->DIR_CONFIG . '/defaultBBCode.php';
 
         foreach ($bbcodes as $bbcode) {
             $vars = [
