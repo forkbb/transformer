@@ -165,7 +165,10 @@ class Transformer extends Model
                     TRANSFORMER_MERGE === $this->c->TR_METHOD
                     && 'config' === $name
                 ) {
-                    return $this->step($step + 1, 0);
+                    return [
+                        'step' => $step + 1,
+                        'id'   => 0,
+                    ];
                 }
 
                 $resultPre = $driver->$pre($this->c->DBSource, $id);
