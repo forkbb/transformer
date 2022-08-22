@@ -57,7 +57,7 @@ class FluxBB_by_Visman extends AbstractDriver
     /**
      * @var string
      */
-    protected $max = '83';
+    protected $max = '84';
 
     public function getType(): string
     {
