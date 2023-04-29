@@ -237,8 +237,9 @@ class ForkBB extends AbstractDriver
             return null;
         }
 
-        $id             = (int) $vars['id'];
-        $vars['id_old'] = $id;
+        $id                     = (int) $vars['id'];
+        $vars['id_old']         = $id;
+        $vars['last_report_id'] = 0;
 
         unset($vars['id']);
 
