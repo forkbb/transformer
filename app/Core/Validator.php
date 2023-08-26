@@ -20,86 +20,67 @@ use function \ForkBB\__;
 class Validator
 {
     /**
-     * Контейнер
-     * @var Container
-     */
-    protected $c;
-
-    /**
      * Массив валидаторов
-     * @var array
      */
-    protected $validators;
+    protected array $validators;
 
     /**
      * Массив правил для текущей проверки данных
-     * @var array
      */
-    protected $rules;
+    protected array $rules;
 
     /**
      * Массив результатов проверенных данных
-     * @var array
      */
-    protected $result;
+    protected array $result;
 
     /**
      * Массив дополнительных аргументов для валидаторов и конкретных полей/правил
-     * @var array
      */
-    protected $arguments;
+    protected array $arguments;
 
     /**
      * Массив сообщений об ошибках для конкретных полей/правил
-     * @var array
      */
-    protected $messages;
+    protected array $messages;
 
     /**
      * Массив псевдонимов имен полей для вывода в ошибках
-     * @var array
      */
-    protected $aliases;
+    protected array $aliases;
 
     /**
      * Массив ошибок валидации
-     * @var array
      */
-    protected $errors;
+    protected array $errors;
 
     /**
      * Массив имен полей для обработки
-     * @var array
      */
-    protected $fields;
+    protected array $fields;
 
     /**
      * Массив состояний проверки полей
-     * @var array
      */
-    protected $status;
+    protected array $status;
 
     /**
      * Массив входящих данных для обработки
-     * @var array
      */
-    protected $raw;
+    protected ?array $raw;
 
     /**
      * Данные для текущей обработки
-     * @var array
      */
-    protected $curData;
+    protected array $curData;
 
     /**
      * Флаг ошибки
-     * @var ?bool
      */
-    protected $error;
+    protected ?bool $error = null;
 
-    public function __construct(Container $container)
+    public function __construct(protected Container $c)
     {
-        $this->c = $container;
         $this->reset();
     }
 
@@ -172,24 +153,26 @@ class Validator
             }
 
             // перебор правил для текущего поля
-            foreach ($raw as $rule) {
-                $vs   = \explode(':', $rule, 2);
+            foreach ($raw as $name => $rule) {
+                if (! \is_string($name)) {
+                    list($name, $rule) = \array_pad(\explode(':', $rule, 2), 2, '');
+                }
 
-                if (empty($this->validators[$vs[0]])) {
+                if (empty($this->validators[$name])) {
                     try {
-                        $validator = $this->c->{"VL{$vs[0]}"};
+                        $validator = $this->c->{"VL{$name}"};
                     } catch (Exception $e) {
                         $validator = null;
                     }
 
                     if ($validator instanceof RulesValidator) {
-                        $this->validators[$vs[0]] = [$validator, $vs[0]];
+                        $this->validators[$name] = [$validator, $name];
                     } else {
-                        throw new RuntimeException("{$vs[0]} validator not found");
+                        throw new RuntimeException("{$name} validator not found");
                     }
                 }
 
-                $rules[$vs[0]] = $vs[1] ?? '';
+                $rules[$name] = $rule ?? '';
             }
 
             if (isset($suffix)) {
@@ -284,7 +267,7 @@ class Validator
      * Проверяет поле согласно заданным правилам
      * Возвращает значение запрашиваемого поля
      */
-    public function __get(string $field) /* : mixed */
+    public function __get(string $field): mixed
     {
         if (isset($this->status[$field])) {
             return $this->result[$field];
@@ -318,7 +301,7 @@ class Validator
     /**
      * Проверяет значение списком правил
      */
-    protected function checkValue(/* mixed */ $value, array $rules, string $field) /* : mixed */
+    protected function checkValue(mixed $value, array $rules, string $field): mixed
     {
         foreach ($rules as $validator => $attr) {
             // данные для обработчика ошибок
@@ -344,7 +327,7 @@ class Validator
     /**
      * Добавляет ошибку
      */
-    public function addError(/* string|array|null */ $error, string $type = 'v'): void
+    public function addError(string|array|null $error, string $type = FORK_MESS_VLD): void
     {
         if (empty($vars = \end($this->curData))) {
             throw new RuntimeException('The array of variables is empty');
@@ -384,7 +367,7 @@ class Validator
     /**
      * Возвращает дополнительные аргументы
      */
-    protected function getArguments(string $field, string $rule) /* : mixed */
+    protected function getArguments(string $field, string $rule): mixed
     {
         return $this->arguments["{$field}.{$rule}"] ?? $this->arguments[$field] ?? null;
     }
@@ -459,7 +442,7 @@ class Validator
     /**
      * Проверяет переменную на отсутсвие содержимого
      */
-    public function noValue(/* mixed */ $value, bool $withArray = false): bool
+    public function noValue(mixed $value, bool $withArray = false): bool
     {
         if (null === $value) {
             return true;
@@ -482,7 +465,7 @@ class Validator
      *
      * @return mixed
      */
-    protected function vAbsent(Validator $v, /* mixed */ $value, string $attr) /* : mixed */
+    protected function vAbsent(Validator $v, mixed $value, string $attr): mixed
     {
         if (null === $value) {
             if (isset($attr[0])) {
@@ -495,7 +478,7 @@ class Validator
         return $value;
     }
 
-    protected function vExist(Validator $v, /* mixed */ $value) /* : mixed */
+    protected function vExist(Validator $v, mixed $value): mixed
     {
         if (null === $value) {
             $this->addError('The :alias not exist');
@@ -504,7 +487,7 @@ class Validator
         return $value;
     }
 
-    protected function vRequired(Validator $v, /* mixed */ $value) /* : mixed */
+    protected function vRequired(Validator $v, mixed $value): mixed
     {
         if ($this->noValue($value, true)) {
             $this->addError('The :alias is required');
@@ -515,7 +498,7 @@ class Validator
         return $value;
     }
 
-    protected function vRequiredWith(Validator $v, /* mixed */ $value, string $attr) /* : mixed */
+    protected function vRequiredWith(Validator $v, mixed $value, string $attr): mixed
     {
         foreach (\explode(',', $attr) as $field) {
             if (null !== $this->__get($field)) {     // если есть хотя бы одно поле,
@@ -530,7 +513,7 @@ class Validator
         return $value;
     }
 
-    protected function vString(Validator $v, /* mixed */ $value, string $attr): ?string
+    protected function vString(Validator $v, mixed $value, string $attr): ?string
     {
         if (\is_string($value)) {
             if (isset($attr[0])) {
@@ -582,7 +565,7 @@ class Validator
         return $value;
     }
 
-    protected function vNumeric(Validator $v, /* mixed */ $value) /* : mixed */
+    protected function vNumeric(Validator $v, mixed $value): mixed
     {
         if (\is_numeric($value)) {
             $value += 0;
@@ -602,7 +585,7 @@ class Validator
         return $value;
     }
 
-    protected function vInteger(Validator $v, /* mixed */ $value) /* : mixed */
+    protected function vInteger(Validator $v, mixed $value): mixed
     {
         if (
             \is_numeric($value)
@@ -625,7 +608,7 @@ class Validator
         return $value;
     }
 
-    protected function vArray(Validator $v, $value, array $attr): ?array
+    protected function vArray(Validator $v, mixed $value, array $attr): ?array
     {
         if (
             null !== $value
@@ -689,7 +672,7 @@ class Validator
         }
     }
 
-    protected function vMin(Validator $v, /* mixed */ $value, string $attr) /* : mixed */
+    protected function vMin(Validator $v, mixed $value, string $attr): mixed
     {
         if (! \preg_match('%^(-?\d+)(\s*bytes)?$%i', $attr, $matches)) {
             throw new InvalidArgumentException('Expected number in attribute');
@@ -728,7 +711,7 @@ class Validator
         return $value;
     }
 
-    protected function vMax(Validator $v, /* mixed */ $value, string $attr) /* : mixed */
+    protected function vMax(Validator $v, mixed $value, string $attr): mixed
     {
         if (! \preg_match('%^(-?\d+)(\s*bytes)?$%i', $attr, $matches)) {
             throw new InvalidArgumentException('Expected number in attribute');
@@ -783,17 +766,24 @@ class Validator
         return $value;
     }
 
-    protected function vToken(Validator $v, /* mixed */ $value, string $attr, /* mixed */ $args): ?string
+    protected function vToken(Validator $v, mixed $value, string $attr, mixed $args): ?string
     {
         if (! \is_array($args)) {
             $args = [];
         }
 
+        if (\preg_match('%^([1-9]\d+):(.+)$%', $attr, $matches)) {
+            $lifetime = (int) $matches[1];
+            $attr     = $matches[2];
+        } else {
+            $lifetime = null;
+        }
+
         if (
             ! \is_string($value)
-            || ! $this->c->Csrf->verify($value, $attr, $args)
+            || ! $this->c->Csrf->verify($value, $attr, $args, $lifetime)
         ) {
-            $this->addError($this->c->Csrf->getError() ?? 'Bad token', 'e');
+            $this->addError($this->c->Csrf->getError() ?? 'Bad token', FORK_MESS_ERR);
 
             $value = null;
         }
@@ -801,7 +791,7 @@ class Validator
         return $value;
     }
 
-    protected function vCheckbox(Validator $v, /* mixed */ $value) /* : mixed */
+    protected function vCheckbox(Validator $v, mixed $value): mixed
     {
         if (null === $value) {
             $this->addError(null);
@@ -818,7 +808,7 @@ class Validator
         return $value;
     }
 
-    protected function vReferer(Validator $v, /* mixed */ $value, string $attr, /* mixed */ $args): string
+    protected function vReferer(Validator $v, mixed $value, string $attr, mixed $args): string
     {
         if (! \is_array($args)) {
             $args = [];
@@ -827,7 +817,7 @@ class Validator
         return $this->c->Router->validate($value, $attr, $args);
     }
 
-    protected function vSame(Validator $v, /* mixed */ $value, string $attr) /* : mixed */
+    protected function vSame(Validator $v, mixed $value, string $attr): mixed
     {
         if (
             $this->getStatus($attr)
@@ -855,7 +845,7 @@ class Validator
         return $this->vRegex($v, $value, '%[^\x20][\x20][^\x20]%');
     }
 
-    protected function vIn(Validator $v, /* mixed */ $value, string $attr) /* : mixed */
+    protected function vIn(Validator $v, mixed $value, string|array $attr): mixed
     {
         if (! \is_scalar($value)) {
             $value = null;
@@ -863,7 +853,14 @@ class Validator
 
         if (
             null === $value
-            || ! \in_array($value, \explode(',', $attr))
+            || (
+                \is_array($attr)
+                && ! \in_array($value, $attr, true)
+            )
+            || (
+                ! \is_array($attr)
+                && ! \in_array($value, \explode(',', $attr))
+            )
         ) {
             $this->addError('The :alias contains an invalid value');
         }
@@ -871,7 +868,7 @@ class Validator
         return $value;
     }
 
-    protected function vNotIn(Validator $v, /* mixed */ $value, string $attr) /* : mixed */
+    protected function vNotIn(Validator $v, mixed $value, string|array $attr): mixed
     {
         if (! \is_scalar($value)) {
             $value = null;
@@ -879,7 +876,14 @@ class Validator
 
         if (
             null === $value
-            || \in_array($value, \explode(',', $attr))
+            || (
+                \is_array($attr)
+                && \in_array($value, $attr, true)
+            )
+            || (
+                ! \is_array($attr)
+                && \in_array($value, \explode(',', $attr))
+            )
         ) {
             $this->addError('The :alias contains an invalid value');
         }
@@ -888,7 +892,7 @@ class Validator
     }
 
 
-    protected function vFile(Validator $v, /* mixed */ $value, string $attr) /* : mixed */
+    protected function vFile(Validator $v, mixed $value, string $attr): mixed
     {
         if ($this->noValue($value, true)) {
             $this->addError(null);
@@ -925,13 +929,13 @@ class Validator
         return $value;
     }
 
-    protected function vImage(Validator $v, /* mixed */ $value, string $attr) /* : mixed */
+    protected function vImage(Validator $v, mixed $value, string $attr): mixed
     {
         $value = $this->vFile($v, $value, $attr);
 
         if (\is_array($value)) {
             foreach ($value as $file) {
-                if (null === $this->c->Files->isImage($file)) {
+                if (null === $this->c->Files->imageExt($file)) {
                     $this->addError('The :alias not contains image');
 
                     return null;
@@ -939,7 +943,7 @@ class Validator
             }
         } elseif (
             null !== $value
-            && null === $this->c->Files->isImage($value)
+            && null === $this->c->Files->imageExt($value)
         ) {
             $this->addError('The :alias not contains image');
 
@@ -949,7 +953,7 @@ class Validator
         return $value;
     }
 
-    protected function vDate(Validator $v, /* mixed */ $value): ?string
+    protected function vDate(Validator $v, mixed $value): ?string
     {
         if ($this->noValue($value)) {
             $value = null;

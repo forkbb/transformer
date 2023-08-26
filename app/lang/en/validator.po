@@ -19,10 +19,10 @@ msgid "Long email"
 msgstr "The email address you entered is too long."
 
 msgid "Passphrase help"
-msgstr "Passphrase must contain a few words. Passphrase must be at least 16 characters long. Passphrase are case sensitive."
+msgstr "The passphrase should be at least 16 characters long, with multiple words separated by spaces, and it is case sensitive."
 
 msgid "Pass format"
-msgstr "Passphrase must contain a few words. Passphrase must be at least 16 characters long."
+msgstr "The passphrase should be at least 16 characters long, with multiple words separated by spaces."
 
 msgid "Login format"
 msgstr "The username must begin with a letter. May contain letters, numbers, spaces, dots, dashes and underscores."
@@ -31,16 +31,19 @@ msgid "Banned email"
 msgstr "The email address you entered is banned in this forum."
 
 msgid "Username censor"
-msgstr "The username you entered contains one or more censored words. Please choose another username."
+msgstr "The username you entered contains one or more censored words."
 
 msgid "Banned username"
-msgstr "The username you entered is banned in this forum. Please choose another username."
+msgstr "The username you entered is banned in this forum."
 
 msgid "Username not unique"
-msgstr "The username you entered is not unique. Please choose another username."
+msgstr "The username you entered is not unique."
 
 msgid "Dupe email"
-msgstr "Someone else is already registered with that email address. Please choose another email address."
+msgstr "Someone else is already registered with that email address."
+
+msgid "Dupe email (OAuth)"
+msgstr "Someone else is already registered with that email address (OAuth)."
 
 msgid "Account email flood"
 msgstr "This account has already requested a passphrase reset recently. Please wait %s minutes before trying again."
@@ -194,3 +197,24 @@ msgstr "Too much data"
 
 msgid "The :alias not exist"
 msgstr "The :alias field not exist."
+
+msgid "The :alias contains a link"
+msgstr "The :alias field contains a link."
+
+msgid "The :alias is not valid email"
+msgstr "The :alias field contains an invalid email address."
+
+msgid "The %s extension is not allowed"
+msgstr "The .%s extension is not allowed."
+
+msgid "Short username"
+msgstr "The username is too short."
+
+msgid "Long username"
+msgstr "The username is too long."
+
+msgid "Invalid passphrase"
+msgstr "Invalid passphrase."
+
+msgid "Javascript disabled or bot"
+msgstr "Your browser most likely has javascript disabled or you are a robot :)"

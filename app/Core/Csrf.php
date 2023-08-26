@@ -11,35 +11,20 @@ declare(strict_types=1);
 namespace ForkBB\Core;
 
 use ForkBB\Core\Secury;
+use SensitiveParameter;
 
 class Csrf
 {
     const TOKEN_LIFETIME = 1800;
 
-    /**
-     * @var Secury
-     */
-    protected $secury;
+    protected ?string $error = null;
+    protected int $hashExpiration = 3600;
 
-    /**
-     * @var string
-     */
-    protected $key;
-
-    /**
-     * @var ?string
-     */
-    protected $error;
-
-    /**
-     * @var int
-     */
-    protected $hashExpiration = 3600;
-
-    public function __construct(Secury $secury, string $key)
-    {
-        $this->secury = $secury;
-        $this->key    = \sha1($key);
+    public function __construct(
+        protected Secury $secury,
+        #[SensitiveParameter] protected string $key,
+        #[SensitiveParameter] protected mixed $externalSalt // сюда и Container может попасть O_o
+    ) {
     }
 
     /**
@@ -53,21 +38,33 @@ class Csrf
     /**
      * Возвращает csrf токен
      */
-    public function create(string $marker, array $args = [], /* string|int */ $time = null): string
+    public function create(string $marker, array $args = [], int|string $time = null, string $type = 's'): string
     {
-        $marker      = $this->argsToStr($marker, $args);
-        $time        = $time ?: \time();
+        $marker = $this->argsToStr($marker, $args);
+        $time   = $time ?: \time();
 
-        return $this->secury->hmac($marker, $time . $this->key) . 's' . $time;
+        switch ($type) {
+            case 's':
+                return $this->secury->hmac($marker, $time . $this->key) . 's' . $time;
+            case 'x':
+                if (
+                    \is_string($this->externalSalt)
+                    && isset($this->externalSalt[9])
+                ) {
+                    return \hash_hmac('sha1', $marker, $time . $this->externalSalt . $_SERVER['REMOTE_ADDR']) . 'x' . $time;
+                }
+            default:
+                return 'n';
+        }
     }
 
     /**
      * Возвращает хэш
      */
-    public function createHash(string $marker, array $args = [], /* string|int */ $time = null): string
+    public function createHash(string $marker, array $args = [], int|string $time = null): string
     {
-        $marker      = $this->argsToStr($marker, $args, ['hash']);
-        $time        = $time ?: \time() + $this->hashExpiration;
+        $marker = $this->argsToStr($marker, $args, ['hash']);
+        $time   = $time ?: \time() + $this->hashExpiration;
 
         return $this->secury->hash($marker . $time) . 'e' . $time;
     }
@@ -95,7 +92,7 @@ class Csrf
     /**
      * Проверка токена/хэша
      */
-    public function verify($token, string $marker, array $args = []): bool
+    public function verify($token, string $marker, array $args = [], int $lifetime = null): bool
     {
         $this->error = 'Bad token';
         $now         = \time();
@@ -103,17 +100,18 @@ class Csrf
 
         if (
             \is_string($token)
-            && \preg_match('%(e|s)(\d+)$%D', $token, $matches)
+            && \preg_match('%(e|s|x)(\d+)$%D', $token, $matches)
         ) {
             switch ($matches[1]) {
                 // токен
                 case 's':
-                    if ($matches[2] + self::TOKEN_LIFETIME < $now) {
+                case 'x':
+                    if ($matches[2] + ($lifetime ?? self::TOKEN_LIFETIME) < $now) {
                         // просрочен
                         $this->error = 'Expired token';
                     } elseif (
                         $matches[2] + 0 <= $now
-                        && \hash_equals($this->create($marker, $args, $matches[2]), $token)
+                        && \hash_equals($this->create($marker, $args, $matches[2], $matches[1]), $token)
                     ) {
                         $this->error = null;
                         $result      = true;

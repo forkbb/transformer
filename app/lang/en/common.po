@@ -80,7 +80,7 @@ msgid "Hidden text"
 msgstr "Hidden text"
 
 msgid "Announcement"
-msgstr "Announcement"
+msgstr "Announcement:"
 
 msgid "Options"
 msgstr "Options"
@@ -88,19 +88,19 @@ msgstr "Options"
 msgid "Submit"
 msgstr "Submit"
 
-msgid "Ban message"
+msgid "You are banned"
 msgstr "You are banned from this forum."
 
-msgid "Ban message 1"
+msgid "Your IP is blocked"
 msgstr "Your IP is blocked from this forum."
 
-msgid "Ban message 2"
+msgid "The ban expires %s"
 msgstr "The ban expires at the end of %s"
 
-msgid "Ban message 3"
+msgid "Ban message for you"
 msgstr "The administrator or moderator that banned you left the following message:"
 
-msgid "Ban message 4"
+msgid "Ban message contact %s"
 msgstr "Please direct any inquiries to the forum administrator at <a href=\"mailto:%1$s\">%1$s</a>."
 
 msgid "Never"
@@ -125,10 +125,7 @@ msgid "Redirecting"
 msgstr "Redirecting"
 
 msgid "Redirecting..."
-msgstr "Redirecting …"
-
-msgid "Click redirect"
-msgstr "Click here if you do not want to wait any longer (or if your browser does not automatically forward you)"
+msgstr "<br><a href=\"%s\">Redirecting …</a>"
 
 msgid "on"
 msgstr "on"
@@ -212,8 +209,8 @@ msgstr "Page %1$s of %2$s ·"
 msgid "Image link"
 msgstr "image"
 
-msgid "wrote"
-msgstr "wrote:"
+msgid "%s wrote"
+msgstr "%s wrote:"
 
 msgid "Mailer"
 msgstr "%s"
@@ -288,7 +285,7 @@ msgid "Logout"
 msgstr "Logout"
 
 msgid "Admin"
-msgstr "Administration"
+msgstr "Admin area"
 
 msgid "Administration functions"
 msgstr "Administration functions"
@@ -309,22 +306,19 @@ msgid "Send PM"
 msgstr "Send private message"
 
 msgid "Board footer"
-msgstr "Board footer"
+msgstr "Board footer:"
 
 msgid "Powered by"
-msgstr "Powered by <a href=\"https://github.com/forkbb\">ForkBB</a>"
+msgstr "Powered by <a href=\"https://forkbb.ru\">ForkBB</a>"
 
 msgid "Debug table"
-msgstr "Debug information"
+msgstr "Debug information:"
 
-msgid "Querytime"
+msgid "Generated in %1$s, %2$s queries"
 msgstr "Generated in %1$s seconds, %2$s queries executed"
 
-msgid "Memory usage"
-msgstr "Memory usage: %1$s"
-
-msgid "Peak usage"
-msgstr "(Peak: %1$s)"
+msgid "Memory %1$s, Peak %2$s"
+msgstr "Memory usage: %1$s (Peak: %2$s)"
 
 msgid "Query times"
 msgstr "Time (s)"
@@ -384,25 +378,25 @@ msgid "Maintenance mode enabled"
 msgstr "<a href=\"%s\">Maintenance mode is enabled!</a>"
 
 msgid "%s B"
-msgstr "%s B"
+msgstr "%sB"
 
 msgid "%s KiB"
-msgstr "%s KiB"
+msgstr "%sK"
 
 msgid "%s MiB"
-msgstr "%s MiB"
+msgstr "%sM"
 
 msgid "%s GiB"
-msgstr "%s GiB"
+msgstr "%sG"
 
 msgid "%s TiB"
-msgstr "%s TiB"
+msgstr "%sT"
 
 msgid "%s PiB"
-msgstr "%s PiB"
+msgstr "%sP"
 
 msgid "%s EiB"
-msgstr "%s EiB"
+msgstr "%sE"
 
 msgid "Latest active topics"
 msgstr "Latest active topics"
@@ -443,9 +437,6 @@ msgstr "No"
 msgid "Your passphrase"
 msgstr "Your passphrase"
 
-msgid "Invalid passphrase"
-msgstr "Invalid passphrase"
-
 msgid "User %s"
 msgstr "%s"
 
@@ -463,3 +454,9 @@ msgstr "The search may be case sensitive for non-Basic Latin characters."
 
 msgid "%s"
 msgstr "%s"
+
+msgid "ACTIONS"
+msgstr "ACTIONS"
+
+msgid "Main menu"
+msgstr "Main menu"

@@ -19,7 +19,7 @@ class Email extends RulesValidator
     /**
      * Проверяет email
      */
-    public function email(Validator $v, string $email, string $attrs, /* mixed */ $originalUser): ?string
+    public function email(Validator $v, string $email, string $attrs, mixed $originalUser): ?string
     {
         // поле отсутствует
         if ($v->noValue($email)) {
@@ -98,6 +98,22 @@ class Email extends RulesValidator
             ) {
                 $v->addError('Dupe email');
                 $ok = false;
+
+            // дополнительная проверка по связанным аккаунтам
+            } else {
+                $id = $this->c->providerUser->findByEmail($email);
+
+                if (
+                    $id > 0
+                    && (
+                        ! $originalUser instanceof User
+                        || $originalUser->isGuest
+                        || $id !== $originalUser->id
+                    )
+                ) {
+                    $v->addError('Dupe email (OAuth)');
+                    $ok = false;
+                }
             }
         }
         // проверка на флуд интервал
@@ -120,7 +136,7 @@ class Email extends RulesValidator
             }
 
             if ($flood < $this->c->FLOOD_INTERVAL) {
-                $v->addError(['Account email flood', (int) (($this->c->FLOOD_INTERVAL - $flood) / 60)], 'e');
+                $v->addError(['Account email flood', (int) (($this->c->FLOOD_INTERVAL - $flood) / 60)], FORK_MESS_ERR);
                 $ok = false;
             }
         }
@@ -133,7 +149,7 @@ class Email extends RulesValidator
             && $user instanceof User
             && ! $user->isGuest
         ) {
-            $originalUser->setAttrs($user->getAttrs());
+            $originalUser->setModelAttrs($user->getModelAttrs());
         }
 
         return $email;

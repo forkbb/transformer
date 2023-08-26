@@ -11,19 +11,14 @@ declare(strict_types=1);
 namespace ForkBB\Core;
 
 use Normalizer;
+use SensitiveParameter;
 use RuntimeException;
 use UnexpectedValueException;
 use InvalidArgumentException;
 
 class Secury
 {
-    /**
-     * Algorithm and salt for hash_hmac
-     * @var array
-     */
-    protected $hmac;
-
-    public function __construct(array $hmac)
+    public function __construct(protected array $hmac)
     {
         if (
             empty($hmac['salt'])
@@ -31,10 +26,10 @@ class Secury
         ) {
             throw new InvalidArgumentException('Algorithm and salt can not be empty');
         }
+
         if (! \in_array($hmac['algo'], \hash_hmac_algos(), true)) {
             throw new UnexpectedValueException('Algorithm not supported');
         }
-        $this->hmac = $hmac;
     }
 
     /**
@@ -48,7 +43,7 @@ class Secury
     /**
      * Обертка для hash_hmac
      */
-    public function hmac(string $data, string $key): string
+    public function hmac(string $data, #[SensitiveParameter] string $key): string
     {
         if (empty($key)) {
             throw new InvalidArgumentException('Key can not be empty');
@@ -71,9 +66,10 @@ class Secury
      */
     public function randomPass(int $len): string
     {
-        $key = \random_bytes($len);
-        $chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_';
+        $key    = \random_bytes($len);
+        $chars  = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_';
         $result = '';
+
         for ($i = 0; $i < $len; ++$i) {
             $result .= $chars[\ord($key[$i]) % 64];
         }
@@ -82,23 +78,33 @@ class Secury
     }
 
     /**
-     * Replacing invalid UTF-8 characters and remove control characters
+     * For string: Replacing invalid UTF-8 characters and remove control characters
+     * For other scalar or null: unchanged
      */
-    public function replInvalidChars(/* mixed */ $data) /* : mixed */
+    public function replInvalidChars(mixed $data): mixed
     {
         if (\is_array($data)) {
             return \array_map([$this, 'replInvalidChars'], $data);
-        } elseif (\is_int($data)) {
+
+        } elseif (\is_string($data)) {
+            // Replacing invalid UTF-8 characters
+            // slow, small memory
+            //$data = mb_convert_encoding($data, 'UTF-8', 'UTF-8');
+            // fast, large memory
+            $data = \htmlspecialchars_decode(\htmlspecialchars($data, \ENT_SUBSTITUTE, 'UTF-8'));
+            // Canonical Decomposition followed by Canonical Composition
+            $data = Normalizer::normalize($data, Normalizer::FORM_C);
+            // Remove control characters
+            return \preg_replace('%(?:[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]|\xC2[\x80-\x9F])%', '', $data);
+
+        } elseif (
+            null === $data
+            || \is_scalar($data)
+        ) {
             return $data;
+
+        } else {
+            throw new InvalidArgumentException('Unexpected variable type: ' . \gettype($data));
         }
-        // Replacing invalid UTF-8 characters
-        // slow, small memory
-        //$data = mb_convert_encoding((string) $data, 'UTF-8', 'UTF-8');
-        // fast, large memory
-        $data = \htmlspecialchars_decode(\htmlspecialchars((string) $data, \ENT_SUBSTITUTE, 'UTF-8'));
-        // Canonical Decomposition followed by Canonical Composition
-        $data = Normalizer::normalize($data, Normalizer::FORM_C);
-        // Remove control characters
-        return \preg_replace('%(?:[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]|\xC2[\x80-\x9F])%', '', $data);
     }
 }

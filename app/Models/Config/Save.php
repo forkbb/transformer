@@ -22,27 +22,33 @@ class Save extends Method
     public function save(): Config
     {
         $modified = $this->model->getModified();
+
         if (empty($modified)) {
             return $this->model;
         }
 
-        $values = $this->model->getAttrs();
+        $values = $this->model->getModelAttrs();
+
         foreach ($modified as $name) {
             if (\array_key_exists($name, $values)) {
                 switch ($name[0]) {
                     case 'a':
-                        $value = \json_encode($values[$name], \JSON_UNESCAPED_SLASHES | \JSON_UNESCAPED_UNICODE | \JSON_THROW_ON_ERROR);
+                        $value = \json_encode($values[$name], FORK_JSON_ENCODE);
+
                         break;
                     case 'b':
                         $value = $values[$name] ? '1' : '0';
+
                         break;
                     case 'i':
                         if (null !== $values[$name]) {
                             $value = (string) $values[$name];
+
                             break;
                         }
                     default:
                         $value = $values[$name];
+
                         break;
                 }
 
@@ -73,14 +79,13 @@ class Save extends Method
                         $this->c->DB->exec($query, $vars);
 
                         $query = 'INSERT INTO ::config (conf_name, conf_value)
-                            SELECT ?s:name, ?s:value
-                            FROM ::groups
+                            SELECT tmp.*
+                            FROM (SELECT ?s:name AS f1, ?s:value AS f2) AS tmp
                             WHERE NOT EXISTS (
                                 SELECT 1
                                 FROM ::config
                                 WHERE conf_name=?s:name
-                            )
-                            LIMIT 1';
+                            )';
 
                         break;
                 }

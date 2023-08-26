@@ -4,6 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{!! __('Transformer') !!}</title>
+  <meta name="robots" content="noindex">
 @foreach ($p->pageHeaders as $pageHeader)
     @if ('style' === $pageHeader['type'])
   <style>{!! $pageHeader['values'][0] !!}</style>
@@ -18,19 +19,19 @@
       <h1 id="id-fhth1"><span id="id-fhtha">{!! __('Transformer') !!}</span></h1>
       <p id="id-fhtdesc">{!! __('Welcome') !!}</p>
     </header>
-    <main>
+    <main id="fork-main">
 @if ($iswev = $p->fIswev)
     @include ('layouts/iswev')
 @endif
 @if ($form = $p->form1)
     <section class="f-install">
-      <h2>{!! __('Choose install language') !!}</h2>
+      <h2>{!! __('Transformer') !!}</h2>
       <div class="f-fdiv">
     @include ('layouts/form')
       </div>
     </section>
 @endif
-@if (! $p->fIswev['e'])
+@if (! $p->fIswev[FORK_MESS_ERR])
     @if ($form = $p->form2)
     <section class="f-install">
       <h2>{!! __($p->formTitle) !!}</h2>
@@ -41,7 +42,9 @@
     @endif
 @endif
     </main>
+    <footer id="fork-footer">
 <!-- debuginfo -->
+    </footer>
   </div>
 </body>
 </html>

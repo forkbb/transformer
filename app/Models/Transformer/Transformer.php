@@ -18,18 +18,16 @@ use function \ForkBB\__;
 
 class Transformer extends Model
 {
-    const JSON_OPTIONS = \JSON_UNESCAPED_SLASHES | \JSON_UNESCAPED_UNICODE | \JSON_THROW_ON_ERROR;
-
     /**
      * Ключ модели для контейнера
      * @var string
      */
-    protected $cKey = 'Transformer';
+    protected string $cKey = 'Transformer';
 
     /**
      * @var array
      */
-    protected $oldAdd = [
+    protected array $oldAdd = [
         'categories',
         'forums',
         'groups',
@@ -39,19 +37,20 @@ class Transformer extends Model
         'pm_topics',
         'users',
         'warnings',
+        'attachments',
     ];
 
     /**
      * @var array
      */
-    protected $errors = [];
+    protected array $errors = [];
 
     public function getErrors(): array
     {
         return $this->errors;
     }
 
-    public function setError(/* string|array */ $error): void
+    public function setError(string|array $error): void
     {
         $this->errors[] = $error;
     }
@@ -104,7 +103,7 @@ class Transformer extends Model
         return null;
     }
 
-    public function receiverTest() /* : false|int */
+    public function receiverTest(): int|false
     {
         $count = \count($this->c->DB->getMap());
 
@@ -124,7 +123,7 @@ class Transformer extends Model
         return $count;
     }
 
-    public function step(int $step, int $id) /* : mixed */
+    public function step(int $step, int $id): mixed
     {
         $driver  = $this->loadDriver($this->c->SOURCE_TYPE);
         $endStep = \max(\array_keys($this->c->STEPS));
@@ -245,6 +244,56 @@ class Transformer extends Model
 
             $this->c->DB->exec($query);
         }
+
+        //attachments
+        $schema = [
+            'FIELDS' => [
+                'id'          => ['SERIAL', false],
+                'uid'         => ['INT(10) UNSIGNED', false, 0],
+                'created'     => ['INT(10) UNSIGNED', false, 0],
+                'size_kb'     => ['INT(10) UNSIGNED', false, 0],
+                'path'        => ['VARCHAR(255)', false, ''],
+                'uip'         => ['VARCHAR(45)', false, ''],
+            ],
+            'PRIMARY KEY' => ['id'],
+            'INDEXES' => [
+                'uid_idx' => ['uid'],
+            ],
+            'ENGINE' => $this->c->DBEngine,
+        ];
+        $this->c->DB->createTable('::attachments', $schema);
+
+        //attachments_pos
+        $schema = [
+            'FIELDS' => [
+                'id'          => ['SERIAL', false],
+                'pid'         => ['INT(10) UNSIGNED', false, 0],
+            ],
+            'UNIQUE KEYS' => [
+                'id_pid_idx' => ['id', 'pid'],
+            ],
+            'INDEXES' => [
+                'pid_idx' => ['pid'],
+            ],
+            'ENGINE' => $this->c->DBEngine,
+        ];
+        $this->c->DB->createTable('::attachments_pos', $schema);
+
+        //attachments_pos_pm
+        $schema = [
+            'FIELDS' => [
+                'id'          => ['SERIAL', false],
+                'pid'         => ['INT(10) UNSIGNED', false, 0],
+            ],
+            'UNIQUE KEYS' => [
+                'id_pid_idx' => ['id', 'pid'],
+            ],
+            'INDEXES' => [
+                'pid_idx' => ['pid'],
+            ],
+            'ENGINE' => $this->c->DBEngine,
+        ];
+        $this->c->DB->createTable('::attachments_pos_pm', $schema);
 
         // bans
         $schema = [
@@ -378,6 +427,7 @@ class Transformer extends Model
                 'g_edit_posts'           => ['TINYINT(1)', false, 1],
                 'g_delete_posts'         => ['TINYINT(1)', false, 1],
                 'g_delete_topics'        => ['TINYINT(1)', false, 1],
+                'g_delete_profile'       => ['TINYINT(1)', false, 0],
                 'g_post_links'           => ['TINYINT(1)', false, 1],
                 'g_set_title'            => ['TINYINT(1)', false, 1],
                 'g_search'               => ['TINYINT(1)', false, 1],
@@ -392,6 +442,9 @@ class Transformer extends Model
                 'g_pm_limit'             => ['INT(10) UNSIGNED', false, 100],
                 'g_sig_length'           => ['SMALLINT UNSIGNED', false, 400],
                 'g_sig_lines'            => ['TINYINT UNSIGNED', false, 4],
+                'g_up_ext'               => ['VARCHAR(255)', false, 'webp,jpg,jpeg,png,gif,avif'],
+                'g_up_size_kb'           => ['INT(10) UNSIGNED', false, 0],
+                'g_up_limit_mb'          => ['INT(10) UNSIGNED', false, 0],
             ],
             'PRIMARY KEY' => ['g_id'],
             'ENGINE' => $this->c->DBEngine,
@@ -401,8 +454,8 @@ class Transformer extends Model
         // online
         $schema = [
             'FIELDS' => [
-                'user_id'     => ['INT(10) UNSIGNED', false, 1],
-                'ident'       => ['VARCHAR(190)', false, ''],
+                'user_id'     => ['INT(10) UNSIGNED', false, 0],
+                'ident'       => ['VARCHAR(45)', false, ''],
                 'logged'      => ['INT(10) UNSIGNED', false, 0],
                 'last_post'   => ['INT(10) UNSIGNED', false, 0],
                 'last_search' => ['INT(10) UNSIGNED', false, 0],
@@ -410,11 +463,10 @@ class Transformer extends Model
                 'o_name'      => ['VARCHAR(190)', false, ''],
             ],
             'UNIQUE KEYS' => [
-                'user_id_ident_idx' => ['user_id', 'ident(45)'],
+                'user_id_ident_idx' => ['user_id', 'ident'],
             ],
             'INDEXES' => [
-                'ident_idx'      => ['ident'],
-                'logged_idx'     => ['logged'],
+                'logged_idx' => ['logged'],
             ],
             'ENGINE' => $this->c->DBEngine,
         ];
@@ -425,7 +477,7 @@ class Transformer extends Model
             'FIELDS' => [
                 'id'           => ['SERIAL', false],
                 'poster'       => ['VARCHAR(190)', false, ''],
-                'poster_id'    => ['INT(10) UNSIGNED', false, 1],
+                'poster_id'    => ['INT(10) UNSIGNED', false, 0],
                 'poster_ip'    => ['VARCHAR(45)', false, ''],
                 'poster_email' => ['VARCHAR(190)', false, ''],
                 'message'      => ['MEDIUMTEXT', false],
@@ -440,8 +492,9 @@ class Transformer extends Model
             ],
             'PRIMARY KEY' => ['id'],
             'INDEXES' => [
-                'topic_id_idx' => ['topic_id'],
-                'multi_idx'    => ['poster_id', 'topic_id'],
+                'topic_id_idx'  => ['topic_id'],
+                'multi_idx'     => ['poster_id', 'topic_id', 'posted'],
+                'editor_id_idx' => ['editor_id'],
             ],
             'ENGINE' => $this->c->DBEngine,
         ];
@@ -491,7 +544,7 @@ class Transformer extends Model
                 'subject_match' => ['TINYINT(1)', false, 0],
             ],
             'INDEXES' => [
-                'word_id_idx' => ['word_id'],
+                'multi_idx' => ['word_id', 'post_id'],
                 'post_id_idx' => ['post_id'],
             ],
             'ENGINE' => $this->c->DBEngine,
@@ -560,10 +613,10 @@ class Transformer extends Model
             ],
             'PRIMARY KEY' => ['id'],
             'INDEXES' => [
-                'forum_id_idx'      => ['forum_id'],
-                'moved_to_idx'      => ['moved_to'],
+                'multi_2_idx'       => ['forum_id', 'sticky', 'last_post'],
                 'last_post_idx'     => ['last_post'],
                 'first_post_id_idx' => ['first_post_id'],
+                'multi_1_idx'       => ['moved_to', 'forum_id', 'num_replies', 'last_post'],
             ],
             'ENGINE' => $this->c->DBEngine,
         ];
@@ -665,8 +718,7 @@ class Transformer extends Model
                 'show_img_sig'     => ['TINYINT(1)', false, 1],
                 'show_avatars'     => ['TINYINT(1)', false, 1],
                 'show_sig'         => ['TINYINT(1)', false, 1],
-                'timezone'         => ['FLOAT', false, 0],
-                'dst'              => ['TINYINT(1)', false, 0],
+                'timezone'         => ['VARCHAR(255)', false, \date_default_timezone_get()],
                 'time_format'      => ['TINYINT(1)', false, 0],
                 'date_format'      => ['TINYINT(1)', false, 0],
                 'language'         => ['VARCHAR(25)', false, ''],
@@ -690,11 +742,13 @@ class Transformer extends Model
                 'u_pm_last_post'   => ['INT(10) UNSIGNED', false, 0],
                 'warning_flag'     => ['TINYINT(1)', false, 0],
                 'warning_all'      => ['INT(10) UNSIGNED', false, 0],
-                'gender'           => ['TINYINT UNSIGNED', false, 0],
+                'gender'           => ['TINYINT UNSIGNED', false, FORK_GEN_NOT],
                 'u_mark_all_read'  => ['INT(10) UNSIGNED', false, 0],
                 'last_report_id'   => ['INT(10) UNSIGNED', false, 0],
                 'ip_check_type'    => ['TINYINT UNSIGNED', false, 0],
                 'login_ip_cache'   => ['VARCHAR(255)', false, ''],
+                'u_up_size_mb'     => ['INT(10) UNSIGNED', false, 0],
+                'unfollowed_f'     => ['VARCHAR(255)', false, ''],
             ],
             'PRIMARY KEY' => ['id'],
             'UNIQUE KEYS' => [
@@ -797,6 +851,59 @@ class Transformer extends Model
         ];
         $this->c->DB->createTable('::mark_of_topic', $schema);
 
+        // providers
+        $schema = [
+            'FIELDS' => [
+                'pr_name'     => ['VARCHAR(25)', false],
+                'pr_allow'    => ['TINYINT(1)', false, 0],
+                'pr_pos'      => ['INT(10) UNSIGNED', false, 0],
+                'pr_cl_id'    => ['VARCHAR(255)', false, ''],
+                'pr_cl_sec'   => ['VARCHAR(255)', false, ''],
+            ],
+            'UNIQUE KEYS' => [
+                'pr_name_idx' => ['pr_name'],
+            ],
+        ];
+        $this->c->DB->createTable('::providers', $schema);
+
+        // providers_users
+        $schema = [
+            'FIELDS' => [
+                'uid'               => ['INT(10) UNSIGNED', false],
+                'pr_name'           => ['VARCHAR(25)', false],
+                'pu_uid'            => ['VARCHAR(165)', false],
+                'pu_email'          => ['VARCHAR(190)', false, ''],
+                'pu_email_normal'   => ['VARCHAR(190)', false, ''],
+                'pu_email_verified' => ['TINYINT(1)', false, 0],
+            ],
+            'UNIQUE KEYS' => [
+                'pr_name_pu_uid_idx' => ['pr_name', 'pu_uid'],
+            ],
+            'INDEXES' => [
+                'uid_idx'             => ['uid'],
+                'pu_email_normal_idx' => ['pu_email_normal'],
+            ],
+        ];
+        $this->c->DB->createTable('::providers_users', $schema);
+
+        // заполнение providers
+        $providers = [
+            'github', 'yandex', 'google',
+        ];
+
+        $query = 'INSERT INTO ::providers (pr_name, pr_pos)
+            VALUES (?s:name, ?i:pos)';
+
+        foreach ($providers as $pos => $name) {
+            $vars = [
+                ':name' => $name,
+                ':pos'  => $pos,
+            ];
+
+            $this->c->DB->exec($query, $vars);
+        }
+
+        // заполнение groups
         $now    = \time();
         $groups = [
             [
@@ -945,11 +1052,11 @@ class Transformer extends Model
         }
 
 /*
-        $pun_config = [
+        $forkConfig = [
             'i_fork_revision'         => $this->c->FORK_REVISION,
             'o_board_title'           => $v->title,
             'o_board_desc'            => $v->descr,
-            'o_default_timezone'      => 0,
+            'o_default_timezone'      => \date_default_timezone_get(),
             'i_timeout_visit'         => 3600,
             'i_timeout_online'        => 900,
             'i_redirect_delay'        => 1,
@@ -975,11 +1082,12 @@ class Transformer extends Model
             'b_regs_report'           => 0,
             'i_default_email_setting' => 2,
             'o_mailing_list'          => $v->email,
-            'b_avatars'               => \filter_var(@\ini_get('file_uploads'), \FILTER_VALIDATE_BOOLEAN) ? 1 : 0,
+            'b_avatars'               => \filter_var(\ini_get('file_uploads'), \FILTER_VALIDATE_BOOL) ? 1 : 0,
             'o_avatars_dir'           => '/img/avatars',
-            'i_avatars_width'         => 60,
-            'i_avatars_height'        => 60,
-            'i_avatars_size'          => 10240,
+            'i_avatars_width'         => 160,
+            'i_avatars_height'        => 160,
+            'i_avatars_size'          => 51200,
+            'i_avatars_quality'       => 75,
             'o_admin_email'           => $v->email,
             'o_webmaster_email'       => $v->email,
             'b_forum_subscriptions'   => 1,
@@ -991,13 +1099,13 @@ class Transformer extends Model
             'b_smtp_ssl'              => 0,
             'b_regs_allow'            => 1,
             'b_regs_verify'           => 1,
+            'b_oauth_allow'           => 0,
             'b_announcement'          => 0,
             'o_announcement_message'  => __('Announcement '),
             'b_rules'                 => 0,
             'o_rules_message'         => __('Rules '),
             'b_maintenance'           => 0,
             'o_maintenance_message'   => __('Maintenance message '),
-            'b_default_dst'           => 0,
             'i_feed_type'             => 2,
             'i_feed_ttl'              => 0,
             'b_message_bbcode'        => 1,
@@ -1013,11 +1121,11 @@ class Transformer extends Model
             'i_poll_time'             => 60,
             'i_poll_term'             => 3,
             'b_poll_guest'            => 0,
-            'a_max_users'             => \json_encode(['number' => 1, 'time' => \time()], self::JSON_OPTIONS),
-            'a_bb_white_mes'          => \json_encode([], self::JSON_OPTIONS),
-            'a_bb_white_sig'          => \json_encode(['b', 'i', 'u', 'color', 'colour', 'email', 'url'], self::JSON_OPTIONS),
-            'a_bb_black_mes'          => \json_encode([], self::JSON_OPTIONS),
-            'a_bb_black_sig'          => \json_encode([], self::JSON_OPTIONS),
+            'a_max_users'             => \json_encode(['number' => 1, 'time' => \time()], FORK_JSON_ENCODE),
+            'a_bb_white_mes'          => \json_encode([], FORK_JSON_ENCODE),
+            'a_bb_white_sig'          => \json_encode(['b', 'i', 'u', 'color', 'colour', 'email', 'url'], FORK_JSON_ENCODE),
+            'a_bb_black_mes'          => \json_encode([], FORK_JSON_ENCODE),
+            'a_bb_black_sig'          => \json_encode([], FORK_JSON_ENCODE),
             'a_guest_set'             => \json_encode(
                 [
                     'show_smilies' => 1,
@@ -1025,13 +1133,22 @@ class Transformer extends Model
                     'show_avatars' => 1,
                     'show_img'     => 1,
                     'show_img_sig' => 1,
-                ], self::JSON_OPTIONS
+                ], FORK_JSON_ENCODE
             ),
             's_РЕГИСТР'               => 'Ok',
+            'b_upload'                => 0,
+            'i_upload_img_quality'    => 75,
+            'i_upload_img_axis_limit' => 1920,
+            's_upload_img_outf'       => 'webp,jpg,png,gif',
+            'i_search_ttl'            => 900,
+            'b_ant_hidden_ch'         => 1,
+            'b_ant_use_js'            => 0,
+            's_meta_desc'             => '',
+            'a_og_image'              => \json_encode([], FORK_JSON_ENCODE),
         ];
 
-        foreach ($pun_config as $conf_name => $conf_value) {
-            $this->c->DB->exec('INSERT INTO ::config (conf_name, conf_value) VALUES (?s, ?s)', [$conf_name, $conf_value]);
+        foreach ($forkConfig as $name => $value) {
+            $this->c->DB->exec('INSERT INTO ::config (conf_name, conf_value) VALUES (?s, ?s)', [$name, $value]);
         }
 */
 
@@ -1068,7 +1185,7 @@ class Transformer extends Model
         foreach ($bbcodes as $bbcode) {
             $vars = [
                 ':tag'       => $bbcode['tag'],
-                ':structure' => \json_encode($bbcode, self::JSON_OPTIONS),
+                ':structure' => \json_encode($bbcode, FORK_JSON_ENCODE),
             ];
 
             $this->c->DB->exec($query, $vars);
@@ -1084,6 +1201,12 @@ class Transformer extends Model
 
             if (false === $this->c->DB->addIndex("::{$name}", 'id_old_idx', ['id_old'])) {
                 throw new RuntimeException("Failed to add 'id_old_idx' index to {$name} table");
+            }
+
+            $query = "SELECT COUNT(id_old) FROM ::{$name} WHERE id_old>0";
+
+            if ($this->c->DB->query($query)->fetchColumn() > 0) {
+                throw new RuntimeException("The id_old field of the {$name} table contains values other than 0 upon initialization (Most likely the previous merge attempt failed)");
             }
         }
     }

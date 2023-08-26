@@ -1,3 +1,7 @@
+#
+# This .htaccess for AllowOverride All
+# https://httpd.apache.org/docs/2.4/mod/core.html#allowoverride
+#
 AddDefaultCharset UTF-8
 
 <IfModule mod_autoindex.c>
@@ -8,23 +12,41 @@ AddDefaultCharset UTF-8
   RewriteEngine On
   #RewriteBase /
 
-  RewriteRule ^favicon\.ico$ public/favicon.ico [L]
-  RewriteRule ^robots\.txt$ public/robots.txt [L]
+  <IfModule !litespeed>
+    RewriteRule ^favicon\.ico$ public/favicon.ico [L]
+    RewriteRule ^apple-touch-icon\.png$ public/apple-touch-icon.png [L]
+    RewriteRule ^robots\.txt$ public/robots.txt [L]
 
-  RewriteRule !^public/ index.php [L]
+    RewriteRule !^public/ index.php [L]
 
-  RewriteCond %{REQUEST_URI} \.v\.[0-9]
-  RewriteRule ^(.+)\.v\.[0-9]+\.([^.\\/]++)$ $1.$2 [L]
+    RewriteCond %{REQUEST_URI} \.v\.[0-9]
+    RewriteRule ^(.+)\.v\.[0-9]+\.([^.\\/]++)$ $1.$2 [L]
 
-  RewriteCond %{REQUEST_FILENAME} !-f
-  RewriteRule ^public/ index.php [L]
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteRule ^public/ index.php [L]
 
-  RewriteRule \.dist\. index.php [L]
+    RewriteRule \.dist\. index.php [L]
+  </IfModule>
+  <IfModule litespeed>
+    RewriteRule ^favicon\.ico$ public/favicon.ico
+    RewriteRule ^apple-touch-icon\.png$ public/apple-touch-icon.png
+    RewriteRule ^robots\.txt$ public/robots.txt
+
+    RewriteRule !^public/ index.php [L]
+
+    RewriteCond %{REQUEST_URI} \.v\.[0-9]
+    RewriteRule ^(.+)\.v\.[0-9]+\.([^.\\/]++)$ $1.$2
+
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteRule ^public/ index.php
+
+    RewriteRule \.dist\. index.php
+  </IfModule>
 </IfModule>
 
 # Set Cache-Control header for caching statics
 <ifModule mod_headers.c>
-  <FilesMatch "\.(css|js|gif|png|jpg|jpeg|webp|woff|woff2)$">
+  <FilesMatch "\.(css|js|gif|png|jpg|jpeg|webp|avif|woff|woff2)$">
     Header set Cache-Control "public,max-age=31536000,immutable"
     Header unset ETag
   </FilesMatch>

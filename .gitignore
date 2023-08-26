@@ -5,8 +5,13 @@
 /app/config/db/*
 /app/cache/**/*.php
 /app/cache/**/*.lock
+/app/cache/**/*.tmp
 /app/log/*
 /public/img/avatars/*
+/public/img/og/*
 /public/.htaccess
 /public/index.php
+/public/upload/**/*
+/public/style/ForkBB_old/*
+!/public/upload/index.html
 !.gitkeep

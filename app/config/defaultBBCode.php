@@ -13,18 +13,10 @@ return [
         'tag' => 'ROOT',
         'type' => 'block',
         'handler' => <<<'HANDLER'
-// Replace any breaks next to paragraphs so our replace below catches them
-$body = \preg_replace('%(</?p>)(?:\s*?<br>){1,2}%', '$1', '<p>' . $body . '</p>');
-$body = \preg_replace('%(?:<br>\s*?){1,2}(</?p>)%', '$1', $body);
-
-// Remove any empty paragraph tags (inserted via quotes/lists/code/etc) which should be stripped
+$body = '<p>' . $body . '</p>';
+$body = \str_replace('<p><br>', '<p>', $body);
 $body = \str_replace('<p></p>', '', $body);
-
-$body = \preg_replace('%<br>\s*?<br>%', '</p><p>', $body);
-
-$body = \str_replace('<p><br>', '<br><p>', $body);
-$body = \str_replace('<br></p>', '</p><br>', $body);
-$body = \str_replace('<p></p>', '<br><br>', $body);
+$body = \preg_replace('%<br>(?:\s*?<br>){3,}%', '<br><br><br>', $body);
 
 return $body;
 HANDLER,
@@ -40,48 +32,69 @@ HANDLER,
             'No_attr' => true,
         ],
         'handler' => <<<'HANDLER'
-return '</p><pre class="f-bb-code">' . \trim($body, "\n\r") . '</pre><p>';
+return '</p><pre class="f-bb-code f-bbivert">' . \trim($body, "\n\r") . '</pre><p>';
 HANDLER,
     ],
     [   'tag' => 'b',
+        'parents' => ['inline', 'block', 'url'],
         'handler' => <<<'HANDLER'
 return "<b>{$body}</b>";
 HANDLER,
     ],
     [
         'tag' => 'i',
+        'parents' => ['inline', 'block', 'url'],
         'handler' => <<<'HANDLER'
 return "<i>{$body}</i>";
 HANDLER,
     ],
     [
         'tag' => 'em',
+        'parents' => ['inline', 'block', 'url'],
         'handler' => <<<'HANDLER'
 return "<em>{$body}</em>";
 HANDLER,
     ],
     [
         'tag' => 'u',
+        'parents' => ['inline', 'block', 'url'],
         'handler' => <<<'HANDLER'
 return "<u>{$body}</u>";
 HANDLER,
     ],
     [
         'tag' => 's',
+        'parents' => ['inline', 'block', 'url'],
         'handler' => <<<'HANDLER'
 return "<s>{$body}</s>";
 HANDLER,
     ],
     [
         'tag' => 'del',
+        'parents' => ['inline', 'block', 'url'],
         'handler' => <<<'HANDLER'
 return "<del>{$body}</del>";
 HANDLER,
     ],
     [
         'tag' => 'ins',
+        'parents' => ['inline', 'block', 'url'],
         'handler' => <<<'HANDLER'
 return "<ins>{$body}</ins>";
+HANDLER,
+    ],
+    [
+        'tag' => 'sub',
+        'parents' => ['inline', 'block', 'url'],
+        'handler' => <<<'HANDLER'
+return "<sub>{$body}</sub>";
+HANDLER,
+    ],
+    [
+        'tag' => 'sup',
+        'parents' => ['inline', 'block', 'url'],
+        'handler' => <<<'HANDLER'
+return "<sup>{$body}</sup>";
 HANDLER,
     ],
     [
@@ -101,6 +114,7 @@ HANDLER,
     ],
     [
         'tag' => 'color',
+        'parents' => ['inline', 'block', 'url'],
         'self_nesting' => 5,
         'attrs' => [
             'Def' => [
@@ -108,11 +122,43 @@ HANDLER,
             ],
         ],
         'handler' => <<<'HANDLER'
-return "<span style=\"color:{$attrs['Def']};\">{$body}</span>";
+$parser->inlineStyle(true);
+
+$color = $attrs['Def'];
+
+if ('#' === $color[0]) {
+    $color = \strtoupper($color);
+} else {
+    $repl = [
+        'black'   => '#000000',
+        'gray'    => '#808080',
+        'silver'  => '#C0C0C0',
+        'white'   => '#FFFFFF',
+        'fuchsia' => '#FF00FF',
+        'purple'  => '#800080',
+        'red'     => '#FF0000',
+        'maroon'  => '#800000',
+        'yellow'  => '#FFFF00',
+        'olive'   => '#808000',
+        'lime'    => '#00FF00',
+        'green'   => '#008000',
+        'aqua'    => '#00FFFF',
+        'teal'    => '#008080',
+        'blue'    => '#0000FF',
+        'navy'    => '#000080',
+    ];
+
+    if (isset($repl[$color])) {
+        $color = $repl[$color];
+    }
+}
+
+return "<span class=\"f-bb-color\" style=\"color:{$color};\">{$body}</span>";
 HANDLER,
     ],
     [
         'tag' => 'colour',
+        'parents' => ['inline', 'block', 'url'],
         'self_nesting' => 5,
         'attrs' => [
             'Def' => [
@@ -120,11 +166,43 @@ HANDLER,
             ],
         ],
         'handler' => <<<'HANDLER'
-return "<span style=\"color:{$attrs['Def']};\">{$body}</span>";
+$parser->inlineStyle(true);
+
+$color = $attrs['Def'];
+
+if ('#' === $color[0]) {
+    $color = \strtoupper($color);
+} else {
+    $repl = [
+        'black'   => '#000000',
+        'gray'    => '#808080',
+        'silver'  => '#C0C0C0',
+        'white'   => '#FFFFFF',
+        'fuchsia' => '#FF00FF',
+        'purple'  => '#800080',
+        'red'     => '#FF0000',
+        'maroon'  => '#800000',
+        'yellow'  => '#FFFF00',
+        'olive'   => '#808000',
+        'lime'    => '#00FF00',
+        'green'   => '#008000',
+        'aqua'    => '#00FFFF',
+        'teal'    => '#008080',
+        'blue'    => '#0000FF',
+        'navy'    => '#000080',
+    ];
+
+    if (isset($repl[$color])) {
+        $color = $repl[$color];
+    }
+}
+
+return "<span class=\"f-bb-color\" style=\"color:{$color};\">{$body}</span>";
 HANDLER,
     ],
     [
         'tag' => 'background',
+        'parents' => ['inline', 'block', 'url'],
         'self_nesting' => 5,
         'attrs' => [
             'Def' => [
@@ -132,54 +210,91 @@ HANDLER,
             ],
         ],
         'handler' => <<<'HANDLER'
-return "<span style=\"background-color:{$attrs['Def']};\">{$body}</span>";
+$parser->inlineStyle(true);
+
+$color = $attrs['Def'];
+
+if ('#' === $color[0]) {
+    $color = \strtoupper($color);
+} else {
+    $repl = [
+        'black'   => '#000000',
+        'gray'    => '#808080',
+        'silver'  => '#C0C0C0',
+        'white'   => '#FFFFFF',
+        'fuchsia' => '#FF00FF',
+        'purple'  => '#800080',
+        'red'     => '#FF0000',
+        'maroon'  => '#800000',
+        'yellow'  => '#FFFF00',
+        'olive'   => '#808000',
+        'lime'    => '#00FF00',
+        'green'   => '#008000',
+        'aqua'    => '#00FFFF',
+        'teal'    => '#008080',
+        'blue'    => '#0000FF',
+        'navy'    => '#000080',
+    ];
+
+    if (isset($repl[$color])) {
+        $color = $repl[$color];
+    }
+}
+
+return "<span class=\"f-bb-bgcolor\" style=\"background-color:{$color};\">{$body}</span>";
 HANDLER,
     ],
     [
         'tag' => 'size',
+        'parents' => ['inline', 'block', 'url'],
         'self_nesting' => 5,
         'attrs' => [
             'Def' => [
-                'format' => '%^[1-9]\d*(?:em|ex|pt|px|\%)?$%',
+                'format' => '%^[1-7]$%',
             ],
         ],
         'handler' => <<<'HANDLER'
-if (\is_numeric($attrs['Def'])) {
-    $attrs['Def'] .= 'px';
-}
-
-return "<span style=\"font-size:{$attrs['Def']};\">{$body}</span>";
+return "<span class=\"f-bb-size\" data-bb=\"{$attrs['Def']}\">{$body}</span>";
+HANDLER,
+    ],
+    [
+        'tag' => 'left',
+        'type' => 'block',
+        'handler' => <<<'HANDLER'
+return "</p><p class=\"f-bb-left\">{$body}</p><p>";
 HANDLER,
     ],
     [
         'tag' => 'right',
         'type' => 'block',
         'handler' => <<<'HANDLER'
-return "</p><p class=\"text-align-right\">{$body}</p><p>";
+return "</p><p class=\"f-bb-right\">{$body}</p><p>";
 HANDLER,
     ],
     [
         'tag' => 'center',
         'type' => 'block',
         'handler' => <<<'HANDLER'
-return "</p><p class=\"text-align-center\">{$body}</p><p>";
+return "</p><p class=\"f-bb-center\">{$body}</p><p>";
 HANDLER,
     ],
     [
         'tag' => 'justify',
         'type' => 'block',
         'handler' => <<<'HANDLER'
-return "</p><p class=\"text-align-justify\">{$body}</p><p>";
+return "</p><p class=\"f-bb-justify\">{$body}</p><p>";
 HANDLER,
     ],
     [
         'tag' => 'mono',
+        'parents' => ['inline', 'block', 'url'],
         'handler' => <<<'HANDLER'
-return "<code>{$body}</code>";
+return "<span class=\"f-bb-mono\">{$body}</span>";
 HANDLER,
     ],
     [
         'tag' => 'font',
+        'parents' => ['inline', 'block', 'url'],
         'self_nesting' => 5,
         'attrs' => [
             'Def' => [
@@ -187,7 +302,9 @@ HANDLER,
             ],
         ],
         'handler' => <<<'HANDLER'
-return "<span style=\"font-family:{$attrs['Def']};\">{$body}</span>";
+$parser->inlineStyle(true);
+
+return "<span class=\"f-bb-font\" style=\"font-family:{$attrs['Def']};\">{$body}</span>";
 HANDLER,
     ],
     [
@@ -210,6 +327,7 @@ if ('' == $def) {
     return '<span class="f-bb-badlink">BAD EMAIL</span>';
 } else {
     $def = $parser->e($def);
+
     return "<a href=\"{$def}\">{$body}</a>";
 }
 HANDLER,
@@ -240,11 +358,11 @@ if (! isset($attrs['Def'])) {
 
 switch ($attrs['Def'][0]) {
     case 'a':
-        return "</p><ol class=\"f-bb-l-lat\">{$body}</ol><p>";
+        return "</p><ol class=\"f-bb-l-lat f-bbivert\">{$body}</ol><p>";
     case '1':
-        return "</p><ol class=\"f-bb-l-dec\">{$body}</ol><p>";
+        return "</p><ol class=\"f-bb-l-dec f-bbivert\">{$body}</ol><p>";
     default:
-        return "</p><ul class=\"f-bb-l-disc\">{$body}</ul><p>";
+        return "</p><ul class=\"f-bb-l-disc f-bbivert\">{$body}</ul><p>";
 }
 HANDLER,
     ],
@@ -278,7 +396,7 @@ if ($sec > 0) {
 
 $attr = __('After time') . ' ' . \implode(' ', $arr);
 
-return '</p><p class="f-bb-after">' . $attr . ':</p><p>';
+return '</p><p class="f-bb-after"><em>' . $attr . ':</em></p><p>';
 HANDLER,
     ],
     [
@@ -290,8 +408,9 @@ HANDLER,
             'No_attr' => true,
         ],
         'handler' => <<<'HANDLER'
-$header = isset($attrs['Def']) ? '<div class="f-bb-q-header">' . $attrs['Def'] .  ' ' . __('wrote') . '</div>' : '';
-return "</p><blockquote class=\"f-bb-quote\">{$header}<div class=\"f-bb-q-body\"><p>{$body}</p></div></blockquote><p>";
+$header = isset($attrs['Def']) ? '<cite class="f-bb-q-header">' . __(['%s wrote', $attrs['Def']]) . '</cite>' : '';
+
+return "</p><blockquote class=\"f-bb-quote f-bbivert\">{$header}<div class=\"f-bb-q-body\"><p>{$body}</p></div></blockquote><p>";
 HANDLER,
     ],
     [
@@ -307,7 +426,7 @@ if (! isset($attrs['Def'])) {
     $attrs['Def'] = __('Hidden text');
 }
 
-return "</p><details class=\"f-bb-spoiler\"><summary>{$attrs['Def']}</summary><div class=\"f-bb-s-body\"><p>{$body}</p></div></details><p>";
+return "</p><details class=\"f-bb-spoiler f-bbivert\"><summary>{$attrs['Def']}</summary><div class=\"f-bb-s-body\"><p>{$body}</p></div></details><p>";
 HANDLER,
     ],
     [
@@ -331,12 +450,12 @@ if (! isset($attrs['Def'])) {
 // тег в подписи
 if ($parser->attr('isSign')) {
     if ($parser->attr('showImgSign')) {
-        return '<img src="' . $body . '" alt="' . $attrs['Def'] . '" loading="lazy" class="sigimage" />';
+        return '<img src="' . $body . '" alt="' . $attrs['Def'] . '" loading="lazy" class="sigimage f-bbivert">';
     }
 } else {
     // тег в теле сообщения
     if ($parser->attr('showImg')) {
-        return '<span class="postimg"><img src="' . $body . '" alt="' . $attrs['Def'] . '" loading="lazy" /></span>';
+        return '<img src="' . $body . '" alt="' . $attrs['Def'] . '" loading="lazy" class="postimg f-bbivert">';
     }
 }
 
@@ -383,13 +502,7 @@ if ('' == $fUrl) {
 } else {
     $fUrl = $parser->e($fUrl);
 
-    if ($url === $body) {
-        $url = $parser->de($url);
-        $url = \mb_strlen($url, 'UTF-8') > 55 ? \mb_substr($url, 0, 39, 'UTF-8') . ' … ' . \mb_substr($url, -10, null, 'UTF-8') : $url;
-        $body = $parser->e($url);
-    }
-
-    return "<a href=\"{$fUrl}\" rel=\"ugc\">{$body}</a>";
+    return "<a href=\"{$fUrl}\" rel=\"ugc\" class=\"f-bb-url formedia\">{$body}</a>";
 }
 HANDLER,
     ],
@@ -404,11 +517,12 @@ HANDLER,
         ],
         'handler' => <<<'HANDLER'
 $attr = '';
+
 foreach ($attrs as $key => $val) {
     $attr .= " {$key}=\"{$val}\"";
 }
 
-return "</p><table{$attr}>{$body}</table><p>";
+return "</p><table class=\"f-bb-table f-bbivert\"{$attr}>{$body}</table><p>";
 HANDLER,
     ],
     [
@@ -422,11 +536,12 @@ HANDLER,
         ],
         'handler' => <<<'HANDLER'
 $attr = '';
+
 foreach ($attrs as $key => $val) {
     $attr .= " {$key}=\"{$val}\"";
 }
 
-return "<caption{$attr}><p>{$body}</p></caption>";
+return "<caption class=\"f-bb-caption\"{$attr}><p>{$body}</p></caption>";
 HANDLER,
     ],
     [
@@ -441,11 +556,12 @@ HANDLER,
         ],
         'handler' => <<<'HANDLER'
 $attr = '';
+
 foreach ($attrs as $key => $val) {
     $attr .= " {$key}=\"{$val}\"";
 }
 
-return "<thead{$attr}>{$body}</thead>";
+return "<thead class=\"f-bb-thead\"{$attr}>{$body}</thead>";
 HANDLER,
     ],
     [
@@ -460,11 +576,12 @@ HANDLER,
         ],
         'handler' => <<<'HANDLER'
 $attr = '';
+
 foreach ($attrs as $key => $val) {
     $attr .= " {$key}=\"{$val}\"";
 }
 
-return "<tbody{$attr}>{$body}</tbody>";
+return "<tbody class=\"f-bb-tbody\"{$attr}>{$body}</tbody>";
 HANDLER,
     ],
     [
@@ -479,11 +596,12 @@ HANDLER,
         ],
         'handler' => <<<'HANDLER'
 $attr = '';
+
 foreach ($attrs as $key => $val) {
     $attr .= " {$key}=\"{$val}\"";
 }
 
-return "<tfoot{$attr}>{$body}</tfoot>";
+return "<tfoot class=\"f-bb-tfoot\"{$attr}>{$body}</tfoot>";
 HANDLER,
     ],
     [
@@ -498,11 +616,12 @@ HANDLER,
         ],
         'handler' => <<<'HANDLER'
 $attr = '';
+
 foreach ($attrs as $key => $val) {
     $attr .= " {$key}=\"{$val}\"";
 }
 
-return "<tr{$attr}>{$body}</tr>";
+return "<tr class=\"f-bb-tr\"{$attr}>{$body}</tr>";
 HANDLER,
     ],
     [
@@ -518,11 +637,12 @@ HANDLER,
         ],
         'handler' => <<<'HANDLER'
 $attr = '';
+
 foreach ($attrs as $key => $val) {
     $attr .= " {$key}=\"{$val}\"";
 }
 
-return "<th{$attr}><p>{$body}</p></th>";
+return "<th class=\"f-bb-th\"{$attr}><p>{$body}</p></th>";
 HANDLER,
     ],
     [
@@ -538,11 +658,12 @@ HANDLER,
         ],
         'handler' => <<<'HANDLER'
 $attr = '';
+
 foreach ($attrs as $key => $val) {
     $attr .= " {$key}=\"{$val}\"";
 }
 
-return "<td{$attr}><p>{$body}</p></td>";
+return "<td class=\"f-bb-td\"{$attr}><p>{$body}</p></td>";
 HANDLER,
     ],
     [
@@ -555,5 +676,26 @@ $body = __(['Post from topic %s', $parser->de($body)]);
 return "</p><p class=\"f-bb-from\">{$body}</p><p>";
 HANDLER,
     ],
+    [
+        'tag' => 'hashtag',
+        'auto' => false,
+        'text_only' => true,
+        'attrs' => [
+            'No_attr' => [
+                'body_format' => '%^#(?=.{3})[\p{L}\p{N}]+(?:_+[\p{L}\p{N}]+)*$%uD',
+                'text_only' => true,
+            ],
+        ],
+        'handler' => <<<'HANDLER'
+$link = $parser->attr('hashtagLink');
 
+if (\is_string($link)) {
+    $link = \str_replace('HASHTAG', \rawurlencode($body), $link);
+
+    return "<a class=\"f-bb-hashtag\" href=\"{$link}\" rel=\"ugc\">{$body}</a>";
+} else {
+    return "<span class=\"f-bb-hashtag\">{$body}</span>";
+}
+HANDLER,
+    ],
 ];

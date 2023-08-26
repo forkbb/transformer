@@ -22,24 +22,22 @@ class User extends DataModel
 {
     /**
      * Ключ модели для контейнера
-     * @var string
      */
-    protected $cKey = 'User';
+    protected string $cKey = 'User';
 
     public function __construct(Container $container)
     {
         parent::__construct($container);
 
         $this->zDepend = [
-            'group_id'     => ['isUnverified', 'isGuest', 'isAdmin', 'isAdmMod', 'isBanByName', 'link', 'viewUsers', 'showPostCount', 'searchUsers', 'usePoll', 'usePM'],
-            'id'           => ['isGuest', 'link', 'online'],
-            'last_visit'   => ['currentVisit'],
-            'show_sig'     => ['showSignature'],
-            'show_avatars' => ['showAvatar'],
-            'signature'    => ['isSignature'],
-            'email'        => ['email_normal'],
-            'username'     => ['username_normal'],
-            'g_pm'         => ['usePM'],
+            'group_id'      => ['isUnverified', 'isGuest', 'isAdmin', 'isAdmMod', 'isBanByName', 'link', 'usePM', 'linkEmail'],
+            'id'            => ['isGuest', 'link', 'online', 'linkEmail'],
+            'last_visit'    => ['currentVisit'],
+            'signature'     => ['isSignature'],
+            'email'         => ['email_normal', 'linkEmail'],
+            'username'      => ['username_normal'],
+            'g_pm'          => ['usePM'],
+            'email_setting' => ['linkEmail'],
         ];
     }
 
@@ -82,8 +80,7 @@ class User extends DataModel
      */
     protected function getisBanByName(): bool
     {
-        return ! $this->isAdmin
-            && $this->c->bans->banFromName($this->username) > 0;
+        return ! $this->isAdmin && $this->c->bans->banFromName($this->username) > 0;
     }
 
     /**
@@ -97,6 +94,7 @@ class User extends DataModel
 
         while (! $model instanceof Forum) {
             $model = $model->parent;
+
             if (! $model instanceof Model) {
                 throw new RuntimeException('Moderator\'s rights can not be found');
             }
@@ -119,7 +117,7 @@ class User extends DataModel
     protected function getlanguage(): string
     {
         $langs = $this->c->Func->getLangs();
-        $lang  = $this->getAttr('language');
+        $lang  = $this->getModelAttr('language');
 
         if (
             empty($lang)
@@ -141,7 +139,7 @@ class User extends DataModel
     protected function getstyle(): string
     {
         $styles = $this->c->Func->getStyles();
-        $style  = $this->getAttr('style');
+        $style  = $this->getModelAttr('style');
 
         if (
             $this->isGuest
@@ -181,7 +179,7 @@ class User extends DataModel
      */
     protected function getavatar(): ?string
     {
-        $file = $this->getAttr('avatar');
+        $file = $this->getModelAttr('avatar');
 
         if (! empty($file)) {
             $file = $this->c->config->o_avatars_dir . '/' . $file;
@@ -200,7 +198,7 @@ class User extends DataModel
      */
     public function deleteAvatar(): void
     {
-        $file = $this->getAttr('avatar');
+        $file = $this->getModelAttr('avatar');
 
         if (! empty($file)) {
             $path = $this->c->DIR_PUBLIC . "{$this->c->config->o_avatars_dir}/{$file}";
@@ -218,14 +216,14 @@ class User extends DataModel
      */
     public function title(): string
     {
-        if ($this->isBanByName) {
+        if ($this->isGuest) {
+            return __('Guest');
+        } elseif ($this->isBanByName) {
             return __('Banned');
         } elseif ('' != $this->title) {
             return $this->censorTitle;
         } elseif ('' != $this->g_user_title) {
             return $this->censorG_user_title;
-        } elseif ($this->isGuest) {
-            return __('Guest');
         } elseif ($this->isUnverified) {
             return __('Unverified');
         } else {
@@ -262,59 +260,11 @@ class User extends DataModel
     }
 
     /**
-     * Статус видимости профилей пользователей
-     */
-    protected function getviewUsers(): bool
-    {
-        return 1 === $this->g_view_users || $this->isAdmin;
-    }
-
-    /**
-     * Статус поиска пользователей
-     */
-    protected function getsearchUsers(): bool
-    {
-        return 1 === $this->g_search_users || $this->isAdmin;
-    }
-
-    /**
-     * Статус показа аватаров
-     */
-    protected function getshowAvatar(): bool
-    {
-        return 1 === $this->c->config->b_avatars && 1 === $this->show_avatars;
-    }
-
-    /**
-     * Статус показа информации пользователя
-     */
-    protected function getshowUserInfo(): bool
-    {
-        return 1 === $this->c->config->b_show_user_info;
-    }
-
-    /**
-     * Статус показа подписи
-     */
-    protected function getshowSignature(): bool
-    {
-        return 1 === $this->show_sig;
-    }
-
-    /**
-     * Статус показа количества сообщений
-     */
-    protected function getshowPostCount(): bool
-    {
-        return 1 === $this->c->config->b_show_post_count || $this->isAdmMod;
-    }
-
-    /**
      * Число тем на одну страницу
      */
     protected function getdisp_topics(): int
     {
-        $attr = $this->getAttr('disp_topics');
+        $attr = $this->getModelAttr('disp_topics');
 
         if ($attr < 10) {
             $attr = $this->c->config->i_disp_topics_default;
@@ -328,7 +278,7 @@ class User extends DataModel
      */
     protected function getdisp_posts(): int
     {
-        $attr = $this->getAttr('disp_topics');
+        $attr = $this->getModelAttr('disp_topics');
 
         if ($attr < 10) {
             $attr = $this->c->config->i_disp_posts_default;
@@ -385,28 +335,25 @@ class User extends DataModel
     /**
      * Возвращает значения свойств в массиве
      */
-    public function getAttrs(): array
+    public function getModelAttrs(): array
     {
         foreach (['email_normal', 'username_normal'] as $key) {
             if (isset($this->zModFlags[$key])) {
-                $this->setAttr($key, $this->$key);
+                $this->setModelAttr($key, $this->$key);
             }
         }
 
-        return parent::getAttrs();
+        return parent::getModelAttrs();
     }
 
     /**
-     * Статус возможности использования опросов
+     * Информация для лога
      */
-    protected function getusePoll(): bool
-    {
-        return 1 === $this->c->config->b_poll_enabled && ! $this->isGuest;
-    }
-
     public function fLog(): string
     {
-        return "id:{$this->id} gid:{$this->group_id} name:{$this->username}";
+        return $this->isGuest
+            ? "id:{$this->id} gid:{$this->group_id} guest"
+            : "id:{$this->id} gid:{$this->group_id} name:{$this->username}";
     }
 
     /**
@@ -419,5 +366,42 @@ class User extends DataModel
                 1 === $this->g_pm
                 || $this->isAdmin
             );
+    }
+
+    /**
+     * Формирует ссылку на отправку письма от $this->c->user к $this
+     * ???? Результат используется как условие для вариантов отображения
+     */
+    protected function getlinkEmail(): ?string
+    {
+        if (
+            $this->c->user->isGuest
+            || $this->id === $this->c->user->id
+            || empty($this->email)
+        ) {
+            return '';
+        } elseif (2 === $this->email_setting) {
+            return null;
+        } elseif (
+            0 === $this->email_setting
+            || (
+                $this->isGuest
+                && $this->c->user->isAdmMod
+            )
+        ) {
+            return 'mailto:' . $this->censorEmail;
+        } elseif (
+            1 === $this->email_setting
+            && (
+                1 === $this->c->user->g_send_email
+                || $this->c->user->isAdmin
+            )
+        ) {
+            $this->c->Csrf->setHashExpiration(3600);
+
+            return $this->c->Router->link('SendEmail', ['id' => $this->id]);
+        } else {
+            return '';
+        }
     }
 }

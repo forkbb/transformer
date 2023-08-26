@@ -15,15 +15,8 @@ use ForkBB\Models\Page;
 
 class Install
 {
-    /**
-     * Контейнер
-     * @var Container
-     */
-    protected $c;
-
-    public function __construct(Container $container)
+    public function __construct(protected Container $c)
     {
-        $this->c = $container;
     }
 
     /**
@@ -31,15 +24,10 @@ class Install
      */
     public function routing(): Page
     {
-        $uri = $_SERVER['REQUEST_URI'];
-        if (false !== ($pos = \strpos($uri, '?'))) {
-            $uri = \substr($uri, 0, $pos);
-        }
-        $uri = \rawurldecode($uri);
-
         $this->c->user = $this->c->users->create(['id' => 1, 'group_id' => FORK_GROUP_ADMIN]);
 
         $r = $this->c->Router;
+
         $r->add(
             $r::DUO,
             '/',
@@ -83,18 +71,27 @@ class Install
             'End'
         );
 
-        $method = $_SERVER['REQUEST_METHOD'];
+        $uri = $_SERVER['REQUEST_URI'];
 
-        $route = $r->route($method, $uri);
-        $page  = null;
+        if (false !== ($pos = \strpos($uri, '?'))) {
+            $uri = \substr($uri, 0, $pos);
+        }
+
+        $uri    = \rawurldecode($uri);
+        $method = $_SERVER['REQUEST_METHOD'];
+        $route  = $r->route($method, $uri);
+        $page   = null;
+
         switch ($route[0]) {
             case $r::OK:
                 // ... 200 OK
                 list($page, $action) = \explode(':', $route[1], 2);
                 $page = $this->c->$page->$action($route[2], $method);
+
                 break;
             default:
                 $page = $this->c->Redirect->page('Start')->message('Redirect to install');
+
                 break;
         }
 

@@ -20,42 +20,38 @@ class Image extends File
 {
     /**
      * Изображение
-     * @var mixed
      */
-    protected $image;
+    protected mixed $image;
 
     /**
      * Класс обработки изображений
-     * @var DefaultDriver
      */
-    protected $imgDriver;
+    protected DefaultDriver $imgDriver;
 
     /**
      * Качество изображения
-     * @var int
      */
-    protected $quality = 100;
+    protected int $quality = 100;
 
     /**
      * Паттерн для pathinfo
-     * @var string
      */
-    protected $pattern = '%^(?!.*?\.\.)([\w.\x5C/:-]*[\x5C/])?(\*|[\w.-]+)\.(\*|[a-z\d]+|\([a-z\d]+(?:\|[a-z\d]+)*\))$%i';
+    protected string $pattern = '%^(?!.*?\.\.)([\w.\x5C/:-]*[\x5C/])?(\*|[\w.-]+)\.(\*|[a-z\d]+|\([a-z\d]+(?:\|[a-z\d]+)*\))$%iD';
 
-    public function __construct(string $path, array $options, DefaultDriver $imgDriver)
+    public function __construct(string $path, string $name, string $ext, Files $files)
     {
-        parent::__construct($path, $options);
+        parent::__construct($path, $name, $ext, $files);
 
-        if ($imgDriver::DEFAULT) {
+        $this->imgDriver = $files->imageDriver();
+
+        if ($this->imgDriver::DEFAULT) {
             throw new FileException('No library for work with images');
         }
 
-        $this->imgDriver = $imgDriver;
-
         if (\is_string($this->data)) {
-            $this->image = $imgDriver->readFromStr($this->data);
+            $this->image = $this->imgDriver->readFromStr($this->data);
         } else {
-            $this->image = $imgDriver->readFromPath($this->path);
+            $this->image = $this->imgDriver->readFromPath($this->path);
         }
 
         if (false === $this->image) {
@@ -69,6 +65,23 @@ class Image extends File
     public function resize(int $maxW, int $maxH): Image
     {
         $this->image = $this->imgDriver->resize($this->image, $maxW, $maxH);
+
+        return $this;
+    }
+
+    /**
+     * Проверяет и устанавливает качество для сохраняемого изображения
+     */
+    public function setQuality(int $quality): Image
+    {
+        if (
+            $quality < 0
+            || $quality > 100
+        ) {
+            throw new InvalidArgumentException('Invalid image quality value: ' . $quality);
+        }
+
+        $this->quality = $quality;
 
         return $this;
     }
@@ -112,6 +125,16 @@ class Image extends File
         }
 
         return $result;
+    }
+
+    public function width(): int
+    {
+        return $this->imgDriver->width($this->image);
+    }
+
+    public function height(): int
+    {
+        return $this->imgDriver->height($this->image);
     }
 
     public function __destruct()

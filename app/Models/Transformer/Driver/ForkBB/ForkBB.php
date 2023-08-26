@@ -22,7 +22,7 @@ class ForkBB extends AbstractDriver
     /**
      * @var array
      */
-    protected $reqTables = [
+    protected array $reqTables = [
         'bans',
         'bbcode',
         'categories',
@@ -55,19 +55,19 @@ class ForkBB extends AbstractDriver
     /**
      * @var string
      */
-    protected $min = '42';
+    protected string $min = '42';
 
     /**
      * @var string
      */
-    protected $max = '49';
+    protected string $max = '68';
 
     public function getType(): string
     {
         return 'ForkBB';
     }
 
-    public function test(DB $db) /* : bool|string|array */
+    public function test(DB $db): bool|string|array
     {
         if (! $this->reqTablesTest($db)) {
             if (! empty($this->error)) {
@@ -195,6 +195,11 @@ class ForkBB extends AbstractDriver
 
         unset($vars['g_id']);
 
+        $vars['g_up_ext']         ??= 'webp,jpg,jpeg,png,gif,avif';
+        $vars['g_up_size_kb']     ??= 0;
+        $vars['g_up_limit_mb']    ??= 0;
+        $vars['g_delete_profile'] ??= 0;
+
         return $vars;
     }
 
@@ -242,6 +247,9 @@ class ForkBB extends AbstractDriver
         $vars['last_report_id'] = 0;
 
         unset($vars['id']);
+
+        $vars['u_up_size_mb'] ??= 0;
+        $vars['unfollowed_f'] ??= '';
 
         return $vars;
     }
@@ -611,10 +619,10 @@ class ForkBB extends AbstractDriver
     {
         $this->insertQuery = 'INSERT INTO ::warnings (id, poster, poster_id, posted, message)
             SELECT (
-                    SELECT id
-                    FROM ::posts
-                    WHERE id_old=?i:id
-                ), ?s:poster, ?i:poster_id, ?i:posted, ?s:message';
+                SELECT id
+                FROM ::posts
+                WHERE id_old=?i:id
+            ), ?s:poster, ?i:poster_id, ?i:posted, ?s:message';
 
 
         $vars = [
@@ -678,14 +686,14 @@ class ForkBB extends AbstractDriver
 
         $this->insertQuery = 'INSERT INTO ::forum_subscriptions (user_id, forum_id)
             SELECT (
-                    SELECT id
-                    FROM ::users
-                    WHERE id_old=?i:user_id
-                ), (
-                    SELECT id
-                    FROM ::forums
-                    WHERE id_old=?i:forum_id
-                )';
+                SELECT id
+                FROM ::users
+                WHERE id_old=?i:user_id
+            ), (
+                SELECT id
+                FROM ::forums
+                WHERE id_old=?i:forum_id
+            )';
 
         $vars = [
             ':id'  => $id,
@@ -742,14 +750,14 @@ class ForkBB extends AbstractDriver
 
         $this->insertQuery = 'INSERT INTO ::topic_subscriptions (user_id, topic_id)
             SELECT (
-                    SELECT id
-                    FROM ::users
-                    WHERE id_old=?i:user_id
-                ), (
-                    SELECT id
-                    FROM ::topics
-                    WHERE id_old=?i:topic_id
-                )';
+                SELECT id
+                FROM ::users
+                WHERE id_old=?i:user_id
+            ), (
+                SELECT id
+                FROM ::topics
+                WHERE id_old=?i:topic_id
+            )';
 
         $vars = [
             ':id'  => $id,
@@ -806,15 +814,15 @@ class ForkBB extends AbstractDriver
 
         $this->insertQuery = 'INSERT INTO ::mark_of_forum (uid, fid, mf_mark_all_read)
             SELECT (
-                    SELECT id
-                    FROM ::users
-                    WHERE id_old=?i:uid
-                ), (
-                    SELECT id
-                    FROM ::forums
-                    WHERE id_old=?i:fid
-                ),
-                ?i:mf_mark_all_read';
+                SELECT id
+                FROM ::users
+                WHERE id_old=?i:uid
+            ), (
+                SELECT id
+                FROM ::forums
+                WHERE id_old=?i:fid
+            ),
+            ?i:mf_mark_all_read';
 
         $vars = [
             ':id'  => $id,
@@ -871,15 +879,15 @@ class ForkBB extends AbstractDriver
 
         $this->insertQuery = 'INSERT INTO ::mark_of_topic (uid, tid, mt_last_visit, mt_last_read)
             SELECT (
-                    SELECT id
-                    FROM ::users
-                    WHERE id_old=?i:uid
-                ), (
-                    SELECT id
-                    FROM ::topics
-                    WHERE id_old=?i:tid
-                ),
-                ?i:mt_last_visit, ?i:mt_last_read';
+                SELECT id
+                FROM ::users
+                WHERE id_old=?i:uid
+            ), (
+                SELECT id
+                FROM ::topics
+                WHERE id_old=?i:tid
+            ),
+            ?i:mt_last_visit, ?i:mt_last_read';
 
         $vars = [
             ':id'  => $id,
@@ -936,11 +944,11 @@ class ForkBB extends AbstractDriver
 
         $this->insertQuery = 'INSERT INTO ::poll (tid, question_id, field_id, qna_text, votes)
             SELECT (
-                    SELECT id
-                    FROM ::topics
-                    WHERE id_old=?i:tid
-                ),
-                ?i:question_id, ?i:field_id, ?s:qna_text, ?i:votes';
+                SELECT id
+                FROM ::topics
+                WHERE id_old=?i:tid
+            ),
+            ?i:question_id, ?i:field_id, ?s:qna_text, ?i:votes';
 
         $vars = [
             ':id'  => $id,
@@ -997,15 +1005,15 @@ class ForkBB extends AbstractDriver
 
         $this->insertQuery = 'INSERT INTO ::poll_voted (tid, uid, rez)
             SELECT (
-                    SELECT id
-                    FROM ::topics
-                    WHERE id_old=?i:tid
-                ), (
-                    SELECT id
-                    FROM ::users
-                    WHERE id_old=?i:uid
-                ),
-                ?s:rez';
+                SELECT id
+                FROM ::topics
+                WHERE id_old=?i:tid
+            ), (
+                SELECT id
+                FROM ::users
+                WHERE id_old=?i:uid
+            ),
+            ?s:rez';
 
         $vars = [
             ':id'  => $id,
@@ -1158,14 +1166,14 @@ class ForkBB extends AbstractDriver
 
         $this->insertQuery = 'INSERT INTO ::pm_block (bl_first_id, bl_second_id)
             SELECT (
-                    SELECT id
-                    FROM ::users
-                    WHERE id_old=?i:bl_first_id
-                ), (
-                    SELECT id
-                    FROM ::users
-                    WHERE id_old=?i:bl_second_id
-                )';
+                SELECT id
+                FROM ::users
+                WHERE id_old=?i:bl_first_id
+            ), (
+                SELECT id
+                FROM ::users
+                WHERE id_old=?i:bl_second_id
+            )';
 
         $vars = [
             ':id'  => $id,
@@ -1203,11 +1211,11 @@ class ForkBB extends AbstractDriver
     public function bansPre(DB $db, int $id): bool
     {
         $this->insertQuery = 'INSERT INTO ::bans (username, ip, email, message, expire, ban_creator)
-            SELECT ?s:username, ?s:ip, ?s:email, ?s:message, ?i:expire, (
-                    SELECT id
-                    FROM ::users
-                    WHERE id_old=?i:ban_creator
-                )';
+            SELECT ?s:username, ?s:ip, ?s:email, ?s:message, ?i:expire, COALESCE((
+                SELECT id
+                FROM ::users
+                WHERE id_old=?i:ban_creator
+            ), 0)';
 
         $vars = [
             ':id'    => $id,
@@ -1277,4 +1285,183 @@ class ForkBB extends AbstractDriver
 
         return $vars;
     }
+
+    /*************************************************************************/
+    /* providers                                                             */
+    /*************************************************************************/
+    public function providersPre(DB $db, int $id): ?bool
+    {
+        $tables = $db->getMap();
+
+        if (empty($tables['providers'])) {
+            return null;
+        }
+
+        $map = $this->c->dbMapArray['providers'];
+
+        $sub               = $this->subQInsert($map);
+        $this->insertQuery = "INSERT INTO ::providers ({$sub['fields']}) VALUES ({$sub['values']})";
+
+        unset($map['pr_name']);
+
+        $sub               = $this->subQUpdate($map);
+        $this->updateQuery = "UPDATE ::providers SET {$sub['sets']} WHERE pr_name=?s:pr_name AND pr_cl_id='' AND pr_cl_sec=''";
+
+        $query = 'SELECT *
+            FROM ::providers';
+
+        $this->stmt = $db->query($query);
+
+        return false !== $this->stmt;
+    }
+
+    public function providersGet(int &$id): ?array
+    {
+        $vars = $this->stmt->fetch();
+
+        if (false === $vars) {
+            $this->stmt->closeCursor();
+            $this->stmt = null;
+
+            $id = -1;
+
+            return null;
+        }
+
+        return $vars;
+    }
+
+    public function providersSet(DB $db, array $vars): bool
+    {
+        $exist = (int) $db->query('SELECT 1 FROM ::providers WHERE pr_name=?s:pr_name', $vars)->fetchColumn();
+        $query = 1 === $exist ? $this->updateQuery : $this->insertQuery;
+
+        return false !== $db->exec($query, $vars);
+    }
+
+    /*************************************************************************/
+    /* providers_users                                                       */
+    /*************************************************************************/
+    public function providers_usersPre(DB $db, int $id): ?bool
+    {
+        $tables = $db->getMap();
+
+        if (empty($tables['providers_users'])) {
+            return null;
+        }
+
+        $vars = [
+            ':id'    => $id,
+            ':limit' => $this->c->LIMIT,
+        ];
+        $query = 'SELECT uid
+            FROM ::providers_users
+            WHERE uid>=?i:id
+            ORDER BY uid
+            LIMIT ?i:limit';
+
+        $ids = $db->query($query, $vars)->fetchAll(PDO::FETCH_COLUMN);
+
+        if (empty($ids)) {
+            $max = $id;
+        } else {
+            $max = \array_pop($ids);
+        }
+
+        $this->insertQuery = 'INSERT INTO ::providers_users (uid, pr_name, pu_uid, pu_email, pu_email_normal, pu_email_verified)
+            SELECT (
+                SELECT id
+                FROM ::users
+                WHERE id_old=?i:uid
+            ), ?s:pr_name, ?s:pu_uid, ?s:pu_email, ?s:pu_email_normal, ?i:pu_email_verified';
+
+        $vars = [
+            ':id'  => $id,
+            ':max' => $max,
+        ];
+        $query = 'SELECT *
+            FROM ::providers_users
+            WHERE uid>=?i:id AND uid<=?i:max
+            ORDER BY uid';
+
+        $this->stmt = $db->query($query, $vars);
+
+        return false !== $this->stmt;
+    }
+
+    public function providers_usersGet(int &$id): ?array
+    {
+        $vars = $this->stmt->fetch();
+
+        if (false === $vars) {
+            $this->stmt->closeCursor();
+            $this->stmt = null;
+
+            return null;
+        }
+
+        $id = (int) $vars['uid'];
+
+        return $vars;
+    }
+
+    /*************************************************************************/
+    /* attachments                                                           */
+    /*************************************************************************/
+    public function attachmentsPre(DB $db, int $id): ?bool
+    {
+        $tables = $db->getMap();
+
+        if (empty($tables['attachments'])) {
+            return null;
+        }
+
+        $map = $this->c->dbMapArray['attachments'];
+
+        unset($map['id']);
+
+        $sub               = $this->subQInsert($map);
+        $this->insertQuery = "INSERT INTO ::attachments ({$sub['fields']}) VALUES ({$sub['values']})";
+
+        $vars = [
+            ':id'    => $id,
+            ':limit' => $this->c->LIMIT,
+        ];
+        $query = 'SELECT *
+            FROM ::attachments
+            WHERE id>=?i:id
+            ORDER BY id
+            LIMIT ?i:limit';
+
+        $this->stmt = $db->query($query, $vars);
+
+        return false !== $this->stmt;
+    }
+
+    public function attachmentsGet(int &$id): ?array
+    {
+        $vars = $this->stmt->fetch();
+
+        if (false === $vars) {
+            $this->stmt->closeCursor();
+            $this->stmt = null;
+
+            return null;
+        }
+
+        $id             = (int) $vars['id'];
+        $vars['id_old'] = $id;
+
+        unset($vars['id']);
+
+        return $vars;
+    }
+
+    /*************************************************************************/
+    /* attachments_pos                                                       */
+    /*************************************************************************/
+
+    /*************************************************************************/
+    /* attachments_pos_pm                                                    */
+    /*************************************************************************/
 }

@@ -13,92 +13,31 @@ namespace ForkBB\Core;
 use ForkBB\Core\Container;
 use ForkBB\Core\Exceptions\MailException;
 use ForkBB\Core\Exceptions\SmtpException;
+use SensitiveParameter;
 use function \ForkBB\e;
 
 class Mail
 {
-    /**
-     * Контейнер
-     * @var Container
-     */
-    protected $c;
-
-    /**
-     * @var string
-     */
-    protected $folder;
-
-    /**
-     * @var string
-     */
-    protected $language;
-
-    /**
-     * @var string
-     */
-    protected $from;
-
-    /**
-     * @var array
-     */
-    protected $to = [];
-
-    /**
-     * @var array
-     */
-    protected $headers = [];
-
-    /**
-     * @var string
-     */
-    protected $message;
-
-    /**
-     * @var array
-     */
-    protected $smtp;
-
-    /**
-     * @var string
-     */
-    protected $EOL;
-
-    /**
-     * @var Resource
-     */
+    protected string $folder;
+    protected string $language;
+    protected string $from;
+    protected array $to = [];
+    protected array $headers = [];
+    protected string $message;
+    protected ?array $smtp = null;
+    protected string $EOL;
     protected $connect;
-
-    /**
-     * var int
-     */
-    protected $auth = 0;
-
-    /**
-     * var int
-     */
-    protected $maxRecipients = 1;
-
-    /**
-     * @var array
-     */
-    protected $tplHeaders = [
+    protected int $auth = 0;
+    protected int $maxRecipients = 1;
+    protected array $tplHeaders = [
         'Subject'      => true,
         'Content-Type' => true,
     ];
+    protected string $response;
 
-    /**
-     * @var string
-     */
-    protected $response;
-
-    public function __construct(/* string */ $host, /* string */ $user, /* string */ $pass, /* bool */ $ssl, /* string */ $eol, Container $c)
+    public function __construct(string $host, string $user, #[SensitiveParameter] string $pass, int $ssl, string $eol, protected Container $c)
     {
-        $this->c = $c;
-
-        if (
-            \is_string($host)
-            && \strlen(\trim($host)) > 0
-        ) {
+        if ('' != $host) {
             $hp = \explode(':', $host, 2);
 
             if (
@@ -113,8 +52,8 @@ class Mail
             $this->smtp = [
                 'host'    => ($ssl ? 'ssl://' : '') . $hp[0],
                 'port'    => (int) $hp[1],
-                'user'    => (string) $user,
-                'pass'    => (string) $pass,
+                'user'    => $user,
+                'pass'    => $pass,
                 'timeout' => 15,
             ];
             $this->EOL = "\r\n";
@@ -126,11 +65,11 @@ class Mail
     /**
      * Валидация email
      */
-    public function valid(/* mixed */ $email, bool $strict = false, bool $idna = false) /* : string|false */
+    public function valid(mixed $email, bool $strict = false, bool $idna = false): string|false
     {
         if (
             ! \is_string($email)
-            || \mb_strlen($email, 'UTF-8') > 80 // for DB
+            || \mb_strlen($email, 'UTF-8') > $this->c->MAX_EMAIL_LENGTH
             || ! \preg_match('%^([^\x00-\x1F]+)@([^\x00-\x1F\s@]++)$%Du', $email, $matches)
         ) {
             return false;
@@ -206,7 +145,7 @@ class Mail
             'Content-Type'              => 'text/plain; charset=UTF-8',
             'X-Mailer'                  => 'ForkBB Mailer',
         ];
-        $this->message = null;
+        $this->message = '';
 
         return $this;
     }
@@ -224,10 +163,10 @@ class Mail
     /**
      * Добавляет заголовок To
      */
-    public function addTo(/* array|string */ $email, string $name = null): Mail
+    public function addTo(string|array $email, string $name = null): Mail
     {
         if (! \is_array($email)) {
-            $email = \preg_split('%[,\n\r]%', (string) $email, -1, \PREG_SPLIT_NO_EMPTY);
+            $email = \preg_split('%[,\n\r]%', $email, -1, \PREG_SPLIT_NO_EMPTY);
         }
 
         foreach ($email as $cur) {
@@ -244,7 +183,7 @@ class Mail
     /**
      * Задает заголовок To
      */
-    public function setTo(/* array|string */ $email, string $name = null): Mail
+    public function setTo(array|string $email, string $name = null): Mail
     {
         $this->to = [];
 
@@ -754,7 +693,7 @@ class Mail
 
         if (
             ! $name
-            || '' === ($name = \preg_replace('%[\x00-\x1F]%', '', \trim($name)))
+            || '' === ($name = \preg_replace('%(?:[\x00-\x1F\x7F]|\xC2[\x80-\x9F])%', '', \trim($name)))
         ) {
             $name = '[127.0.0.1]';
 

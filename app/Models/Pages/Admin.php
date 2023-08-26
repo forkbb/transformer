@@ -16,20 +16,18 @@ use function \ForkBB\__;
 
 abstract class Admin extends Page
 {
-    /**
-     * @var array
-     */
-    protected $aCrumbs = [];
+    protected array $aCrumbs = [];
 
     public function __construct(Container $container)
     {
         parent::__construct($container);
 
-        $this->aIndex    = 'index'; # string Указатель на активный пункт навигации в меню админки
-        $this->fIndex    = self::FI_ADMIN;
-        $this->onlinePos = 'admin';
-        $this->robots    = 'noindex, nofollow';
-        $this->hhsLevel  = 'secure';
+        $this->aIndex       = 'index'; # string Указатель на активный пункт навигации в меню админки
+        $this->fIndex       = self::FI_ADMIN;
+        $this->onlinePos    = 'admin';
+        $this->onlineDetail = null;
+        $this->robots       = 'noindex, nofollow';
+        $this->hhsLevel     = 'secure';
 
         $container->Lang->load('admin');
 
@@ -62,7 +60,7 @@ abstract class Admin extends Page
             'users' => [$r->link('AdminUsers'), 'Users'],
         ];
 
-        if ($this->c->userRules->banUsers) {
+        if ($this->userRules->banUsers) {
             $nav['bans'] = [$r->link('AdminBans'), 'Bans'];
         }
         if (
@@ -81,6 +79,8 @@ abstract class Admin extends Page
                 'forums'      => [$r->link('AdminForums'), 'Forums'],
                 'groups'      => [$r->link('AdminGroups'), 'User groups'],
                 'censoring'   => [$r->link('AdminCensoring'), 'Censoring'],
+                'uploads'     => [$r->link('AdminUploads'), 'Uploads'],
+                'antispam'    => [$r->link('AdminAntispam'), 'Antispam'],
                 'logs'        => [$r->link('AdminLogs'), 'Logs'],
                 'maintenance' => [$r->link('AdminMaintenance'), 'Maintenance'],
             ];
@@ -93,7 +93,7 @@ abstract class Admin extends Page
      * Возвращает массив хлебных крошек
      * Заполняет массив титула страницы
      */
-    protected function crumbs(/* mixed */ ...$crumbs): array
+    protected function crumbs(mixed ...$crumbs): array
     {
         if ('index' !== $this->aIndex) {
             if (isset($this->aNavigation[$this->aIndex])) {
@@ -104,7 +104,10 @@ abstract class Admin extends Page
         }
 
         $crumbs[] = [$this->c->Router->link('Admin'), 'Admin title'];
+        $result   = parent::crumbs(...$crumbs);
 
-        return parent::crumbs(...$crumbs);
+        $this->adminHeader = \end($result)[1];
+
+        return $result;
     }
 }

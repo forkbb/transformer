@@ -18,21 +18,9 @@ use PDOException;
 class Sqlite
 {
     /**
-     * @var DB
-     */
-    protected $db;
-
-    /**
-     * Префикс для таблиц базы
-     * @var string
-     */
-    protected $dbPrefix;
-
-    /**
      * Массив замены типов полей таблицы
-     * @var array
      */
-    protected $dbTypeRepl = [
+    protected array $dbTypeRepl = [
         '%^.*?INT.*$%i'                           => 'INTEGER',
         '%^.*?(?:CHAR|CLOB|TEXT).*$%i'            => 'TEXT',
         '%^.*?BLOB.*$%i'                          => 'BLOB',
@@ -44,22 +32,17 @@ class Sqlite
 
     /**
      * Подстановка типов полей для карты БД
-     * @var array
      */
-    protected $types = [
+    protected array $types = [
         'boolean' => 'b',
         'integer' => 'i',
         'real'    => 'f',
         'numeric' => 'f',
     ];
 
-    public function __construct(DB $db, string $prefix)
+    public function __construct(protected DB $db, protected string $dbPrefix)
     {
-        $this->db = $db;
-
-        $this->nameCheck($prefix);
-
-        $this->dbPrefix = $prefix;
+        $this->nameCheck($dbPrefix);
     }
 
     /**
@@ -93,7 +76,7 @@ class Sqlite
      */
     protected function tName(string $name): string
     {
-        if ('::' === \substr($name, 0, 2)) {
+        if (\str_starts_with($name, '::')) {
             $name = $this->dbPrefix . \substr($name, 2);
         }
 
@@ -135,7 +118,7 @@ class Sqlite
     /**
      * Конвертирует данные в строку для DEFAULT
      */
-    protected function convToStr(/* mixed */ $data): string
+    protected function convToStr(mixed $data): string
     {
         if (\is_string($data)) {
             return $this->db->quote($data);
@@ -423,7 +406,7 @@ class Sqlite
 
             return false;
         } else {
-            $vars  = [
+            $vars = [
                 ':tname'  => $table,
                 ':iname'  => $table . '_' . $index,
                 ':itype'  => 'index',
@@ -508,7 +491,7 @@ class Sqlite
     /**
      * Добавляет поле в таблицу
      */
-    public function addField(string $table, string $field, string $type, bool $allowNull, /* mixed */ $default = null, string $collate = null, string $after = null): bool
+    public function addField(string $table, string $field, string $type, bool $allowNull, mixed $default = null, string $collate = null, string $after = null): bool
     {
         $table = $this->tName($table);
 
@@ -524,7 +507,7 @@ class Sqlite
     /**
      * Модифицирует поле в таблице
      */
-    public function alterField(string $table, string $field, string $type, bool $allowNull, /* mixed */ $default = null, string $collate = null, string $after = null): bool
+    public function alterField(string $table, string $field, string $type, bool $allowNull, mixed $default = null, string $collate = null, string $after = null): bool
     {
         $this->nameCheck($field);
 
@@ -705,6 +688,10 @@ class Sqlite
         $table = $this->tName($table);
 
         if (false !== $this->db->exec("DELETE FROM \"{$table}\"")) {
+            if (! $this->tableExists('SQLITE_SEQUENCE')) {
+                return true;
+            }
+
             $vars = [
                 ':tname' => $table,
             ];

@@ -33,6 +33,9 @@ class Dirk extends PhpEngine
         'Echos',
     ];
 
+    protected $shortID = '';
+    protected $shortArr = [];
+
     /**
      * Prepare file to include
      * @param  string $name
@@ -42,11 +45,16 @@ class Dirk extends PhpEngine
     {
         $name = \str_replace('.', '/', $name);
         $tpl  = $this->views . '/' . $name . $this->ext;
-        $php  = $this->cache . '/' . \sha1($name) . '.php';
+        $sha1 = \sha1($name);
+        $php  = $this->cache . '/' . $sha1 . '.php';
+
         if (
             ! \file_exists($php)
             || \filemtime($tpl) > \filemtime($php)
         ) {
+            $this->shortArr[] = $this->shortID;
+            $this->shortID    = \substr($sha1, 0, 4);
+
             $text = \file_get_contents($tpl);
 
             foreach ($this->compilers as $type) {
@@ -54,6 +62,8 @@ class Dirk extends PhpEngine
             }
 
             \file_put_contents($php, $text);
+
+            $this->shortID    = \array_pop($this->shortArr);
         }
 
         return $php;
@@ -134,9 +144,9 @@ class Dirk extends PhpEngine
                 $whitespace = empty($matches[3]) ? '' : $matches[3] . $matches[3];
 
                 return $matches[1]
-                    ? substr($matches[0], 1)
+                    ? \substr($matches[0], 1)
                     : '<?= '
-                        . sprintf($this->echoFormat, $this->compileEchoDefaults($matches[2]))
+                        . \sprintf($this->echoFormat, $this->compileEchoDefaults($matches[2]))
                         . ' ?>' . $whitespace;
             },
             $value
@@ -164,7 +174,7 @@ class Dirk extends PhpEngine
      */
     protected function compileIf(string $expression): string
     {
-        if (\preg_match('%^\(\s*(\!\s*)?(\$[\w>-]+\[(?:[\'"]\w+[\'"]|\d+)\])\s*\)$%', $expression, $matches)) {
+        if (\preg_match('%^\(\s*(\!\s*)?(\$[\w>-]+\[(?:\w+|[\'"]\w+[\'"])\])\s*\)$%', $expression, $matches)) {
             if (empty($matches[1])) {
                 return "<?php if (! empty{$expression}): ?>";
             } else {
@@ -279,6 +289,8 @@ class Dirk extends PhpEngine
         return "<?php endfor; ?>";
     }
 
+    protected $loopsCounter = 0;
+
     /**
      * Compile the foreach statements
      *
@@ -287,7 +299,11 @@ class Dirk extends PhpEngine
      */
     protected function compileForeach(string $expression): string
     {
-        return "<?php foreach {$expression}: ?>";
+        ++$this->loopsCounter;
+
+        return "<?php \$__iter{$this->shortID}_{$this->loopsCounter} = 0; "
+             . "foreach {$expression}: "
+             . "++\$__iter{$this->shortID}_{$this->loopsCounter}; ?>";
     }
 
     /**
@@ -297,10 +313,16 @@ class Dirk extends PhpEngine
      */
     protected function compileEndforeach(): string
     {
+        --$this->loopsCounter;
+
         return "<?php endforeach; ?>";
     }
 
-    protected $emptyCounter = 0;
+    protected function compileIteration(): string
+    {
+        return "((int) \$__iter{$this->shortID}_{$this->loopsCounter})";
+    }
+
     /**
      * Compile the forelse statements
      *
@@ -309,11 +331,11 @@ class Dirk extends PhpEngine
      */
     protected function compileForelse(string $expression): string
     {
-        $this->emptyCounter++;
+        ++$this->loopsCounter;
 
-        return "<?php \$__empty_{$this->emptyCounter} = true; "
-              . "foreach {$expression}: "
-              . "\$__empty_{$this->emptyCounter} = false;?>";
+        return "<?php \$__iter{$this->shortID}_{$this->loopsCounter} = 0; "
+             . "foreach {$expression}: "
+             . "++\$__iter{$this->shortID}_{$this->loopsCounter}; ?>";
     }
 
     /**
@@ -331,8 +353,9 @@ class Dirk extends PhpEngine
         ) {
             return "<?php if (empty{$expression}): ?>";
         } else {
-            $s = "<?php endforeach; if (\$__empty_{$this->emptyCounter}): ?>";
-            $this->emptyCounter--;
+            $s = "<?php endforeach; if (0 === \$__iter{$this->shortID}_{$this->loopsCounter}): ?>";
+
+            --$this->loopsCounter;
 
             return $s;
         }
@@ -384,7 +407,7 @@ class Dirk extends PhpEngine
             $expression = \substr($expression, 1, -1);
         }
 
-        return "<?php \$this->extend({$expression}) ?>";
+        return "<?php \$this->extend({$expression}); ?>";
     }
 
     /**
@@ -402,7 +425,7 @@ class Dirk extends PhpEngine
             $expression = \substr($expression, 1, -1);
         }
 
-        return "<?php include \$this->prepare({$expression}) ?>";
+        return "<?php include \$this->prepare({$expression}); ?>";
     }
 
     /**
@@ -413,7 +436,7 @@ class Dirk extends PhpEngine
      */
     protected function compileYield(string $expression): string
     {
-        return "<?= \$this->block{$expression} ?>";
+        return "<?= \$this->block{$expression}; ?>";
     }
 
     /**
@@ -424,7 +447,7 @@ class Dirk extends PhpEngine
      */
     protected function compileSection(string $expression): string
     {
-        return "<?php \$this->beginBlock{$expression} ?>";
+        return "<?php \$this->beginBlock{$expression}; ?>";
     }
 
     /**
@@ -434,7 +457,7 @@ class Dirk extends PhpEngine
      */
     protected function compileEndsection(): string
     {
-        return "<?php \$this->endBlock() ?>";
+        return "<?php \$this->endBlock(); ?>";
     }
 
     /**
@@ -444,7 +467,7 @@ class Dirk extends PhpEngine
      */
     protected function compileShow(): string
     {
-        return "<?= \$this->block(\$this->endBlock()) ?>";
+        return "<?= \$this->block(\$this->endBlock()); ?>";
     }
 
     /**
@@ -454,7 +477,7 @@ class Dirk extends PhpEngine
      */
     protected function compileAppend(): string
     {
-        return "<?php \$this->endBlock() ?>";
+        return "<?php \$this->endBlock(); ?>";
     }
 
     /**
@@ -464,7 +487,7 @@ class Dirk extends PhpEngine
      */
     protected function compileStop(): string
     {
-        return "<?php \$this->endBlock() ?>";
+        return "<?php \$this->endBlock(); ?>";
     }
 
     /**
@@ -474,6 +497,33 @@ class Dirk extends PhpEngine
      */
     protected function compileOverwrite(): string
     {
-        return "<?php \$this->endBlock(true) ?>";
+        return "<?php \$this->endBlock(true); ?>";
+    }
+
+    protected function compileSwitch(string $expression): string
+    {
+        return "<?php switch {$expression}: ?>";
+    }
+
+    protected function compileCase(string $expression): string
+    {
+        $expression = \substr($expression, 1, -1);
+
+        return "<?php case {$expression}: ?>";
+    }
+
+    protected function compileDefault(): string
+    {
+        return "<?php default: ?>";
+    }
+
+    protected function compileEndswitch(): string
+    {
+        return "<?php endswitch; ?>";
+    }
+
+    protected function compileBreak(): string
+    {
+        return "<?php break; ?>";
     }
 }

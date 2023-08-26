@@ -22,7 +22,7 @@ class FluxBB extends AbstractDriver
     /**
      * @var array
      */
-    protected $reqTables = [
+    protected array $reqTables = [
         'bans',
         'categories',
         'censoring',
@@ -45,19 +45,19 @@ class FluxBB extends AbstractDriver
     /**
      * @var string
      */
-    protected $min = '1.5.0';
+    protected string $min = '1.5.0';
 
     /**
      * @var string
      */
-    protected $max = '1.5.11';
+    protected string $max = '1.5.11';
 
     public function getType(): string
     {
         return 'FluxBB';
     }
 
-    public function test(DB $db) /* : bool|string|array */
+    public function test(DB $db): bool|string|array
     {
         if (! $this->reqTablesTest($db)) {
             if (! empty($this->error)) {
@@ -214,6 +214,10 @@ class FluxBB extends AbstractDriver
             'g_pm_limit'             => (int) ($vars['g_pm_limit'] ?? 100),
             'g_sig_length'           => 400,
             'g_sig_lines'            => 4,
+            'g_up_ext'               => 'webp,jpg,jpeg,png,gif,avif',
+            'g_up_size_kb'           => 0,
+            'g_up_limit_mb'          => 0,
+            'g_delete_profile'       => 0,
         ];
     }
 
@@ -305,7 +309,6 @@ class FluxBB extends AbstractDriver
             'show_avatars'     => (int) $vars['show_avatars'],
             'show_sig'         => (int) $vars['show_sig'],
             'timezone'         => (string) $vars['timezone'],
-            'dst'              => (int) $vars['dst'],
             'time_format'      => (int) $vars['time_format'],
             'date_format'      => (int) $vars['date_format'],
             'language'         => 'Russian' == $vars['language'] ? 'ru' : 'en',
@@ -334,6 +337,8 @@ class FluxBB extends AbstractDriver
             'last_report_id'   => 0,
             'ip_check_type'    => 0,
             'login_ip_cache'   => '',
+            'u_up_size_mb'     => 0,
+            'unfollowed_f'     => '',
         ];
     }
 
@@ -754,14 +759,14 @@ class FluxBB extends AbstractDriver
 
         $this->insertQuery = 'INSERT INTO ::forum_subscriptions (user_id, forum_id)
             SELECT (
-                    SELECT id
-                    FROM ::users
-                    WHERE id_old=?i:user_id
-                ), (
-                    SELECT id
-                    FROM ::forums
-                    WHERE id_old=?i:forum_id
-                )';
+                SELECT id
+                FROM ::users
+                WHERE id_old=?i:user_id
+            ), (
+                SELECT id
+                FROM ::forums
+                WHERE id_old=?i:forum_id
+            )';
 
         $vars = [
             ':id'  => $id,
@@ -821,14 +826,14 @@ class FluxBB extends AbstractDriver
 
         $this->insertQuery = 'INSERT INTO ::topic_subscriptions (user_id, topic_id)
             SELECT (
-                    SELECT id
-                    FROM ::users
-                    WHERE id_old=?i:user_id
-                ), (
-                    SELECT id
-                    FROM ::topics
-                    WHERE id_old=?i:topic_id
-                )';
+                SELECT id
+                FROM ::users
+                WHERE id_old=?i:user_id
+            ), (
+                SELECT id
+                FROM ::topics
+                WHERE id_old=?i:topic_id
+            )';
 
         $vars = [
             ':id'  => $id,
@@ -902,11 +907,11 @@ class FluxBB extends AbstractDriver
 
         $this->insertQuery = 'INSERT INTO ::poll (tid, question_id, field_id, qna_text, votes)
             SELECT (
-                    SELECT id
-                    FROM ::topics
-                    WHERE id_old=?i:tid
-                ),
-                ?i:question_id, ?i:field_id, ?s:qna_text, ?i:votes';
+                SELECT id
+                FROM ::topics
+                WHERE id_old=?i:tid
+            ),
+            ?i:question_id, ?i:field_id, ?s:qna_text, ?i:votes';
 
         $vars = [
             ':id'  => $id,
@@ -981,15 +986,15 @@ class FluxBB extends AbstractDriver
 
         $this->insertQuery = 'INSERT INTO ::poll_voted (tid, uid, rez)
             SELECT (
-                    SELECT id
-                    FROM ::topics
-                    WHERE id_old=?i:tid
-                ), (
-                    SELECT id
-                    FROM ::users
-                    WHERE id_old=?i:uid
-                ),
-                ?s:rez';
+                SELECT id
+                FROM ::topics
+                WHERE id_old=?i:tid
+            ), (
+                SELECT id
+                FROM ::users
+                WHERE id_old=?i:uid
+            ),
+            ?s:rez';
 
         $vars = [
             ':id'  => $id,
@@ -1199,14 +1204,14 @@ class FluxBB extends AbstractDriver
 
         $this->insertQuery = 'INSERT INTO ::pm_block (bl_first_id, bl_second_id)
             SELECT (
-                    SELECT id
-                    FROM ::users
-                    WHERE id_old=?i:bl_first_id
-                ), (
-                    SELECT id
-                    FROM ::users
-                    WHERE id_old=?i:bl_second_id
-                )';
+                SELECT id
+                FROM ::users
+                WHERE id_old=?i:bl_first_id
+            ), (
+                SELECT id
+                FROM ::users
+                WHERE id_old=?i:bl_second_id
+            )';
 
         $vars = [
             ':id'  => $id,
@@ -1247,11 +1252,11 @@ class FluxBB extends AbstractDriver
     public function bansPre(DB $db, int $id): bool
     {
         $this->insertQuery = 'INSERT INTO ::bans (username, ip, email, message, expire, ban_creator)
-            SELECT ?s:username, ?s:ip, ?s:email, ?s:message, ?i:expire, (
-                    SELECT id
-                    FROM ::users
-                    WHERE id_old=?i:ban_creator
-                )';
+            SELECT ?s:username, ?s:ip, ?s:email, ?s:message, ?i:expire, COALESCE((
+                SELECT id
+                FROM ::users
+                WHERE id_old=?i:ban_creator
+            ), 0)';
 
         $vars = [
             ':id'    => $id,
@@ -1315,7 +1320,7 @@ class FluxBB extends AbstractDriver
             ['i_fork_revision'         , $this->c->FORK_REVISION],
             ['o_board_title'           , (string) $old['o_board_title']],
             ['o_board_desc'            , (string) $old['o_board_desc']],
-            ['o_default_timezone'      , (string) $old['o_default_timezone']],
+            ['o_default_timezone'      , \date_default_timezone_get()],
             ['i_timeout_visit'         , (int) $old['o_timeout_visit']],
             ['i_timeout_online'        , (int) $old['o_timeout_online']],
             ['i_redirect_delay'        , (int) $old['o_redirect_delay']],
@@ -1363,7 +1368,6 @@ class FluxBB extends AbstractDriver
             ['o_rules_message'         , (string) $old['o_rules_message']],
             ['b_maintenance'           , '1' == $old['o_maintenance'] ? 1 : 0],
             ['o_maintenance_message'   , (string) $old['o_maintenance_message']],
-            ['b_default_dst'           , '1' == $old['o_default_dst'] ? 1 : 0],
             ['i_feed_type'             , (int) $old['o_feed_type']],
             ['i_feed_ttl'              , (int) $old['o_feed_ttl']],
             ['b_message_bbcode'        , '1' == $old['p_message_bbcode'] ? 1 : 0],
@@ -1383,12 +1387,12 @@ class FluxBB extends AbstractDriver
                 [
                     'number' => 1,
                     'time'   => \time(),
-                ], self::JSON_OPTIONS
+                ], FORK_JSON_ENCODE
             )],
-            ['a_bb_white_mes'          , \json_encode([], self::JSON_OPTIONS)],
-            ['a_bb_white_sig'          , \json_encode(['b', 'i', 'u', 'color', 'colour', 'email', 'url'], self::JSON_OPTIONS)],
-            ['a_bb_black_mes'          , \json_encode([], self::JSON_OPTIONS)],
-            ['a_bb_black_sig'          , \json_encode([], self::JSON_OPTIONS)],
+            ['a_bb_white_mes'          , \json_encode([], FORK_JSON_ENCODE)],
+            ['a_bb_white_sig'          , \json_encode(['b', 'i', 'u', 'color', 'colour', 'email', 'url'], FORK_JSON_ENCODE)],
+            ['a_bb_black_mes'          , \json_encode([], FORK_JSON_ENCODE)],
+            ['a_bb_black_sig'          , \json_encode([], FORK_JSON_ENCODE)],
             ['a_guest_set'             , \json_encode(
                 [
                     'show_smilies' => 1,
@@ -1396,9 +1400,20 @@ class FluxBB extends AbstractDriver
                     'show_avatars' => 1,
                     'show_img'     => 1,
                     'show_img_sig' => 1,
-                ], self::JSON_OPTIONS
+                ], FORK_JSON_ENCODE
             )],
             ['s_РЕГИСТР'               , 'Ok'],
+            ['b_oauth_allow'           , 0],
+            ['i_avatars_quality'       , 75],
+            ['b_upload'                , 0],
+            ['i_upload_img_quality'    , 75],
+            ['i_upload_img_axis_limit' , 1920],
+            ['s_upload_img_outf'       , 'webp,jpg,png,gif'],
+            ['i_search_ttl'            , 900],
+            ['b_ant_hidden_ch'         , 1],
+            ['b_ant_use_js'            , 0],
+            ['s_meta_desc'             , ''],
+            ['a_og_image'              , \json_encode([], FORK_JSON_ENCODE)],
         ];
 
         return true;

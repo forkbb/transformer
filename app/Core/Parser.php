@@ -15,15 +15,8 @@ use ForkBB\Core\Container;
 
 class Parser extends Parserus
 {
-    /**
-     * Контейнер
-     * @var Container
-     */
-    protected $c;
-
-    public function __construct(int $flag, Container $container)
+    public function __construct(int $flag, protected Container $c)
     {
-        $this->c = $container;
         parent::__construct($flag);
         $this->init();
     }
@@ -61,6 +54,10 @@ class Parser extends Parserus
         $this->setAttr('baseUrl', $this->c->BASE_URL);
         $this->setAttr('showImg', 1 === $this->c->user->show_img);
         $this->setAttr('showImgSign', 1 === $this->c->user->show_img_sig);
+        $this->setAttr(
+            'hashtagLink',
+            1 === $this->c->user->g_search ? $this->c->Router->link('Search', ['keywords' => 'HASHTAG']) : null
+        );
     }
 
     /**
@@ -77,7 +74,7 @@ class Parser extends Parserus
                     : $this->c->config->a_bb_white_sig
                 )
                 : [];
-            $blackList = null;
+            //$blackList = null;
         } else {
             $whiteList = 1 === $this->c->config->b_message_bbcode
                 ? (empty($this->c->config->a_bb_white_mes) && empty($this->c->config->a_bb_black_mes)
@@ -85,8 +82,10 @@ class Parser extends Parserus
                     : $this->c->config->a_bb_white_mes
                 )
                 : [];
-            $blackList = null;
+            //$blackList = null;
         }
+
+        $blackList = 1 === $this->c->user->g_post_links ? null : ['email', 'url', 'img'];
 
         $this->setAttr('isSign', $isSignature)
              ->setWhiteList($whiteList)
@@ -97,6 +96,9 @@ class Parser extends Parserus
         if (1 === $this->c->config->b_make_links) {
             $this->detectUrls();
         }
+
+        // создание хэштегов
+        $this->detect('hashtag', '%(?<=^|\s|\n|\r)#(?=[\p{L}\p{N}_]{3})[\p{L}\p{N}]+(?:_+[\p{L}\p{N}]+)*(?=$|\s|\n|\r|\.|,)%u', true);
 
         return \preg_replace('%^(\x20*\n)+|(\n\x20*)+$%D', '', $this->getCode());
     }
@@ -148,5 +150,25 @@ class Parser extends Parserus
         }
 
         return $this->getHtml();
+    }
+
+    /**
+     * Флаг использования встроенных стилей
+     */
+    protected bool $flagInlneStyle = false;
+
+    /**
+     * Устанавливает/возвращает флаг использования встроенных стилей в ббкодах
+     * (обработчик ббкода должен вызвать этот метод со значением true)
+     */
+    public function inlineStyle(bool $flag = null): bool
+    {
+        $prev = $this->flagInlneStyle;
+
+        if (true === $flag) {
+            $this->flagInlneStyle = $flag;
+        }
+
+        return $prev;
     }
 }

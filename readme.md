@@ -7,20 +7,22 @@ Transformer is a script to convert/merge another forum's database to/with ForkBB
 ## Note
 
 Supports (convert/merge):
-1. ForkBB rev.42 - rev.49
+1. ForkBB rev.42 - rev.68
 2. FluxBB_by_Visman rev.51 - rev.83
 3. FluxBB 1.5.0 - 1.5.11
 
 ## Requirements
 
-* PHP 7.3+
+* PHP 8.0+
 * PHP extensions: pdo, intl, json, mbstring, fileinfo
-* PHP extensions (suggests): imagick or gd (for upload avatars and other images), openssl (for send email via smtp server using SSL/TLS)
-* A database such as MySQL 5.5.3+, SQLite 3.25+, PostgreSQL 10+
+* PHP extensions (suggests): imagick or gd (for upload avatars and other images), openssl (for send email via smtp server using SSL/TLS), curl (for OAuth)
+* A database such as MySQL 5.5.3+ (an extension using the mysqlnd driver must be enabled), SQLite 3.25+, PostgreSQL 10+
 
 ## Install
 
 ### For Apache:
+
+Apache must have **mod_rewrite** and **mod_headers** enabled. Also, the **AllowOverride** directive must be set to **All**.
 
 Two options
 1. Document Root != **public** folder:
@@ -58,7 +60,8 @@ P.S. If you see the contents of the file in both cases, then something went wron
 
 ## Links
 
-* Development: https://github.com/forkbb/transformer
+* Homepage: https://forkbb.ru/
+* GitHub: https://github.com/forkbb/transformer
 
 ## License
 

@@ -19,36 +19,31 @@ abstract class AbstractStatement extends DBStatement
 {
     /**
      * Типы столбцов полученные через getColumnMeta()
-     * @var array
      */
-    protected $columnsType;
+    protected ?array $columnsType = null;
 
     /**
      * Режим выборки установленный через setFetchMode()/fetchAll()
-     * @var int
      */
-    protected $fetchMode;
+    protected int $fetchMode = 0;
 
     /**
      * colno, class или object из setFetchMode()/fetchAll()
-     * @var mixed
      */
-    protected $fetchArg;
+    protected mixed $fetchArg;
 
     /**
      * constructorArgs из setFetchMode()/fetchAll()
-     * @var array
      */
-    protected $ctorArgs;
+    protected ?array $ctorArgs = null;
 
     /**
      * Флаг успешного завершения fetch() для PDO::FETCH_COLUMN
-     * @var bool
      */
-    protected $okFetchColumn;
+    protected bool $okFetchColumn;
 
     abstract public function getColumnsType(): array;
-    abstract protected function convToBoolean(/* mixed */ $value): bool;
+    abstract protected function convToBoolean(mixed $value): bool;
 
     protected function setFetchVars(int $mode, ...$args): void
     {
@@ -75,7 +70,7 @@ abstract class AbstractStatement extends DBStatement
         return $this->stmt->setFetchMode($mode, ...$args);
     }
 
-    public function fetch(int $mode = 0, int $orientation = PDO::FETCH_ORI_NEXT, int $offset = 0) /* : mixed */
+    public function fetch(int $mode = 0, int $orientation = PDO::FETCH_ORI_NEXT, int $offset = 0): mixed
     {
         $this->okFetchColumn = false;
 
@@ -184,10 +179,7 @@ abstract class AbstractStatement extends DBStatement
                         \array_shift($data);;
                     }
 
-                    if (! isset($result[$key])) {
-                        $result[$key] = [];
-                    }
-
+                    $result[$key] ??= [];
                     $result[$key][] = $data;
                 }
 

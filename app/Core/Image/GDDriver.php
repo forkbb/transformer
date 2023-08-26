@@ -25,16 +25,21 @@ class GDDriver extends DefaultDriver
         $this->ready = \extension_loaded('gd') && \function_exists('\\imagecreatetruecolor');
     }
 
-    public function readFromStr(string $data) /* : mixed|false */
+    public function readFromStr(string $data): mixed
     {
-        return $this->tuning($this->ready ? \imagecreatefromstring($data) : false);
+        if ($this->isBadData(\substr($data, 0, 64))) {
+            return false;
+        } else {
+            return $this->tuning($this->ready ? \imagecreatefromstring($data) : false);
+        }
     }
 
-    public function readFromPath(string $path) /* : mixed|false */
+    public function readFromPath(string $path): mixed
     {
         if (
             ! $this->ready
             || $this->files->isBadPath($path)
+            || $this->isBadData(\file_get_contents($path, false, null, 0, 64))
         ) {
             return false;
         } else {
@@ -42,7 +47,22 @@ class GDDriver extends DefaultDriver
         }
     }
 
-    protected function tuning(/* mixed */ $image) /* : mixed */
+    protected function isBadData(string $data): bool
+    {
+        if (
+            8 === \strpos($data, 'WEBP')
+            && (
+                \strpos($data, 'ANIM')
+                || \strpos($data, 'ANMF')
+            )
+        ) {
+            return true;
+        }
+
+        return false;
+    }
+
+    protected function tuning(mixed $image): mixed
     {
         if (
             false !== $image
@@ -57,7 +77,7 @@ class GDDriver extends DefaultDriver
         }
     }
 
-    public function writeToPath(/* mixed */ $image, string $path, int $quality): ?bool
+    public function writeToPath(mixed $image, string $path, int $quality): ?bool
     {
         $args = [$image, $path];
         $type = \pathinfo($path, \PATHINFO_EXTENSION);
@@ -66,12 +86,20 @@ class GDDriver extends DefaultDriver
             case 'gif':
                 break;
             case 'png':
-                $args[] = (int) \floor((100 - $quality) / 11);
+                $args[] = 9; //(int) \floor((100 - $quality) / 11);
                 break;
             case 'jpg':
-                $type = 'jpeg';
+                $type   = 'jpeg';
+                $args[] = $quality;
+                break;
             case 'webp':
             case 'avif':
+                if (\imagecolorstotal($image) > 0) {
+                    \imagepalettetotruecolor($image);
+
+                    $args = [$this->tuning($image), $path];
+                }
+
                 $args[] = $quality;
                 break;
             default:
@@ -87,7 +115,7 @@ class GDDriver extends DefaultDriver
         }
     }
 
-    public function resize(/* mixed */ $image, int $maxW, int $maxH) /* : mixed */
+    public function resize(mixed $image, int $maxW, int $maxH): mixed
     {
         if (! $this->ready) {
             throw new FileException('GD library not enabled');
@@ -135,10 +163,13 @@ class GDDriver extends DefaultDriver
         return $result;
     }
 
-    public function destroy(/* mixed */ $image): void
+    public function width(mixed $image): int
     {
-        if (\is_resource($image)) {
-            \imagedestroy($image);
-        }
+        return \imagesx($image);
+    }
+
+    public function height(mixed $image): int
+    {
+        return \imagesy($image);
     }
 }

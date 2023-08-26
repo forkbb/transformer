@@ -1,0 +1,312 @@
+:root {
+  --c-fprimary: hsl(40, 16%, 93%);
+  --bg-fprimary: hsl(0, 0%, 16%);
+  --br-fprimary: hsl(0, 0%, 34%);
+  --bg-like-br1: hsl(0, 18%, 30%);
+  --c-a-and-btn: hsl(50, 100%, 50%);
+  --c-fh1: hsl(0, 0%, 80%);
+  --bg-fh1: hsl(220, 5%, 12%);
+  --br-fh1: hsl(0, 0%, 80%);
+  --c-icon-sub: hsl(0, 0%, 70%);
+  --c-focus: hsl(220, 5%, 12%);
+  --bg-focus: hsl(50, 100%, 50%);
+  --bg-post-h: hsl(0, 20%, 26%);
+  --bg-post-b: hsl(0, 0%, 26%);
+  --bg-fann: hsl(0, 0%, 21%);
+  --bg-submenu: hsl(0, 0%, 20%);
+  --bg-stats: hsl(0, 0%, 21%);
+  --c-active: hsl(40, 16%, 93%);
+  --c-nav-focus: hsl(220, 5%, 12%);
+  --bg-active: hsl(220, 5%, 12%);
+  --bg-btn: hsl(0, 0%, 21%);
+  --bg-nav: hsl(0, 0%, 19%);
+  --bg-like-nav: hsl(0, 0%, 19%);
+  --c-light: hsl(40, 16%, 93%);
+  --c-tsticky: hsl(0, 100%, 50%);
+  --c-faggr: hsl(357, 75%, 50%);
+  --c-faggr-pr: hsl(0, 0%, 20%);
+  --bg-faggr: hsl(0, 100%, 86%);
+  --c-tclosed: hsl(0, 0%, 45%);
+  --c-tpoll: hsl(50, 100%, 50%);
+  --c-req: hsl(0, 100%, 50%);
+  --bg-bbcode: hsl(220, 5%, 16%);
+  --br-bbcode: hsl(0, 0%, 75%);
+  --bg-poll-res: hsl(50, 100%, 50%);
+  --c-sel: hsl(0, 0%, 0%);
+  --bg-sel: hsl(0, 0%, 60%);
+}
+
+html,
+body,
+a,
+abbr,
+acronym,
+address,
+applet,
+article,
+aside,
+audio,
+b,
+big,
+blockquote,
+canvas,
+caption,
+center,
+cite,
+code,
+dd,
+del,
+details,
+dfn,
+div,
+dl,
+dt,
+em,
+embed,
+fieldset,
+figcaption,
+figure,
+footer,
+form,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+header,
+hgroup,
+i,
+iframe,
+img,
+input,
+ins,
+kbd,
+label,
+legend,
+li,
+main,
+mark,
+menu,
+nav,
+object,
+ol,
+output,
+p,
+pre,
+q,
+ruby,
+s,
+samp,
+section,
+small,
+span,
+strike,
+strong,
+sub,
+summary,
+sup,
+table,
+tbody,
+td,
+textarea,
+tfoot,
+th,
+thead,
+time,
+tr,
+tt,
+u,
+ul,
+var,
+video {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font: inherit;
+  box-sizing: border-box;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  outline: none;
+}
+
+body {
+  color: var(--c-fprimary);
+  background-color: var(--bg-post-b); /*var(--bg-fprimary);*/
+  font-family: -apple-system, system-ui, sans-serif;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+html {
+  height: 100%;
+}
+
+.ios {
+  /* Needed for iOS scrolling bug fix */
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.ios body {
+  /* Needed for iOS scrolling bug fix */
+  position: relative;
+  overflow: auto;
+}
+
+body {
+  /* Needed to make sure body covers the whole editor and that
+    long lines don't cause horizontal scrolling */
+  min-height: 100%;
+  word-wrap: break-word;
+}
+
+body.placeholder::before {
+  content: attr(placeholder);
+  color: #555;
+  font-style: italic;
+}
+
+ol {
+  list-style-type: decimal;
+  list-style-position: outside;
+  padding-inline-start: 1.5rem;
+}
+
+ul {
+  list-style-type: disc;
+  list-style-position: outside;
+  padding-inline-start: 1.5rem;
+}
+
+code {
+  display: block;
+  white-space: pre;
+  margin: 0 0.625rem;
+  padding: 0.625rem;
+  background-color: var(--bg-bbcode);
+  border: 0.0625rem solid var(--br-bbcode);
+  overflow: auto;
+  max-height: 45rem;
+  min-height: 2rem;
+  font-family: ui-monospace, "Cascadia Code", "Source Code Pro", Menlo, Consolas, "DejaVu Sans Mono", monospace;
+}
+
+blockquote {
+  border-inline-start: 0.1875rem solid var(--br-fprimary);
+  border-top: 0.0625rem solid var(--br-fprimary);
+  padding: 0.625rem;
+}
+
+blockquote cite {
+  display: block;
+  padding: 0.625rem;
+  background-color: var(--bg-like-nav);
+  margin: -0.625rem -0.625rem 0.625rem -0.625rem;
+}
+
+a {
+  color: var(--c-a-and-btn);
+  cursor: pointer;
+  text-decoration: none;
+}
+
+a:hover, a:focus {
+  background-color: var(--bg-focus);
+}
+
+table {
+  border-collapse: collapse;
+  border: 0.0625rem solid var(--c-fprimary);
+}
+
+td, th {
+  border: 0.0625rem solid var(--c-fprimary);
+  empty-cells: show;
+  padding: 0.3125rem;
+  min-width: 1rem;
+}
+
+th {
+  background-color: var(--bg-post-h);
+}
+
+b,
+strong {
+  font-weight: bold;
+}
+
+i,
+em {
+ font-style: italic;
+}
+
+s {
+  text-decoration: line-through;
+}
+
+u {
+  text-decoration: underline;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+span.f-bb-mono {
+  border: 0.0625rem solid var(--br-bbcode);
+  background-color: var(--bg-bbcode);
+  padding: 0 0.25rem;
+  font-family: ui-monospace, "Cascadia Code", "Source Code Pro", Menlo, Consolas, "DejaVu Sans Mono", monospace;
+}
+
+summary {
+  cursor: pointer;
+  margin-bottom: 0.625rem;
+}
+
+summary::after {
+  display: inline-block;
+  content: "(click to open)";
+  font-size: 0.875rem;
+  margin: 0 0.3125rem;
+  opacity: 0.6;
+}
+
+details[open] > summary::after {
+  content: "(click to close)";
+}
+
+div.f-bb-s-body {
+  padding: 0.625rem;
+  border-inline-start: 0.1875rem solid var(--br-fprimary);
+}
+
+span.f-bb-hashtag {
+  color: var(--c-a-and-btn);
+  border-bottom-style: dashed;
+  border-bottom-width: 0.0625rem;
+}
+
+code:not(:first-child),
+blockquote:not(:first-child),
+table:not(:first-child),
+img:not(:first-child),
+details:not(:first-child) {
+  margin-top: 0.5rem;
+}
+
+code:not(:last-child),
+blockquote:not(:last-child),
+table:not(:last-child),
+img:not(:last-child),
+details:not(:last-child) {
+  margin-bottom: 0.5rem;
+}
+
+::selection {
+  /*color: var(--c-sel);*/
+  background-color: var(--bg-sel);
+  text-shadow: -0.0625rem 0 0 var(--c-sel), 0.0625rem 0 0 var(--c-sel), 0 -0.0625rem 0 var(--c-sel), 0 0.0625rem 0 var(--c-sel);
+}

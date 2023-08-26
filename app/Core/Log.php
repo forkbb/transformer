@@ -21,23 +21,14 @@ use Throwable;
 
 class Log implements LoggerInterface
 {
-    const JSON_OPTIONS = \JSON_UNESCAPED_SLASHES | \JSON_UNESCAPED_UNICODE | \JSON_THROW_ON_ERROR;
-
-    /**
-     * Контейнер
-     * @var Container
-     */
-    protected $c;
-
-    protected $path;
-    protected $lineFormat;
-    protected $timeFormat;
+    protected string $path;
+    protected string $lineFormat;
+    protected string $timeFormat;
     protected $resource;
-    protected $hidePath;
+    protected string $hidePath;
 
-    public function __construct(array $config, Container $c)
+    public function __construct(array $config, protected Container $c)
     {
-        $this->c          = $c;
         $this->path       = $config['path']       ?? __DIR__ . '/../log/{Y-m-d}.log';
         $this->lineFormat = $config['lineFormat'] ?? "%datetime% [%level_name%] %message%\t%context%\n";
         $this->timeFormat = $config['timeFormat'] ?? 'Y-m-d H:i:s';
@@ -69,13 +60,10 @@ class Log implements LoggerInterface
             && \method_exists($message, '__toString')
         ) {
             $message = (string) $message;
-        }
 
-        if (! \is_string($message)) {
+        } elseif (! \is_string($message)) {
             throw new InvalidArgumentException('Expected string in message');
         }
-
-        $message = $this->c->Secury->replInvalidChars($message);
 
         if (! \is_string($level)) {
             throw new InvalidArgumentException('Expected string in level');
@@ -95,9 +83,12 @@ class Log implements LoggerInterface
                 throw new InvalidArgumentException('Invalid level value');
         }
 
-        $context = $this->c->Secury->replInvalidChars($context);
         $context = $this->contextExp($level, $context);
-        $line    = $this->generateLine($level, $message, $context);
+        $line    = $this->generateLine(
+            $level,
+            $this->c->Secury->replInvalidChars($message),
+            $context
+        );
 
         if (! \is_resource($this->resource)) {
             $this->initResource();
@@ -131,9 +122,12 @@ class Log implements LoggerInterface
         if (true === $ext) {
             foreach ($_SERVER as $key => $value) {
                 if (
-                    'HTTP_' === \substr($key, 0, 5)
-                    && 'HTTP_USER_AGENT' !== $key
-                    && 'HTTP_COOKIE' !== $key
+                    'REQUEST_METHOD' === $key
+                    || (
+                        \str_starts_with($key, 'HTTP_')
+                        && 'HTTP_USER_AGENT' !== $key
+                        && 'HTTP_COOKIE' !== $key
+                    )
                 ) {
                     $headers[$key] = $value;
                 }
@@ -208,7 +202,7 @@ class Log implements LoggerInterface
             '%datetime%'   => $dt->format($this->timeFormat),
             '%level_name%' => $level,
             '%message%'    => \addcslashes($message, "\0..\37\\"),
-            '%context%'    => \json_encode($context, self::JSON_OPTIONS),
+            '%context%'    => \json_encode($context, FORK_JSON_ENCODE | \JSON_INVALID_UTF8_SUBSTITUTE),
         ];
 
         return \strtr($this->lineFormat, $result);

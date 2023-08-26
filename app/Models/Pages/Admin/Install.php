@@ -67,7 +67,7 @@ class Install extends Admin
             ! isset($args['key'], $this->settings['key'])
             || $args['key'] !== $this->settings['key']
         ) {
-            $this->fIswev = ['e', 'Script key error'];
+            $this->fIswev = [FORK_MESS_ERR, 'Script key error'];
         } elseif (
             (
                 isset($this->settings['db'])
@@ -78,7 +78,7 @@ class Install extends Admin
                 && null !== $dbFlag
             )
         ) {
-            $this->fIswev = ['e', 'Invalid DB status flag'];
+            $this->fIswev = [FORK_MESS_ERR, 'Invalid DB status flag'];
         } else {
             $this->toCache($this->settings);
         }
@@ -131,12 +131,13 @@ class Install extends Admin
             $this->c->DIR_CONFIG . '/db',
             $this->c->DIR_CACHE,
             $this->c->DIR_PUBLIC . '/img/avatars',
+            $this->c->DIR_PUBLIC . '/upload',
         ];
 
         foreach ($folders as $folder) {
             if (! \is_writable($folder)) {
                 $folder       = \str_replace(\dirname($this->c->DIR_APP), '', $folder);
-                $this->fIswev = ['e', ['Alert folder', $folder]];
+                $this->fIswev = [FORK_MESS_ERR, ['Alert folder %s', $folder]];
             }
         }
 
@@ -144,7 +145,7 @@ class Install extends Admin
         $config = \file_get_contents($this->c->DIR_CONFIG . '/main.dist.php');
 
         if (false === $config) {
-            $this->fIswev = ['e', 'No access to main.dist.php'];
+            $this->fIswev = [FORK_MESS_ERR, 'No access to main.dist.php'];
         }
 
         unset($config);
@@ -152,16 +153,16 @@ class Install extends Admin
         $langs = $this->c->Func->getNameLangs();
 
         if (empty($langs)) {
-            $this->fIswev = ['e', 'No language packs'];
+            $this->fIswev = [FORK_MESS_ERR, 'No language packs'];
         }
 
         if (isset($this->settings['key'])) {
-            $this->fIswev = ['e', 'Script runs error'];
+            $this->fIswev = [FORK_MESS_ERR, 'Script runs error'];
         }
 
         if (
             'POST' === $method
-            && empty($this->fIswev['e'])
+            && empty($this->fIswev[FORK_MESS_ERR])
         ) {
             $v = $this->c->Validator->reset()
                 ->addRules([
@@ -204,14 +205,14 @@ class Install extends Admin
         $this->dbTypes = $this->DBTypes(true);
 
         if (empty($this->dbTypes)) {
-            $this->fIswev = ['e', 'No DB extensions'];
+            $this->fIswev = [FORK_MESS_ERR, 'No DB extensions'];
         }
 
         $v = null;
 
         if (
             'POST' === $method
-            && empty($this->fIswev['e'])
+            && empty($this->fIswev[FORK_MESS_ERR])
         ) {
             $v = $this->c->Validator->reset()
                 ->addValidators([
@@ -269,14 +270,14 @@ class Install extends Admin
         $this->dbTypes = $this->DBTypes();
 
         if (empty($this->dbTypes)) {
-            $this->fIswev = ['e', 'No DB extensions'];
+            $this->fIswev = [FORK_MESS_ERR, 'No DB extensions'];
         }
 
         $v = null;
 
         if (
             'POST' === $method
-            && empty($this->fIswev['e'])
+            && empty($this->fIswev[FORK_MESS_ERR])
         ) {
             $v = $this->c->Validator->reset()
                 ->addValidators([
@@ -331,7 +332,7 @@ class Install extends Admin
 
         if (
             'POST' === $method
-            && empty($this->fIswev['e'])
+            && empty($this->fIswev[FORK_MESS_ERR])
         ) {
             $v = $this->c->Validator->reset()
                 ->addValidators([
@@ -374,7 +375,7 @@ class Install extends Admin
     {
         $this->verifyKey($args);
 
-        if (! empty($this->fIswev['e'])) {
+        if (! empty($this->fIswev[FORK_MESS_ERR])) {
             return $this;
         }
 
@@ -426,7 +427,7 @@ class Install extends Admin
     {
         $this->verifyKey($args, 'config');
 
-        if (! empty($this->fIswev['e'])) {
+        if (! empty($this->fIswev[FORK_MESS_ERR])) {
             return $this;
         } elseif (TRANSFORMER_MERGE === $this->settings['receiverInfo']['method']) {
             $this->settings['db'] = 'ok';
@@ -442,7 +443,7 @@ class Install extends Admin
 
         if (
             'POST' === $method
-            && empty($this->fIswev['e'])
+            && empty($this->fIswev[FORK_MESS_ERR])
         ) {
             $v = $this->c->Validator->reset()
                 ->addValidators([
@@ -516,17 +517,17 @@ class Install extends Admin
     {
         $this->verifyKey($args, 'ok');
 
-        if (! empty($this->fIswev['e'])) {
+        if (! empty($this->fIswev[FORK_MESS_ERR])) {
             return $this;
         }
 
-        $this->fIswev = ['s', 'Database ready'];
+        $this->fIswev = [FORK_MESS_SUCC, 'Database ready'];
 
         if (TRANSFORMER_MERGE !== $this->settings['receiverInfo']['method']) {
             $this->fIswev = ['i', 'Config file is generated'];
         }
 
-        $this->fIswev = ['w', 'Instruction'];
+        $this->fIswev = [FORK_MESS_WARN, 'Instruction'];
 
         return $this;
     }
@@ -569,10 +570,9 @@ class Install extends Admin
             ],
             'sets'   => [
                 'db-info' => [
-                    'info' => [
+                    'inform' => [
                         [
-                            'value' => __($this->formTitle),
-                            'html'  => true,
+                            'message' => $this->formTitle,
                         ],
                     ],
                 ],
@@ -662,9 +662,9 @@ class Install extends Admin
                     ],
                 ],
                 'sourceinfo' => [
-                    'info' => [
+                    'inform' => [
                         [
-                            'value' => __('Source legend'),
+                            'message' => 'Source legend',
                         ],
                     ],
                 ],
@@ -723,9 +723,9 @@ class Install extends Admin
                     ],
                 ],
                 'receiverinfo' => [
-                    'info' => [
+                    'inform' => [
                         [
-                            'value' => __('Receiver legend'),
+                            'message' => 'Receiver legend',
                         ],
                     ],
                 ],

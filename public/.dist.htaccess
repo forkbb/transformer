@@ -1,3 +1,7 @@
+#
+# This .htaccess for AllowOverride All
+# https://httpd.apache.org/docs/2.4/mod/core.html#allowoverride
+#
 AddDefaultCharset UTF-8
 
 <IfModule mod_autoindex.c>
@@ -12,19 +16,29 @@ AddDefaultCharset UTF-8
   RewriteCond %{REQUEST_URI} !^/style/
   RewriteCond %{REQUEST_URI} !^/img/
   RewriteCond %{REQUEST_URI} !^/js/
+  RewriteCond %{REQUEST_URI} !^/upload/
   RewriteCond %{REQUEST_URI} !^/favicon\.ico$
+  RewriteCond %{REQUEST_URI} !^/apple-touch-icon\.png$
   RewriteCond %{REQUEST_URI} !^/robots\.txt$
   RewriteRule . index.php [L]
 
-  RewriteRule \.dist\. index.php [L]
+  <IfModule !litespeed>
+    RewriteRule \.dist\. index.php [L]
 
-  RewriteCond %{REQUEST_URI} \.v\.[0-9]
-  RewriteRule ^(.+)\.v\.[0-9]+\.([^.\\/]++)$ $1.$2 [L]
+    RewriteCond %{REQUEST_URI} \.v\.[0-9]
+    RewriteRule ^(.+)\.v\.[0-9]+\.([^.\\/]++)$ $1.$2 [L]
+  </IfModule>
+  <IfModule litespeed>
+    RewriteRule \.dist\. index.php
+
+    RewriteCond %{REQUEST_URI} \.v\.[0-9]
+    RewriteRule ^(.+)\.v\.[0-9]+\.([^.\\/]++)$ $1.$2
+  </IfModule>
 </IfModule>
 
 # Set Cache-Control header for caching statics
 <ifModule mod_headers.c>
-  <FilesMatch "\.(css|js|gif|png|jpg|jpeg|webp|woff|woff2)$">
+  <FilesMatch "\.(css|js|gif|png|jpg|jpeg|webp|avif|woff|woff2)$">
     Header set Cache-Control "public,max-age=31536000,immutable"
     Header unset ETag
   </FilesMatch>

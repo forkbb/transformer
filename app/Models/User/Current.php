@@ -46,7 +46,6 @@ class Current extends Action
         if ($user->isGuest) {
             $user->__isBot    = $this->isBot($user->userAgent);
             $user->__timezone = $this->c->config->o_default_timezone;
-            $user->__dst      = $this->c->config->b_default_dst;
             $user->__language = $this->getLangFromHTTP();
         } else {
             $user->__isBot = false;
@@ -75,7 +74,7 @@ class Current extends Action
             $vars = [
                 ':id' => $id,
             ];
-            $query = 'SELECT u.*, g.*, o.logged
+            $query = 'SELECT u.*, g.*, o.logged, o.o_position
                 FROM ::users AS u
                 INNER JOIN ::groups AS g ON u.group_id=g.g_id
                 LEFT JOIN ::online AS o ON o.user_id=u.id
@@ -88,7 +87,7 @@ class Current extends Action
             $vars = [
                 ':ip' => $ip,
             ];
-            $query = 'SELECT o.logged, o.last_post, o.last_search
+            $query = 'SELECT o.logged, o.last_post, o.last_search, o.o_position
                 FROM ::online AS o
                 WHERE o.user_id=0 AND o.ident=?s:ip';
 
@@ -116,137 +115,102 @@ class Current extends Action
         return \trim($this->c->Secury->replInvalidChars($_SERVER['HTTP_USER_AGENT'] ?? ''));
     }
 
+    protected string $defRegex = '%(?:^|[ ()])\b([\w .-]*{}[\w/.!-]*)%i';
+    protected array $botSearchList = [
+        'bot'        => ['%(?<!cu)bot(?!tle)%'],
+        'crawl'      => [''],
+        'spider'     => ['%spider(?![\w ]*build/)%'],
+        'google'     => ['%google(?:\w| |;|\-(?!tr))%'],
+        'wordpress'  => ['', '%(wordpress)%i'],
+        'compatible' => ['%compatible(?!;\ msie)%', '%compatible[;) (]+([\w ./!-]+)%i']
+    ];
+
     /**
-     * Проверка на робота
-     * Если робот, то возврат имени
+     * Определяет бота
+     * Если бот, то возвращает вычисленное имя
      */
-    protected function isBot(string $agent) /* string|false */
+    protected function isBot(string $agent): string|false
     {
-        if ('' == $agent) {
-            return false;
+        $status = (int) (
+            empty($_SERVER['HTTP_ACCEPT'])
+            || empty($_SERVER['HTTP_ACCEPT_ENCODING'])
+            || empty($_SERVER['HTTP_ACCEPT_LANGUAGE'])
+        );
+
+        if ('' === $agent) {
+            return $status ? 'Unknown' : false;
         }
+
         $agentL = \strtolower($agent);
 
         if (
-            false !== \strpos($agentL, 'bot')
-            || false !== \strpos($agentL, 'spider')
-            || false !== \strpos($agentL, 'crawler')
-            || false !== \strpos($agentL, 'http')
+            false !== ($pos = \strpos($agentL, 'http:'))
+            || false !== ($pos = \strpos($agentL, 'https:'))
+            || false !== ($pos = \strpos($agentL, 'www.'))
         ) {
-            return $this->nameBot($agent, $agentL);
+            $status = 1;
+            $agent  = \substr($agent, 0, $pos);
+            $agentL = \strtolower($agent);
+        }
+
+        foreach ($this->botSearchList as $needle => $regex) {
+            if (
+                false !== \strpos($agentL, $needle)
+                && (
+                    '' == $regex[0]
+                    || \preg_match($regex[0], $agentL)
+                )
+                && \preg_match($regex[1] ?? \str_replace('{}', $needle, $this->defRegex), $agent, $match)
+            ) {
+                $status = 2;
+                $agent  = $match[1];
+                break;
+            }
         }
 
         if (
-            false !== \strpos($agent, 'Mozilla/')
+            0 === $status
             && (
-                false !== \strpos($agent, 'Gecko')
+                ! \str_starts_with($agent, 'Mozilla/')
                 || (
-                    false !== \strpos($agent, '(compatible; MSIE ')
-                    && false !== \strpos($agent, 'Windows')
+                    false === \strpos($agent, ' Gecko')
+                    && false === \strpos($agent, ' MSIE ')
                 )
             )
+            && ! \str_starts_with($agent, 'Opera/')
         ) {
+            $status = 1;
+        }
+
+        if (0 === $status) {
             return false;
-        } elseif (
-            false !== \strpos($agent, 'Opera/')
-            && false !== \strpos($agent, 'Presto/')
-        ) {
-            return false;
         }
 
-        return $this->nameBot($agent, $agentL);
-    }
+        $reg = [
+            '%Mozilla\S+%',
+            '%[^\w/.-]+%',
+            '%(?:_| |-|\b)bot(?:_| |-|\b)%i',
+            '%(?<=^|\s)[^a-zA-Z\s]{1,2}(?:\s|$)%',
+            '%/\S*+\K.+%',
+        ];
+        $rep = [
+            '',
+            ' ',
+            '',
+            '',
+            '',
+        ];
 
-    /**
-     * Выделяет имя робота из юзерагента
-     */
-    protected function nameBot(string $agent, string $agentL): string
-    {
-        if (false !== \strpos($agentL, 'mozilla')) {
-            $agent = \preg_replace('%Mozilla.*?compatible%i', ' ', $agent);
-        }
-        if (false !== \strpos($agentL, 'http') || false !== \strpos($agentL, 'www.')) {
-            $agent = \preg_replace('%(?:https?://|www\.)[^\)]*(\)[^/]+$)?%i', ' ', $agent);
-        }
-        if (false !== \strpos($agent, '@')) {
-            $agent = \preg_replace('%\b[a-z0-9_\.-]+@[^\)]+%i', ' ', $agent);
-        }
-
-        $agentL = \strtolower($agent);
-        if (
-            false !== \strpos($agentL, 'bot')
-            || false !== \strpos($agentL, 'spider')
-            || false !== \strpos($agentL, 'crawler')
-            || false !== \strpos($agentL, 'engine')
-        ) {
-            $f = true;
-            $p = '%(?<=[^a-z\d\.-])(?:robot|bot|spider|crawler)\b.*%i';
-        } else {
-            $f = false;
-            $p = '%^$%';
-        }
+        $agent = \trim(\preg_replace($reg, $rep, $agent));
 
         if (
-            $f
-            && \preg_match('%\b(([a-z\d\.! _-]+)?(?:robot|(?<!ro)bot|spider|crawler|engine)(?(2)[a-z\d\.! _-]*|[a-z\d\.! _-]+))%i', $agent, $matches)
+            empty($agent)
+            || isset($agent[28])
         ) {
-            $agent = $matches[1];
-
-            $pat = [
-                $p,
-                '%[^a-z\d\.!-]+%i',
-                '%(?<=^|\s|-)v?\d+\.\d[^\s]*\s*%i',
-                '%(?<=^|\s)\S{1,2}(?:\s|$)%',
-            ];
-            $rep = [
-                '',
-                ' ',
-                '',
-                '',
-            ];
-        } else {
-            $pat = [
-                '%\((?:KHTML|Linux|Mac|Windows|X11)[^\)]*\)?%i',
-                $p,
-                '%\b(?:AppleWebKit|Chrom|compatible|Firefox|Gecko|Mobile(?=[/ ])|Moz|Opera|OPR|Presto|Safari|Version)[^\s]*%i',
-                '%\b(?:InfoP|Intel|Linux|Mac|MRA|MRS|MSIE|SV|Trident|Win|WOW|X11)[^;\)]*%i',
-                '%\.NET[^;\)]*%i',
-                '%/.*%',
-                '%[^a-z\d\.!-]+%i',
-                '%(?<=^|\s|-)v?\d+\.\d[^\s]*\s*%i',
-                '%(?<=^|\s)\S{1,2}(?:\s|$)%',
-            ];
-            $rep = [
-                ' ',
-                '',
-                '',
-                '',
-                '',
-                '',
-                ' ',
-                '',
-                '',
-            ];
-        }
-        $agent = \trim(\preg_replace($pat, $rep, $agent), ' -');
-
-        if (empty($agent)) {
             return 'Unknown';
+        } else {
+            return $agent;
         }
-
-        $a     = \explode(' ', $agent);
-        $agent = $a[0];
-        if (
-            \strlen($agent) < 20
-            && ! empty($a[1])
-            && \strlen($agent . ' ' . $a[1]) < 26
-        ) {
-            $agent .= ' ' . $a[1];
-        } elseif (\strlen($agent) > 25) {
-            $agent = 'Unknown';
-        }
-
-        return $agent;
     }
 
     /**
@@ -258,8 +222,10 @@ class Current extends Action
         if (! empty($_SERVER['HTTP_ACCEPT_LANGUAGE'])) {
             $langs = $this->c->Func->getLangs();
             $main  = [];
+
             foreach ($this->c->Func->langParse($_SERVER['HTTP_ACCEPT_LANGUAGE']) as $entry) {
                 $arr = \explode('-', $entry, 2);
+
                 if (isset($arr[1])) {
                     $entry  = $arr[0] . '_' . \strtoupper($arr[1]);
                     $main[] = $arr[0];
@@ -268,6 +234,7 @@ class Current extends Action
                     return $langs[$entry];
                 }
             }
+
             if (! empty($main)) {
                 foreach ($main as $entry) {
                     if (isset($langs[$entry])) {

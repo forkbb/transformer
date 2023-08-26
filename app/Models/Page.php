@@ -12,7 +12,6 @@ namespace ForkBB\Models;
 
 use ForkBB\Core\Container;
 use ForkBB\Models\Model;
-use RuntimeException;
 use function \ForkBB\__;
 
 abstract class Page extends Model
@@ -30,15 +29,13 @@ abstract class Page extends Model
 
     /**
      * Заголовки страницы
-     * @var array
      */
-    protected $pageHeaders = [];
+    protected array $pageHeaders = [];
 
     /**
      * Http заголовки
-     * @var array
      */
-    protected $httpHeaders = [];
+    protected array $httpHeaders = [];
 
     public function __construct(Container $container)
     {
@@ -60,9 +57,9 @@ abstract class Page extends Model
         $this->httpStatus   = 200;            # int         HTTP статус ответа для данной страницы
 #       $this->nameTpl      = null;           # null|string Имя шаблона
 #       $this->titles       = [];             # array       Массив титула страницы | setTitles()
-        $this->fIswev       = [];             # array       Массив info, success, warning, error, validation информации
+#       $this->fIswev       = [];             # array       Массив info, success, warning, error, validation информации
 #       $this->onlinePos    = '';             # null|string Позиция для таблицы онлайн текущего пользователя
-        $this->onlineDetail = false;          # bool        Формировать данные по посетителям online или нет
+        $this->onlineDetail = false;          # null|bool   Формировать данные по посетителям online или нет
         $this->onlineFilter = true;           # bool        Посетители только по текущей странице или по всем
 #       $this->robots       = '';             # string      Переменная для meta name="robots"
 #       $this->canonical    = '';             # string      Переменная для link rel="canonical"
@@ -71,10 +68,22 @@ abstract class Page extends Model
         $this->fTitle       = $container->config->o_board_title;
         $this->fDescription = $container->config->o_board_desc;
         $this->fRootLink    = $container->Router->link('Index');
+
+        $this->mDescription = $this->c->config->s_meta_desc;
+
+        if (! empty($this->c->config->a_og_image['file'])) {
+            $this->mOgImage  = $this->c->PUBLIC_URL . '/img/og/' . $this->c->config->a_og_image['file'];
+            $this->mOgImageX = $this->c->config->a_og_image['width'] ?? null;
+            $this->mOgImageY = $this->c->config->a_og_image['height'] ?? null;
+        }
+
         if (1 === $container->config->b_announcement) {
             $this->fAnnounce = $container->config->o_announcement_message;
         }
-        $this->user         = $this->c->user; // передача текущего юзера в шаблон
+
+        // передача текущего юзера и его правил в шаблон
+        $this->user      = $this->c->user;
+        $this->userRules = $this->c->userRules;
 
         $this->pageHeader('mainStyle', 'link', 10000, [
             'rel'  => 'stylesheet',
@@ -97,9 +106,27 @@ abstract class Page extends Model
      */
     public function prepare(): void
     {
+        // вспышка нового личного сообщения
+        if (
+            null !== $this->onlinePos
+            && ! $this->user->isGuest
+            && 1 === $this->user->u_pm_flash
+        ) {
+            $this->fPMFlash         = true;
+            $this->user->u_pm_flash = 0;
+
+            $this->c->users->update($this->user);
+        }
+
         $this->pageHeader('commonJS', 'script', 10000, [
             'src' => $this->publicLink('/js/common.js'),
         ]);
+
+        if ($this->useMediaJS) {
+            $this->pageHeader('mediaJS', 'script', 10000, [
+                'src' => $this->publicLink('/js/media.js'),
+            ]);
+        }
 
         $this->boardNavigation();
         $this->iswevMessages();
@@ -123,7 +150,7 @@ abstract class Page extends Model
 
         if (
             1 === $this->user->g_read_board
-            && $this->user->viewUsers
+            && $this->userRules->viewUsers
         ) {
             $navGen[self::FI_USERS] = [
                 $r->link('Userlist'),
@@ -254,6 +281,7 @@ abstract class Page extends Model
             // position|name|link[|id]\n
             if (\preg_match_all('%^(\d+)\|([^\|\n\r]+)\|([^\|\n\r]+)(?:\|([^\|\n\r]+))?%m', $this->c->config->o_additional_navlinks . "\n", $matches)) {
                $k = \count($matches[0]);
+
                for ($i = 0; $i < $k; ++$i) {
                    if (empty($matches[4][$i])) {
                        $matches[4][$i] = 'extra' . $i;
@@ -284,14 +312,14 @@ abstract class Page extends Model
             1 === $this->c->config->b_maintenance
             && $this->user->isAdmin
         ) {
-            $this->fIswev = ['w', ['Maintenance mode enabled', $this->c->Router->link('AdminMaintenance')]];
+            $this->fIswev = [FORK_MESS_WARN, ['Maintenance mode enabled', $this->c->Router->link('AdminMaintenance')]];
         }
 
         if (
             $this->user->isAdmMod
             && $this->user->last_report_id < $this->c->reports->lastId()
         ) {
-            $this->fIswev = ['i', ['New reports', $this->c->Router->link('AdminReports')]];
+            $this->fIswev = [FORK_MESS_INFO, ['New reports', $this->c->Router->link('AdminReports')]];
         }
     }
 
@@ -304,6 +332,7 @@ abstract class Page extends Model
         if (empty($titles)) {
             $titles = $this->titles;
         }
+
         $titles[] = ['%s', $this->c->config->o_board_title];
 
         return \implode(__('Title separator'), \array_map('\\ForkBB\\__', $titles));
@@ -312,7 +341,7 @@ abstract class Page extends Model
     /**
      * Задает/получает заголовок страницы
      */
-    public function pageHeader(string $name, string $type, int $weight = 0, array $values = null) /* : mixed */
+    public function pageHeader(string $name, string $type, int $weight = 0, array $values = null): mixed
     {
         if (null === $values) {
             return $this->pageHeaders["{$name}_{$type}"] ?? null;
@@ -333,16 +362,12 @@ abstract class Page extends Model
      */
     protected function getpageHeaders(): array
     {
-        if ($this->canonical) {
-            $this->pageHeader('canonical', 'link', 0, [
-                'rel'  => 'canonical',
-                'href' => $this->canonical,
-            ]);
-        }
-        if ($this->robots) {
-            $this->pageHeader('robots', 'meta', 11000, [
-                'name'    => 'robots',
-                'content' => $this->robots,
+        if (1 === $this->user->g_search) {
+            $this->pageHeader('opensearch', 'link', 0, [
+                'rel'   => 'search',
+                'type'  => 'application/opensearchdescription+xml',
+                'href'  => $this->c->Router->link('OpenSearch'),
+                'title' => $this->fTitle,
             ]);
         }
 
@@ -364,15 +389,15 @@ abstract class Page extends Model
     {
         $key = \strtolower($header);
 
-        if ('http/' === \substr($key, 0, 5)) {
+        if (\str_starts_with($key, 'http/')) {
             $key     = 'http/';
             $replace = true;
 
             if (
                 ! empty($_SERVER['SERVER_PROTOCOL'])
-                && 'HTTP/' === \strtoupper(\substr($_SERVER['SERVER_PROTOCOL'], 0, 5))
+                && \in_array($_SERVER['SERVER_PROTOCOL'], ['HTTP/1.1', 'HTTP/2', 'HTTP/3'], true)
             ) {
-                $header = 'HTTP/' . \substr($_SERVER['SERVER_PROTOCOL'], 5);
+                $header = $_SERVER['SERVER_PROTOCOL'];
             }
         } else {
             $header .= ':';
@@ -401,12 +426,49 @@ abstract class Page extends Model
     protected function gethttpHeaders(): array
     {
         foreach ($this->c->HTTP_HEADERS[$this->hhsLevel] as $header => $value) {
+            if (
+                'Content-Security-Policy' === $header
+                && (
+                    $this->needUnsafeInlineStyle
+                    || (
+                        $this->c->isInit('Parser')
+                        && $this->c->Parser->inlineStyle()
+                    )
+                )
+            ) {
+                $value = $this->addUnsafeInline($value);
+            }
+
             $this->header($header, $value);
         }
 
         $this->httpStatus();
 
         return $this->httpHeaders;
+    }
+
+    /**
+     * Добавляет в заголовок (Content-Security-Policy) значение unsafe-inline для style-src
+     */
+    protected function addUnsafeInline(string $header): string
+    {
+        if (\preg_match('%style\-src([^;]+)%', $header, $matches)) {
+            if (false === \strpos($matches[1], 'unsafe-inline')) {
+                return \str_replace($matches[0], "{$matches[0]} 'unsafe-inline'", $header);
+            } else {
+                return $header;
+            }
+        }
+
+        if (\preg_match('%default\-src([^;]+)%', $header, $matches)) {
+            if (false === \strpos($matches[1], 'unsafe-inline')) {
+                return "{$header};style-src{$matches[1]} 'unsafe-inline'";
+            } else {
+                return "{$header};style-src{$matches[1]}";
+            }
+        }
+
+        return "{$header};style-src 'self' 'unsafe-inline'";
     }
 
     /**
@@ -435,11 +497,12 @@ abstract class Page extends Model
      * Дописывает в массив титула страницы новый элемент
      * $this->titles = ...
      */
-    public function settitles(/* string|array */ $value): void
+    public function settitles(string|array $value): void
     {
-        $attr = $this->getAttr('titles', []);
+        $attr   = $this->getModelAttr('titles', []);
         $attr[] = $value;
-        $this->setAttr('titles', $attr);
+
+        $this->setModelAttr('titles', $attr);
     }
 
     /**
@@ -448,7 +511,7 @@ abstract class Page extends Model
      */
     public function setfIswev(array $value): void
     {
-        $attr = $this->getAttr('fIswev', []);
+        $attr = $this->getModelAttr('fIswev', []);
 
         if (
             isset($value[0], $value[1])
@@ -460,17 +523,18 @@ abstract class Page extends Model
             $attr = \array_merge_recursive($attr, $value); // ???? добавить проверку?
         }
 
-        $this->setAttr('fIswev', $attr) ;
+        $this->setModelAttr('fIswev', $attr) ;
     }
 
     /**
      * Возвращает массив хлебных крошек
      * Заполняет массив титула страницы
      */
-    protected function crumbs(/* mixed */ ...$crumbs): array
+    protected function crumbs(mixed ...$crumbs): array
     {
         $result = [];
         $active = true;
+        $ext    = null;
 
         foreach ($crumbs as $crumb) {
             // модель
@@ -482,12 +546,18 @@ abstract class Page extends Model
                         $name = ['%s', $name];
                     }
 
-                    $result[]     = [$crumb, $name, $active];
+                    $result[]     = [$crumb, $name, $active, $ext];
                     $active       = null;
                     $this->titles = $name;
 
                     if ($crumb->page > 1) {
                         $this->titles = ['Page %s', $crumb->page];
+                    }
+
+                    if ($crumb->linkCrumbExt) {
+                        $ext = [$crumb->linkCrumbExt, $crumb->textCrumbExt ?? '#'];
+                    } else {
+                        $ext = null;
                     }
 
                     $crumb = $crumb->parent;
@@ -497,38 +567,57 @@ abstract class Page extends Model
                 );
             // ссылка (передана массивом)
             } elseif (\is_array($crumb)) {
-                $result[]     = [$crumb[0], $crumb[1], $active];
+                $result[]     = [$crumb[0], $crumb[1], $active, $crumb[2] ?? $ext];
                 $this->titles = $crumb[1];
+                $ext          = null;
             // строка
             } else {
-                $result[]     = [null, (string) $crumb, $active];
+                $result[]     = [null, (string) $crumb, $active, $ext];
                 $this->titles = (string) $crumb;
+                $ext          = null;
             }
 
             $active = null;
         }
+
         // главная страница
-        $result[] = [$this->c->Router->link('Index'), 'Index', $active];
+        $result[] = [$this->c->Router->link('Index'), 'Index', $active, $ext];
 
         return \array_reverse($result);
     }
 
     /**
      * Возвращает url для $path заданного в каталоге public
+     * Если для файла name.ext есть файл name.min.ext, то url возвращается для него
      * Ведущий слеш обязателен O_o
      */
-    public function publicLink(string $path): string
+    public function publicLink(string $path, bool $returnEmpty = false): string
     {
-        $fullPath = $this->c->DIR_PUBLIC . $path;
+        if (\preg_match('%^(.+)(\.[^.\\/]++)$%D', $path, $matches)) {
+            $variants = [
+                $matches[1] . '.min' => $matches[2],
+                $matches[1]          => $matches[2],
+            ];
+        } else {
+            $variants = [
+                $path                => '',
+            ];
+        }
 
-        if (\is_file($fullPath)) {
-            $time = \filemtime($fullPath) ?: '0';
+        foreach ($variants as $start => $end) {
+            $fullPath = $this->c->DIR_PUBLIC . $start . $end;
 
-            if (\preg_match('%^(.+)\.([^.\\/]++)$%D', $path, $matches)) {
-                return $this->c->PUBLIC_URL . "{$matches[1]}.v.{$time}.{$matches[2]}";
+            if (\is_file($fullPath)) {
+                if ('' === $end) {
+                    return $this->c->PUBLIC_URL . $start;
+                } else {
+                    $time = \filemtime($fullPath) ?: '0';
+
+                    return $this->c->PUBLIC_URL . $start . '.v.' . $time . $end;
+                }
             }
         }
 
-        return $this->c->PUBLIC_URL . $path;
+        return $returnEmpty ? '' : $this->c->PUBLIC_URL . $path;
     }
 }

@@ -14,31 +14,29 @@ use ForkBB\Core\DB\DBStatement;
 use PDO;
 use PDOStatement;
 use PDOException;
+use SensitiveParameter;
 
 class DB
 {
     /**
-     * @var PDO
+     * Экземпляр PDO через который идет работа с бд
      */
-    protected $pdo;
+    protected PDO $pdo;
 
     /**
      * Префикс для таблиц базы
-     * @var string
      */
-    protected $dbPrefix;
+    protected string $dbPrefix;
 
     /**
      * Тип базы данных
-     * @var string
      */
-    protected $dbType;
+    protected string $dbType;
 
     /**
      * Имя класса для драйвера
-     * @var string
      */
-    protected $dbDrvClass;
+    protected string $dbDrvClass;
 
     /**
      * Драйвер текущей базы
@@ -48,32 +46,25 @@ class DB
 
     /**
      * Имя класса для PDOStatement
-     * @var string
      */
-    protected $statementClass;
+    protected string $statementClass;
 
     /**
      * Количество выполненных запросов
-     * @var int
      */
-    protected $qCount = 0;
+    protected int $qCount = 0;
 
     /**
      * Выполненные запросы
-     * @var array
      */
-    protected $queries = [];
+    protected array $queries = [];
 
     /**
      * Дельта времени для следующего запроса
-     * @var float
      */
-    protected $delta = 0;
+    protected float $delta = 0;
 
-    /**
-     * @var array
-     */
-    protected $pdoMethods = [
+    protected array $pdoMethods = [
         'beginTransaction'      => true,
         'commit'                => true,
         'errorCode'             => true,
@@ -104,8 +95,13 @@ class DB
         'sqliteCreateFunction'  => true,
     ];
 
-    public function __construct(string $dsn, string $username = null, string $password = null, array $options = [], string $prefix = '')
-    {
+    public function __construct(
+        string $dsn,
+        string $username = null,
+        #[SensitiveParameter] string $password = null,
+        array $options = [],
+        string $prefix = ''
+    ) {
         $dsn = $this->initialConfig($dsn);
 
         if (\preg_match('%[^\w]%', $prefix)) {
@@ -241,11 +237,9 @@ class DB
                     throw new PDOException("Expected array: key='{$key}', type='{$type}'");
                 }
 
-                if (! isset($map[$key])) {
-                    $map[$key] = [$type];
-                }
+                $map[$key] ??= [$type];
+                $res         = [];
 
-                $res = [];
                 foreach ($value as $val) {
                     $name        = ':' . $idxOut++;
                     $res[]       = $name;
@@ -263,20 +257,14 @@ class DB
     /**
      * Метод возвращает значение из массива параметров по ключу или исключение
      */
-    public function getValue(/* int|string */ $key, array $params) /* : mixed */
+    public function getValue(int|string $key, array $params): mixed
     {
         if (
             \is_string($key)
             && \array_key_exists(':' . $key, $params)
         ) {
             return $params[':' . $key];
-        } elseif (
-            (
-                \is_string($key)
-                || \is_int($key)
-            )
-            && \array_key_exists($key, $params)
-        ) {
+        } elseif (\array_key_exists($key, $params)) {
             return $params[$key];
         }
 
@@ -323,7 +311,7 @@ class DB
     /**
      * Метод расширяет PDO::exec()
      */
-    public function exec(string $query, array $params = []) /* : int|false */
+    public function exec(string $query, array $params = []): int|false
     {
         $map = $this->parse($query, $params);
 
@@ -358,7 +346,7 @@ class DB
     /**
      * Метод расширяет PDO::prepare()
      */
-    public function prepare(string $query, array $params = [], array $options = []) /* : DBStatement|false */
+    public function prepare(string $query, array $params = [], array $options = []): DBStatement|false
     {
         $map         = $this->parse($query, $params);
         $start       = \microtime(true);
@@ -380,7 +368,7 @@ class DB
     /**
      * Метод расширяет PDO::query()
      */
-    public function query(string $query, /* mixed */ ...$args) /* : DBStatement|false */
+    public function query(string $query, mixed ...$args): DBStatement|false
     {
         if (
             isset($args[0])
@@ -471,7 +459,7 @@ class DB
     /**
      * Передает вызовы метода в PDO или драйвер текущей базы
      */
-    public function __call(string $name, array $args) /* : mixed */
+    public function __call(string $name, array $args): mixed
     {
         if (isset($this->pdoMethods[$name])) {
             return $this->pdo->$name(...$args);

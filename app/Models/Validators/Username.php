@@ -19,7 +19,7 @@ class Username extends RulesValidator
     /**
      * Проверяет имя пользователя
      */
-    public function username(Validator $v, string $username, /* mixed */  $attrs, /* mixed */ $originalUser): string
+    public function username(Validator $v, string $username, mixed $attrs, mixed $originalUser): string
     {
         if ($originalUser instanceof User) {
             $id   = $originalUser->id;
@@ -32,9 +32,27 @@ class Username extends RulesValidator
         if ($old !== $username) {
 
             $user = $this->c->users->create(['id' => $id, 'username' => $username]);
+            $len  = \mb_strlen($username, 'UTF-8');
 
-            // 2-25 символов, буквы, цифры, пробел, подчеркивание, точка и тире
-            if (! \preg_match($this->c->USERNAME_PATTERN, $username)) {
+            if ($this->c->user->isAdmin) {
+                $max     = 190;
+                $pattern = '%^[^@"<>\\/\x00-\x1F]+$%D';
+            } else {
+                $max     = $this->c->USERNAME['max'];
+                $pattern = $this->c->USERNAME['phpPattern'];
+            }
+
+            // короткое
+            if ($len < \max(2, $this->c->USERNAME['min'])) {
+                $v->addError('Short username');
+            // длинное
+            } elseif ($len > \min(190, $max)) {
+                $v->addError('Long username');
+            // паттерн не совпал
+            } elseif (
+                ! \preg_match($pattern, $username)
+                || \preg_match('%[@"<>\\/\x00-\x1F]%', $username)
+            ) {
                 $v->addError('Login format');
             // идущие подряд пробелы
             } elseif (\preg_match('%\s{2,}%u', $username)) {

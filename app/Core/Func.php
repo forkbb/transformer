@@ -16,32 +16,22 @@ use function \ForkBB\__;
 class Func
 {
     /**
-     * Контейнер
-     * @var Container
-     */
-    protected $c;
-
-    /**
      * Список доступных стилей
-     * @var array
      */
-    protected $styles;
+    protected ?array $styles = null;
 
     /**
      * Список доступных языков
-     * @var array
      */
-    protected $langs;
+    protected ?array $langs = null;
 
     /**
      * Список имен доступных языков
-     * @var array
      */
-    protected $nameLangs;
+    protected ?array $nameLangs = null;
 
-    public function __construct(Container $container)
+    public function __construct(protected Container $c)
     {
-        $this->c = $container;
     }
 
     /**
@@ -75,10 +65,13 @@ class Func
     {
         if (! \is_array($this->nameLangs)) {
             $langs = $this->getLangs();
+
             foreach ($langs as &$value) {
                 $value = include "{$this->c->DIR_LANG}/{$value}/name.php";
             }
+
             unset($value);
+
             $this->nameLangs = $langs;
         }
 
@@ -105,6 +98,7 @@ class Func
                     $result[$entry] = $entry;
                 }
             }
+
             \closedir($dh);
             \asort($result, \SORT_NATURAL);
         }
@@ -167,9 +161,19 @@ class Func
 
             $tpl[$all] = $all;
         } else {
-            $tpl = $all < 7
-                ? \array_slice([2 => 2, 3 => 3, 4 => 4, 5 => 5, 6 => 6], 0, $all - 1)
-                : [2 => 2, 3 => 3, 4 => 4, $all => $all];
+            $tpl = [];
+
+            if ($all > 999) {
+                $d = 2;
+            } elseif ($all > 99) {
+                $d = 3;
+            } else {
+                $d = \min(4, $all - 2);
+            }
+
+            for ($i = $all - $d; $i <= $all; $i++) {
+                $tpl[$i] = $i;
+            }
         }
 
         $k = 1;
@@ -222,9 +226,10 @@ class Func
 
         foreach (\explode(',', $str) as $step) {
             $dsr = \explode(';', $step, 2);
-            if (
-                isset($dsr[1])) {
+
+            if (isset($dsr[1])) {
                 $q = \trim(\ltrim(\ltrim($dsr[1], 'q '), '='));
+
                 if (
                     ! \is_numeric($q)
                     || $q < 0
@@ -232,16 +237,19 @@ class Func
                 ) {
                     continue;
                 }
+
                 $q = (float) $q;
             } else {
                 $q = 1;
             }
 
             $l = \trim($dsr[0]);
+
             if (\preg_match('%^[[:alpha:]]{1,8}(?:-[[:alnum:]]{1,8})?$%', $l)) {
                 $result[$l] = $q;
             }
         }
+
         \arsort($result, \SORT_NUMERIC);
 
         return \array_keys($result);

@@ -29,7 +29,18 @@ define('FORK_GROUP_ADMIN', 1);
 define('FORK_GROUP_MOD', 2);
 define('FORK_GROUP_GUEST', 3);
 define('FORK_GROUP_MEMBER', 4);
-define('FORK_GROUP_NEW_MEMBER', 5);
+
+define('FORK_MESS_INFO', 'i');
+define('FORK_MESS_SUCC', 's');
+define('FORK_MESS_WARN', 'w');
+define('FORK_MESS_ERR',  'e');
+define('FORK_MESS_VLD',  'v');
+
+define('FORK_GEN_NOT', 0);
+define('FORK_GEN_MAN', 1);
+define('FORK_GEN_FEM', 2);
+
+define('FORK_JSON_ENCODE', \JSON_UNESCAPED_SLASHES | \JSON_UNESCAPED_UNICODE | \JSON_THROW_ON_ERROR);
 
 define('TRANSFORMER_COPY', 0);
 define('TRANSFORMER_MERGE', 1);
@@ -60,7 +71,7 @@ if (
     $c->BASE_URL = \str_replace('https://', 'http://', $c->BASE_URL);
 }
 
-$c->FORK_REVISION = 49;
+$c->FORK_REVISION = 68;
 $c->START         = $forkStart;
 $c->PUBLIC_URL    = $c->BASE_URL . $forkPublicPrefix;
 
@@ -89,9 +100,9 @@ if (
 
 if (
     null !== $tpl
-    && $c->DEBUG > 0
+    && 3 & $c->DEBUG
 ) {
-    $debug = $c->View->rendering($c->Debug->debug());
+    $debug = \rtrim($c->View->rendering($c->Debug->debug()));
     $tpl   = \str_replace('<!-- debuginfo -->', $debug, $tpl);
 }
 

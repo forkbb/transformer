@@ -16,27 +16,25 @@ class DataModel extends Model
 {
     /**
      * Массив флагов измененных свойств модели
-     * @var array
      */
-    protected $zModFlags = [];
+    protected array $zModFlags = [];
 
     /**
      * Массив состояний отслеживания изменений в свойствах модели
-     * @var array
      */
-    protected $zTrackFlags = [];
+    protected array $zTrackFlags = [];
 
     /**
      * Устанавливает значения для свойств
      * Сбрасывает вычисленные свойства
      * Флаги модификации свойст сброшены
      */
-    public function setAttrs(array $attrs): Model
+    public function setModelAttrs(array $attrs): Model
     {
         $this->zModFlags   = [];
         $this->zTrackFlags = [];
 
-        return parent::setAttrs($attrs);
+        return parent::setModelAttrs($attrs);
     }
 
     /**
@@ -54,14 +52,6 @@ class DataModel extends Model
         }
 
         return $this;
-    }
-
-    /**
-     * Возвращает значения свойств в массиве
-     */
-    public function getAttrs(): array
-    {
-        return $this->zAttrs; //????
     }
 
     /**
@@ -92,10 +82,10 @@ class DataModel extends Model
     /**
      * Устанавливает значение для свойства
      */
-    public function __set(string $name, /* mixed */ $value): void
+    public function __set(string $name, mixed $value): void
     {
         // без отслеживания
-        if (0 === \strpos($name, '__')) {
+        if (\str_starts_with($name, '__')) {
             $track = null;
             $name  = \substr($name, 2);
         // с отслеживанием
@@ -148,11 +138,11 @@ class DataModel extends Model
     /**
      * Возвращает значение свойства
      */
-    public function __get(string $name) /* : mixed */
+    public function __get(string $name): mixed
     {
         // без вычисления
-        if (0 === \strpos($name, '__')) {
-            return $this->getAttr(\substr($name, 2));
+        if (\str_starts_with($name, '__')) {
+            return $this->getModelAttr(\substr($name, 2));
         // с вычислениями
         } else {
             return parent::__get($name);
@@ -162,7 +152,7 @@ class DataModel extends Model
     /**
      * Удаляет свойство ????
      */
-    public function __unset(/* mixed */ $name): void
+    public function __unset(string $name): void
     {
         $this->zModFlags[$name] = false;
 

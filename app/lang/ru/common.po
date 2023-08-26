@@ -62,7 +62,7 @@ msgid "Error mail"
 msgstr "При отправке письма возникла ошибка. Пожалуйста, повторите попытку позже или свяжитесь с администратором форума по адресу <a href=\"mailto:%1$s\">%1$s</a>."
 
 msgid "Bad request"
-msgstr "Неверный запрос. Запрос содержит некорректные на данный момент данные."
+msgstr "Неверный запрос. Запрос содержит некорректные на текущий момент данные."
 
 msgid "Not Found"
 msgstr "Не найдено. Ссылка является неверной или просроченной."
@@ -80,7 +80,7 @@ msgid "Hidden text"
 msgstr "Скрытый текст"
 
 msgid "Announcement"
-msgstr "Объявление"
+msgstr "Объявление:"
 
 msgid "Options"
 msgstr "Параметры"
@@ -88,19 +88,19 @@ msgstr "Параметры"
 msgid "Submit"
 msgstr "Отправить"
 
-msgid "Ban message"
+msgid "You are banned"
 msgstr "Ваша учетная запись заблокирована."
 
-msgid "Ban message 1"
+msgid "Your IP is blocked"
 msgstr "Ваш IP заблокирован."
 
-msgid "Ban message 2"
+msgid "The ban expires %s"
 msgstr "Блокировка заканчивается %s"
 
-msgid "Ban message 3"
+msgid "Ban message for you"
 msgstr "Администратор или модератор, установивший блокировку, оставил следующее сообщение:"
 
-msgid "Ban message 4"
+msgid "Ban message contact %s"
 msgstr "Все возникшие вопросы отправляйте администратору форума по адресу <a href=\"mailto:%1$s\">%1$s</a>."
 
 msgid "Never"
@@ -125,10 +125,7 @@ msgid "Redirecting"
 msgstr "Перенаправление"
 
 msgid "Redirecting..."
-msgstr "Переадресация …"
-
-msgid "Click redirect"
-msgstr "Кликните здесь, если не желаете ждать (или ваш браузер не поддерживает перенаправление)."
+msgstr "<br><a href=\"%s\">Переадресация …</a>"
 
 msgid "on"
 msgstr "вкл."
@@ -161,7 +158,7 @@ msgid "Passphrase"
 msgstr "Кодовая фраза"
 
 msgid "Email"
-msgstr "Email"
+msgstr "Почта"
 
 msgid "Send email"
 msgstr "Отправить письмо"
@@ -214,8 +211,8 @@ msgstr "Страница %1$s из %2$s ·"
 msgid "Image link"
 msgstr "картинка"
 
-msgid "wrote"
-msgstr "пишет:"
+msgid "%s wrote"
+msgstr "%s пишет:"
 
 msgid "Mailer"
 msgstr "%s"
@@ -311,22 +308,19 @@ msgid "Send PM"
 msgstr "Отправить личное сообщение"
 
 msgid "Board footer"
-msgstr "Подвал форума"
+msgstr "Подвал форума:"
 
 msgid "Powered by"
-msgstr "Под управлением <a href=\"https://github.com/forkbb\">ForkBB</a>"
+msgstr "Под управлением <a href=\"https://forkbb.ru\">ForkBB</a>"
 
 msgid "Debug table"
-msgstr "Отладочная информация"
+msgstr "Отладочная информация:"
 
-msgid "Querytime"
+msgid "Generated in %1$s, %2$s queries"
 msgstr "Сгенерировано за %1$s сек, %2$s запросов выполнено"
 
-msgid "Memory usage"
-msgstr "Использовано памяти: %1$s"
-
-msgid "Peak usage"
-msgstr "(Пик: %1$s)"
+msgid "Memory %1$s, Peak %2$s"
+msgstr "Использовано памяти: %1$s (Пик: %2$s)"
 
 msgid "Query times"
 msgstr "Время (s)"
@@ -386,25 +380,25 @@ msgid "Maintenance mode enabled"
 msgstr "<a href=\"%s\">Включен режим обслуживания!</a>"
 
 msgid "%s B"
-msgstr "%s байт"
+msgstr "%sб"
 
 msgid "%s KiB"
-msgstr "%s Кбайт"
+msgstr "%sК"
 
 msgid "%s MiB"
-msgstr "%s Мбайт"
+msgstr "%sМ"
 
 msgid "%s GiB"
-msgstr "%s Гбайт"
+msgstr "%sГ"
 
 msgid "%s TiB"
-msgstr "%s Тбайт"
+msgstr "%sТ"
 
 msgid "%s PiB"
-msgstr "%s Пбайт"
+msgstr "%sП"
 
 msgid "%s EiB"
-msgstr "%s Эбайт"
+msgstr "%sЭ"
 
 msgid "Latest active topics"
 msgstr "Последние активные темы"
@@ -445,9 +439,6 @@ msgstr "Нет"
 msgid "Your passphrase"
 msgstr "Ваша кодовая фраза"
 
-msgid "Invalid passphrase"
-msgstr "Неверная кодовая фраза"
-
 msgid "User %s"
 msgstr "%s"
 
@@ -465,3 +456,9 @@ msgstr "Поиск может быть чувствителен к регист�
 
 msgid "%s"
 msgstr "%s"
+
+msgid "ACTIONS"
+msgstr "ДЕЙСТВИЯ"
+
+msgid "Main menu"
+msgstr "Главное меню"

@@ -16,20 +16,19 @@ use RuntimeException;
 
 class Users extends Manager
 {
-    const CACHE_NAME = 'guest';
+    const CACHE_KEY = 'guest';
 
     /**
      * Ключ модели для контейнера
-     * @var string
      */
-    protected $cKey = 'Users';
+    protected string $cKey = 'Users';
 
     /**
      * Создает новую модель пользователя
      */
     public function create(array $attrs = []): User
     {
-        return $this->c->UserModel->setAttrs($attrs);
+        return $this->c->UserModel->setModelAttrs($attrs);
     }
 
     /**
@@ -148,13 +147,13 @@ class Users extends Manager
      */
     public function guest(array $attrs = []): User
     {
-        $cache = $this->c->Cache->get(self::CACHE_NAME);
+        $cache = $this->c->Cache->get(self::CACHE_KEY);
 
         if (! \is_array($cache)) {
-            $cache = $this->c->groups->get(FORK_GROUP_GUEST)->getAttrs();
+            $cache = $this->c->groups->get(FORK_GROUP_GUEST)->getModelAttrs();
 
-            if (true !== $this->c->Cache->set(self::CACHE_NAME, $cache)) {
-                throw new RuntimeException('Unable to write value to cache - ' . self::CACHE_NAME);
+            if (true !== $this->c->Cache->set(self::CACHE_KEY, $cache)) {
+                throw new RuntimeException('Unable to write value to cache - ' . self::CACHE_KEY);
             }
         }
 
@@ -177,8 +176,8 @@ class Users extends Manager
      */
     public function resetGuest(): Users
     {
-        if (true !== $this->c->Cache->delete(self::CACHE_NAME)) {
-            throw new RuntimeException('Unable to remove key from cache - ' . self::CACHE_NAME);
+        if (true !== $this->c->Cache->delete(self::CACHE_KEY)) {
+            throw new RuntimeException('Unable to remove key from cache - ' . self::CACHE_KEY);
         }
 
         return $this;

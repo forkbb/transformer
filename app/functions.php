@@ -11,6 +11,8 @@ declare(strict_types=1);
 namespace ForkBB;
 
 use ForkBB\Core\Container;
+use DateTime;
+use DateTimeZone;
 use InvalidArgumentException;
 
 /**
@@ -26,7 +28,7 @@ function _init(Container $c): void
  * Переводит строку с подстановкой аргументов
  * Защита от дурака отсутствует, ловим ошибки/исключения
  */
-function __(/* string|arrray */ $arg): string
+function __(string|array $arg): string
 {
     static $c, $lang;
 
@@ -79,7 +81,7 @@ function e(string $arg): string
 /**
  * Возвращает число в формате текущего пользователя
  */
-function num(/* mixed */ $number, int $decimals = 0): string
+function num(mixed $number, int $decimals = 0): string
 {
     return \is_numeric($number)
         ? \number_format((float) $number, $decimals, __('lang_decimal_point'), __('lang_thousands_sep'))
@@ -91,7 +93,7 @@ function num(/* mixed */ $number, int $decimals = 0): string
  */
 function dt(int $arg, bool $dateOnly = false, string $dateFormat = null, string $timeFormat = null, bool $timeOnly = false, bool $noText = false, Container $container = null): string
 {
-    static $c;
+    static $c, $offset;
 
     if (null !== $container) {
         $c = $container;
@@ -102,8 +104,17 @@ function dt(int $arg, bool $dateOnly = false, string $dateFormat = null, string 
         return __('Never');
     }
 
-    $diff = (int) (($c->user->timezone + $c->user->dst) * 3600);
-    $arg += $diff;
+    if (null === $offset) {
+        if (\in_array($c->user->timezone, DateTimeZone::listIdentifiers(), true)) {
+            $dateTimeZone = new DateTimeZone($c->user->timezone);
+            $dateTime     = new DateTime('now', $dateTimeZone);
+            $offset       = $dateTime->getOffset();
+        } else {
+            $offset      = 0;
+        }
+    }
+
+    $arg += $offset;
 
     if (null === $dateFormat) {
         $dateFormat = $c->DATE_FORMATS[$c->user->date_format];
@@ -115,7 +126,7 @@ function dt(int $arg, bool $dateOnly = false, string $dateFormat = null, string 
     $date = \gmdate($dateFormat, $arg);
 
     if (! $noText) {
-        $now = \time() + $diff;
+        $now = \time() + $offset;
 
         if ($date == \gmdate($dateFormat, $now)) {
             $date = __('Today');
@@ -140,7 +151,7 @@ function size(int $size): string
 {
     $units = ['B', 'KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB'];
 
-    for ($i = 0; $size > 1024; ++$i) {
+    for ($i = 0; $size >= 1024; ++$i) {
         $size /= 1024;
     }
 
@@ -253,10 +264,11 @@ function url(string $url): string
 
                 $host = \filter_var($p['host'], \FILTER_VALIDATE_DOMAIN, \FILTER_FLAG_HOSTNAME);
 
-                if (false !== $host) {
+                if (\is_string($host)) {
                     $result .= $host;
                 } elseif (
-                    '[' === $p['host'][0]
+                    isset($p['host'][1])
+                    && '[' === $p['host'][0]
                     && ']' === $p['host'][-1]
                     && \filter_var(\substr($p['host'], 1, -1), \FILTER_VALIDATE_IP, \FILTER_FLAG_IPV6)
                 ) {

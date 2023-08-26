@@ -19,29 +19,27 @@ use RuntimeException;
 
 abstract class AbstractDriver extends Model
 {
-    const JSON_OPTIONS = \JSON_UNESCAPED_SLASHES | \JSON_UNESCAPED_UNICODE | \JSON_THROW_ON_ERROR;
-
     /**
      * @var array
      */
-    protected $reqTables = [];
+    protected array $reqTables = [];
 
     /**
      * @var string|array;
      */
-    protected $error = '';
+    protected string|array $error = '';
 
     /**
      * @var string
      */
-    protected $min = '0';
+    protected string $min = '0';
 
     /**
      * @var string
      */
-    protected $max = '0';
+    protected string $max = '0';
 
-    protected $defGroups = [
+    protected array $defGroups = [
         FORK_GROUP_UNVERIFIED => false,
         FORK_GROUP_ADMIN      => true,
         FORK_GROUP_MOD        => true,
@@ -50,7 +48,7 @@ abstract class AbstractDriver extends Model
     ];
 
     abstract public function getType(): string;
-    abstract public function test(DB $db) /* : bool|string|array */;
+    abstract public function test(DB $db): bool|string|array;
 
     protected function reqTablesTest(DB $db): bool
     {
@@ -1062,6 +1060,129 @@ abstract class AbstractDriver extends Model
     }
 
     public function configEnd(DB $db): bool
+    {
+        return true;
+    }
+
+    /*************************************************************************/
+    /* providers                                                             */
+    /*************************************************************************/
+    public function providersPre(DB $db, int $id): ?bool
+    {
+        return null;
+    }
+
+    public function providersGet(int &$id): ?array
+    {
+        return null;
+    }
+
+    public function providersSet(DB $db, array $vars): bool
+    {
+        return null;
+    }
+
+    public function providersEnd(DB $db): bool
+    {
+        return true;
+    }
+
+    /*************************************************************************/
+    /* providers_users                                                       */
+    /*************************************************************************/
+    public function providers_usersPre(DB $db, int $id): ?bool
+    {
+        return null;
+    }
+
+    public function providers_usersGet(int &$id): ?array
+    {
+        return null;
+    }
+
+    public function providers_usersSet(DB $db, array $vars): bool
+    {
+        return false !== $db->exec($this->insertQuery, $vars);
+    }
+
+    public function providers_usersEnd(DB $db): bool
+    {
+        return true;
+    }
+
+    /*************************************************************************/
+    /* attachments                                                           */
+    /*************************************************************************/
+    public function attachmentsPre(DB $db, int $id): ?bool
+    {
+        return null;
+    }
+
+    public function attachmentsGet(int &$id): ?array
+    {
+        return null;
+    }
+
+    public function attachmentsSet(DB $db, array $vars): bool
+    {
+        return false !== $db->exec($this->insertQuery, $vars);
+    }
+
+    public function attachmentsEnd(DB $db): bool
+    {
+        $query = 'UPDATE ::attachments
+            SET uid=(
+                SELECT u.id
+                FROM ::users AS u
+                WHERE u.id_old=uid
+            )
+            WHERE id_old>0';
+
+        return false !== $db->exec($query);
+    }
+
+    /*************************************************************************/
+    /* attachments_pos                                                       */
+    /*************************************************************************/
+    public function attachments_posPre(DB $db, int $id): ?bool
+    {
+        return null;
+    }
+
+    public function attachments_posGet(int &$id): ?array
+    {
+        return null;
+    }
+
+    public function attachments_posSet(DB $db, array $vars): bool
+    {
+        return false !== $db->exec($this->insertQuery, $vars);
+    }
+
+    public function attachments_posEnd(DB $db): bool
+    {
+        return true;
+    }
+
+    /*************************************************************************/
+    /* attachments_pos_pm                                                    */
+    /*************************************************************************/
+    public function attachments_pos_pmPre(DB $db, int $id): ?bool
+    {
+        return null;
+    }
+
+    public function attachments_pos_pmGet(int &$id): ?array
+    {
+        return null;
+    }
+
+    public function attachments_pos_pmSet(DB $db, array $vars): bool
+    {
+        return false !== $db->exec($this->insertQuery, $vars);
+    }
+
+    public function attachments_pos_pmEnd(DB $db): bool
     {
         return true;
     }

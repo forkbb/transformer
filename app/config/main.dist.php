@@ -35,7 +35,7 @@ return [
         'algo' => 'sha1',
         'salt' => '_SALT_FOR_HMAC_',
     ],
-    'DEBUG'            => 0,
+    'DEBUG'            => 0, // 0&1st: time/memory, 1st: queries, 2nd: message 400+ to log
     'MAINTENANCE_OFF'  => false,
     'BBCODE_INFO'      => [
         'smTpl'    => '<img src="{url}" alt="{alt}">',
@@ -43,11 +43,17 @@ return [
         'smTplBl'  => ['url'],
     ],
     'MAX_POST_SIZE'    => 65536,
+    'MAX_SUBJ_LENGTH'  => 70,     // max 255
     'MAX_IMG_SIZE'     => '2M',
     'MAX_FILE_SIZE'    => '2M',
     'MAX_EMAIL_LENGTH' => 80,
     'FLOOD_INTERVAL'   => 3600,
-    'USERNAME_PATTERN' => '%^(?=.{2,25}$)\p{L}[\p{L}\p{N}\x20\._-]+$%uD',
+    'USERNAME'         => [
+        'phpPattern' => '%^\p{L}[\p{L}\p{N}\x20\._-]+$%uD',
+        'jsPattern'  => '^.{2,}$',
+        'min'        => 2,
+        'max'        => 25,
+    ],
     'HTTP_HEADERS'     => [
         'common' => [
             'X-Content-Type-Options'  => 'nosniff',
@@ -105,7 +111,7 @@ return [
         'Router' => [
             'class'    => \ForkBB\Core\Router::class,
             'base_url' => '%BASE_URL%',
-            'csrf'     => '@Csrf'
+            'csrf'     => '@Csrf',
         ],
         'Lang' => \ForkBB\Core\Lang::class,
         'Mail' => [
@@ -117,7 +123,10 @@ return [
             'eol'   => '%EOL%',
         ],
         'Func'      => \ForkBB\Core\Func::class,
-        'Test'      => \ForkBB\Core\Test::class,
+        'Test'      => [
+            'class'  => \ForkBB\Core\Test::class,
+            'config' => '%DIR_CONFIG%/test.default.php',
+        ],
         'NormEmail' => \MioVisman\NormEmail\NormEmail::class,
         'Log'       => [
             'class'  => \ForkBB\Core\Log::class,
@@ -163,11 +172,22 @@ return [
         'subscriptions' => \ForkBB\Models\Subscription\Subscription::class,
         'bbcode'        => '@BBCodeListModel:init',
         'pms'           => \ForkBB\Models\PM\PM::class,
+        'providers'     => [
+            'class'   => \ForkBB\Models\Provider\Providers::class,
+            'drivers' => [
+                'github' => \ForkBB\Models\Provider\Driver\GitHub::class,
+                'yandex' => \ForkBB\Models\Provider\Driver\Yandex::class,
+                'google' => \ForkBB\Models\Provider\Driver\Google::class,
+            ],
+        ],
+        'providerUser'  => \ForkBB\Models\ProviderUser\ProviderUser::class,
+        'attachments'   => \ForkBB\Models\Attachment\Attachments::class,
 
         'Csrf' => [
-            'class'  => \ForkBB\Core\Csrf::class,
-            'Secury' => '@Secury',
-            'key'    => '%user.password%%user.ip%%user.id%%BASE_URL%',
+            'class'   => \ForkBB\Core\Csrf::class,
+            'Secury'  => '@Secury',
+            'key'     => '%user.password%%user.ip%%user.id%%BASE_URL%',
+            'extSalt' => '',
         ],
         'Online' => \ForkBB\Models\Online\Online::class,
         'Cookie' => [
@@ -200,6 +220,7 @@ return [
         'VLusername' => \ForkBB\Models\Validators\Username::class,
         'VLemail'    => \ForkBB\Models\Validators\Email::class,
         'VLhtml'     => \ForkBB\Models\Validators\Html::class,
+        'VLnekot'    => \ForkBB\Models\Validators\Nekot::class,
 
         'ProfileRules' => \ForkBB\Models\Rules\Profile::class,
         'UsersRules'   => \ForkBB\Models\Rules\Users::class,
@@ -333,6 +354,7 @@ return [
         'Userlist'           => \ForkBB\Models\Pages\Userlist::class,
         'Search'             => \ForkBB\Models\Pages\Search::class,
         'Register'           => \ForkBB\Models\Pages\Register::class,
+        'RegLog'             => \ForkBB\Models\Pages\RegLog::class,
         'Redirect'           => \ForkBB\Models\Pages\Redirect::class,
         'Maintenance'        => \ForkBB\Models\Pages\Maintenance::class,
         'Ban'                => \ForkBB\Models\Pages\Ban::class,
@@ -357,9 +379,13 @@ return [
         'ProfilePass'        => \ForkBB\Models\Pages\Profile\Pass::class,
         'ProfileEmail'       => \ForkBB\Models\Pages\Profile\Email::class,
         'ProfileMod'         => \ForkBB\Models\Pages\Profile\Mod::class,
+        'ProfileOAuth'       => \ForkBB\Models\Pages\Profile\OAuth::class,
+        'ProfileDelete'      => \ForkBB\Models\Pages\Profile\Delete::class,
+        'ProfileSearch'      => \ForkBB\Models\Pages\Profile\Search::class,
         'AdminIndex'         => \ForkBB\Models\Pages\Admin\Index::class,
         'AdminStatistics'    => \ForkBB\Models\Pages\Admin\Statistics::class,
         'AdminOptions'       => \ForkBB\Models\Pages\Admin\Options::class,
+        'AdminProviders'     => \ForkBB\Models\Pages\Admin\Providers::class,
         'AdminCategories'    => \ForkBB\Models\Pages\Admin\Categories::class,
         'AdminForums'        => \ForkBB\Models\Pages\Admin\Forums::class,
         'AdminGroups'        => \ForkBB\Models\Pages\Admin\Groups::class,
@@ -378,6 +404,8 @@ return [
         'AdminParserSmilies' => \ForkBB\Models\Pages\Admin\Parser\Smilies::class,
         'AdminParserBBCode'  => \ForkBB\Models\Pages\Admin\Parser\BBCode::class,
         'AdminLogs'          => \ForkBB\Models\Pages\Admin\Logs::class,
+        'AdminUploads'       => \ForkBB\Models\Pages\Admin\Uploads::class,
+        'AdminAntispam'      => \ForkBB\Models\Pages\Admin\Antispam::class,
 
         'AdminListModel'    => \ForkBB\Models\AdminList\AdminList::class,
         'BanListModel'      => \ForkBB\Models\BanList\BanList::class,

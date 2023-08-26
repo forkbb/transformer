@@ -16,8 +16,6 @@ use RuntimeException;
 
 class View extends Dirk
 {
-    protected $templates = [];
-
     public function __construct (string $cache, string $views)
     {
         $config = [
@@ -37,7 +35,7 @@ class View extends Dirk
      */
     protected function compileTransformations(string $value): string
     {
-        if ('<?xml ' === \substr($value, 0, 6)) {
+        if (\str_starts_with($value, '<?xml ')) {
             $value = \str_replace(' \\ENT_HTML5 | \\ENT_QUOTES | \\ENT_SUBSTITUTE,', ' \\ENT_XML1,', $value);
         }
 
@@ -69,13 +67,9 @@ EOD;
      */
     public function rendering(Page $p): ?string
     {
-        foreach ($p->httpHeaders as $catHeader) {
-            foreach ($catHeader as $header) {
-                \header($header[0], $header[1]);
-            }
-        }
-
         if (null === $p->nameTpl) {
+            $this->sendHttpHeaders($p);
+
             return null;
         }
 
@@ -95,6 +89,43 @@ EOD;
             $this->endBlock(true);
         }
 
+        $this->sendHttpHeaders($p);
+
         return $this->block('content');
+    }
+
+    /**
+     * Compile echos
+     */
+    protected function compileEchos(string $value): string
+    {
+        $value = \preg_replace_callback(
+            '%(@)?\{\{!\s*(.+?)\s*!\}\}(\r?\n)?%s',
+            function($matches) {
+                $whitespace = empty($matches[3]) ? '' : $matches[3] . $matches[3];
+
+                return $matches[1]
+                    ? \substr($matches[0], 1)
+                    : '<?= \\htmlspecialchars((string) '
+                        . $this->compileEchoDefaults($matches[2])
+                        . ', \\ENT_HTML5 | \\ENT_QUOTES | \\ENT_SUBSTITUTE, \'UTF-8\', false) ?>'
+                        . $whitespace;
+            },
+            $value
+        );
+
+        return parent::compileEchos($value);
+    }
+
+    /**
+     * Отправляет HTTP заголовки
+     */
+    protected function sendHttpHeaders(Page $p): void
+    {
+        foreach ($p->httpHeaders as $catHeader) {
+            foreach ($catHeader as $header) {
+                \header($header[0], $header[1]);
+            }
+        }
     }
 }

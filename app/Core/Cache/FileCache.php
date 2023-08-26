@@ -24,11 +24,10 @@ class FileCache implements CacheInterface
 {
     /**
      * Директория кэша
-     * @var string
      */
-    protected $cacheDir;
+    protected string $cacheDir;
 
-    public function __construct(string $dir, /* string */ $resetMark)
+    public function __construct(string $dir, string $resetMark)
     {
         $dir = \rtrim($dir, '\\/');
 
@@ -42,9 +41,7 @@ class FileCache implements CacheInterface
 
         $this->cacheDir = $dir;
 
-        if (\is_string($resetMark)) {
-            $this->resetIfRequired($resetMark);
-        }
+        $this->resetIfRequired($resetMark);
     }
 
     /**
@@ -81,7 +78,7 @@ class FileCache implements CacheInterface
         if ($ttl instanceof DateInterval) {
             $expire = (new DateTime('now', new DateTimeZone('UTC')))->add($value)->getTimestamp();
         } else {
-            $expire  = null === $ttl || $ttl < 1 ? 0 : \time() + $ttl;
+            $expire = null === $ttl || $ttl < 1 ? 0 : \time() + $ttl;
         }
 
         $value   = \var_export($value, true);
@@ -122,7 +119,7 @@ class FileCache implements CacheInterface
     {
         $dir      = new RecursiveDirectoryIterator($this->cacheDir, RecursiveDirectoryIterator::SKIP_DOTS);
         $iterator = new RecursiveIteratorIterator($dir);
-        $files    = new RegexIterator($iterator, '%\.php$%i', RegexIterator::MATCH);
+        $files    = new RegexIterator($iterator, '%\.(?:php|tmp)$%i', RegexIterator::MATCH);
         $result   = true;
 
         foreach ($files as $file) {
@@ -213,7 +210,7 @@ class FileCache implements CacheInterface
         if (! \preg_match('%^[a-z0-9_\.]+$%Di', $key)) {
             throw new InvalidArgumentException('Key is not a legal value');
         }
-        if ('poll' == \substr($key, 0, 4)) {
+        if (\str_starts_with($key, 'poll')) {
             return $this->cacheDir . "/polls/{$key}.php";
         } else {
             return $this->cacheDir . "/cache_{$key}.php";

@@ -16,45 +16,38 @@ class Config
 {
     /**
      * Путь до файла конфига
-     * @var string
      */
-    protected $path;
+    protected string $path;
 
     /**
      * Содержимое файла конфига
-     * @var string
      */
-    protected $fileContents;
+    protected string $fileContents;
 
     /**
      * Начальная позиция массива конфига
-     * @var int
      */
-    protected $arrayStartPos;
+    protected int $arrayStartPos;
 
     /**
      * Массив токенов
-     * @var array
      */
-    protected $tokens;
+    protected array $tokens;
 
     /**
      * Текущая позиция в массиве токенов
-     * @var int
      */
-    protected $position;
+    protected int $position;
 
     /**
      * Массив полученый из файла настройки путем его парсинга
-     * @var array
      */
-    protected $configArray;
+    protected array $configArray;
 
     /**
      * Строка массива конфига в файле конфигурации
-     * @var string
      */
-    protected $configStr;
+    protected string $configStr;
 
     public function __construct(string $path)
     {
@@ -111,6 +104,8 @@ class Config
                 |
                     function\s*\(.+?\)\s*\{.*?\}(?=,)
                 |
+                    (?:\\\\)?[\w-]+\s*\(.+?\)(?=,)
+                |
                     \S+(?<![,\]\)])
                 %sx',
                 \substr($this->fileContents, $this->arrayStartPos),
@@ -118,7 +113,7 @@ class Config
             )
             || empty($matches)
         ) {
-            throw new ForkException('Config array cannot be parsed');
+            throw new ForkException('Config array cannot be parsed (1)');
         }
 
         $this->tokens    = $matches[0];
@@ -131,10 +126,10 @@ class Config
     /**
      * Очищает ключ от кавычек
      */
-    protected function clearKey(/* mixed */ $key)
+    protected function clearKey(mixed $key): string
     {
         if (! \is_string($key)) {
-            throw new ForkException('Config array cannot be parsed');
+            throw new ForkException('Config array cannot be parsed (2)');
         }
 
         if ((
@@ -187,7 +182,7 @@ class Config
                         $type            = 'VALUE';
                         break;
                     default:
-                        throw new ForkException('Config array cannot be parsed');
+                        throw new ForkException('Config array cannot be parsed (3)');
                 }
 
             // закрытие массива
@@ -211,12 +206,12 @@ class Config
                                 $result[] = $value;
                             }
                         } elseif (null !== $key) {
-                            throw new ForkException('Config array cannot be parsed');
+                            throw new ForkException('Config array cannot be parsed (4)');
                         }
 
                         return $result;
                     default:
-                        throw new ForkException('Config array cannot be parsed');
+                        throw new ForkException('Config array cannot be parsed (5)');
                 }
             // новый элемент
             } elseif (',' === $token) {
@@ -226,7 +221,7 @@ class Config
                         $type = 'NEW';
                         break;
                     default:
-                        throw new ForkException('Config array cannot be parsed');
+                        throw new ForkException('Config array cannot be parsed (6)');
                 }
             // присвоение значения
             } elseif ('=>' === $token) {
@@ -241,7 +236,7 @@ class Config
                         $type         = '=>';
                         break;
                     default:
-                        throw new ForkException('Config array cannot be parsed');
+                        throw new ForkException('Config array cannot be parsed (7)');
                 }
 
             // пробел, комментарий
@@ -259,7 +254,7 @@ class Config
                             $other .= $token;
                         break;
                     default:
-                        throw new ForkException('Config array cannot be parsed');
+                        throw new ForkException('Config array cannot be parsed (8)');
                 }
             // какое-то значение
             } else {
@@ -292,7 +287,7 @@ class Config
                             $value = null;
                             $key   = null;
                         } elseif (null !== $key) {
-                            throw new ForkException('Config array cannot be parsed');
+                            throw new ForkException('Config array cannot be parsed (9)');
                         }
 
                         $type = 'VALUE_OR_KEY';
@@ -301,7 +296,7 @@ class Config
                         $type = 'VALUE';
                         break;
                     default:
-                        throw new ForkException('Config array cannot be parsed');
+                        throw new ForkException('Config array cannot be parsed (10)');
                 }
 
                 $value        = $token;
@@ -313,7 +308,7 @@ class Config
         }
     }
 
-    protected function isFormat(/* mixed */ $data): bool
+    protected function isFormat(mixed $data): bool
     {
         return \is_array($data)
         && \array_key_exists('value', $data)
@@ -326,7 +321,7 @@ class Config
     /**
      * Добавляет/заменяет элемент в конфиг(е)
      */
-    public function add(string $path, /* mixed */ $value, string $after = null): bool
+    public function add(string $path, mixed $value, string $after = null): bool
     {
         if (empty($this->configArray)) {
             $this->configArray = $this->getArray();
@@ -344,9 +339,7 @@ class Config
                 $config[] = [];
                 $config   = &$config[\array_key_last($config)];
             } else {
-                if (! isset($config[$key])) {
-                    $config[$key] = [];
-                }
+                $config[$key] ??= [];
 
                 if ($this->isFormat($config[$key])) {
                     $config = &$config[$key]['value'];
@@ -362,7 +355,7 @@ class Config
 
         if (
             \is_numeric($key) //???? O_o
-            || \is_numeric($after)
+            || \is_numeric($after) //???? O_o O_o O_o
         ) {
             $config[] = $value;
         } elseif (isset($config[$key])) {
@@ -403,7 +396,7 @@ class Config
     /**
      * Удаляет элемент из конфига
      */
-    public function delete(string $path)
+    public function delete(string $path): mixed
     {
         if (empty($this->configArray)) {
             $this->configArray = $this->getArray();

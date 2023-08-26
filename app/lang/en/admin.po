@@ -74,3 +74,12 @@ msgstr "\"%s\""
 
 msgid "Logs"
 msgstr "Logs"
+
+msgid "Admin menu"
+msgstr "Admin menu"
+
+msgid "Uploads"
+msgstr "Uploads"
+
+msgid "Antispam"
+msgstr "Antispam"

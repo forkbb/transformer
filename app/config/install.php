@@ -12,6 +12,8 @@ declare(strict_types=1);
 \ini_set('display_errors', '1');
 \ini_set('log_errors', '1');
 
+define('FORK_GROUP_NEW_MEMBER', 5);
+
 function forkGetBaseURL()
 {
     $file    = \str_replace(\realpath($_SERVER['DOCUMENT_ROOT']), '', \realpath($_SERVER['SCRIPT_FILENAME']));
@@ -22,9 +24,29 @@ function forkGetBaseURL()
     return \rtrim($baseURL, '/');
 }
 
+$extNotFound = \array_diff(
+    [
+        'date',
+        'filter',
+        'hash',
+        'json',
+        'SPL',
+        'pcre',
+        'PDO',
+        'fileinfo',
+        'intl',
+        'mbstring',
+    ],
+    \get_loaded_extensions()
+);
+
+if (! empty($extNotFound)) {
+    exit('Please enable the following extensions in PHP: ' . implode(', ', $extNotFound));
+}
+
 return [
     'BASE_URL'         => forkGetBaseURL(),
-    'LIMIT'            => 100,
+    'LIMIT'            => 300,
     'DEBUG'            => 2,
     'EOL'              => \PHP_EOL,
     'MAX_EMAIL_LENGTH' => 80,
@@ -39,6 +61,12 @@ return [
     ],
     'DATE_FORMATS' => ['Y-m-d', 'd M Y', 'Y-m-d', 'Y-d-m', 'd-m-Y', 'm-d-Y', 'M j Y', 'jS M Y'],
     'TIME_FORMATS' => ['H:i:s', 'H:i', 'H:i:s', 'H:i', 'g:i:s a', 'g:i a'],
+    'USERNAME' => [
+        'phpPattern' => '%^\p{L}[\p{L}\p{N}\x20\._-]+$%uD',
+        'jsPattern'  => '^.{2,}$',
+        'min'        => 2,
+        'max'        => 25,
+    ],
 
     'forConfig' => [
         'o_board_title'    => 'Transformer',
@@ -87,11 +115,14 @@ return [
         24 => 'pm_block',
         25 => 'bans',
         26 => 'config',
+        27 => 'providers',
+        28 => 'providers_users',
+        29 => 'attachments',
 //      'online',
 //      'search_cache',
 //      'search_matches',
 //      'search_words',
-        27 => 'schema re-modification',
+        30 => 'schema re-modification',
     ],
 
     'shared' => [
@@ -146,7 +177,7 @@ return [
             'host'  => '%config.o_smtp_host%',
             'user'  => '%config.o_smtp_user%',
             'pass'  => '%config.o_smtp_pass%',
-            'ssl'   => '%config.o_smtp_ssl%',
+            'ssl'   => '%config.b_smtp_ssl%',
             'eol'   => '%EOL%',
         ],
         'Func' => \ForkBB\Core\Func::class,
@@ -172,6 +203,9 @@ return [
 
         'config'     => '@ConfigModel:install',
         'users'      => \ForkBB\Models\User\Users::class,
+        'userRules'  => '@UsersRules:init',
+
+        'UsersRules' => \ForkBB\Models\Rules\Users::class,
 
         'VLemail'    => \ForkBB\Models\Validators\Email::class,
         'VLhtml'     => \ForkBB\Models\Validators\Html::class,
