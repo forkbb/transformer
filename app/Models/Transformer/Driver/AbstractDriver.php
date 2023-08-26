@@ -48,7 +48,7 @@ abstract class AbstractDriver extends Model
     ];
 
     abstract public function getType(): string;
-    abstract public function test(DB $db): bool|string|array;
+    abstract public function test(DB $db, bool $receiver = false): bool|string|array;
 
     protected function reqTablesTest(DB $db): bool
     {

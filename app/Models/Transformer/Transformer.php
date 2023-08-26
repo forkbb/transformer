@@ -109,7 +109,7 @@ class Transformer extends Model
 
         if ($count > 0) {
             $driver = $this->loadDriver('ForkBB');
-            $result = $driver->test($this->c->DB);
+            $result = $driver->test($this->c->DB, true);
 
             if (true !== $result) {
                 if (! empty($result)) {

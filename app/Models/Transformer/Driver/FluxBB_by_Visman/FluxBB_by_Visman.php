@@ -64,7 +64,7 @@ class FluxBB_by_Visman extends AbstractDriver
         return 'FluxBB_by_Visman';
     }
 
-    public function test(DB $db): bool|string|array
+    public function test(DB $db, bool $receiver = false): bool|string|array
     {
         if (! $this->reqTablesTest($db)) {
             if (! empty($this->error)) {

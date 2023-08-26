@@ -67,8 +67,12 @@ class ForkBB extends AbstractDriver
         return 'ForkBB';
     }
 
-    public function test(DB $db): bool|string|array
+    public function test(DB $db, bool $receiver = false): bool|string|array
     {
+        if ($receiver) {
+            $this->min = $this->max;
+        }
+
         if (! $this->reqTablesTest($db)) {
             if (! empty($this->error)) {
                 return $this->error;
