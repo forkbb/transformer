@@ -1464,8 +1464,140 @@ class ForkBB extends AbstractDriver
     /*************************************************************************/
     /* attachments_pos                                                       */
     /*************************************************************************/
+    public function attachments_posPre(DB $db, int $id): bool
+    {
+        $tables = $db->getMap();
+
+        if (empty($tables['attachments_pos'])) {
+            return null;
+        }
+
+        $vars = [
+            ':id'    => $id,
+            ':limit' => $this->c->LIMIT,
+        ];
+        $query = 'SELECT id
+            FROM ::attachments_pos
+            WHERE id>=?i:id
+            ORDER BY id
+            LIMIT ?i:limit';
+
+        $ids = $db->query($query, $vars)->fetchAll(PDO::FETCH_COLUMN);
+
+        if (empty($ids)) {
+            $max = $id;
+        } else {
+            $max = \array_pop($ids);
+        }
+
+        $this->insertQuery = 'INSERT INTO ::attachments_pos (id, pid)
+            SELECT (
+                SELECT id
+                FROM ::attachments
+                WHERE id_old=?i:id
+            ), (
+                SELECT id
+                FROM ::posts
+                WHERE id_old=?i:pid
+            )';
+
+        $vars = [
+            ':id'  => $id,
+            ':max' => $max,
+        ];
+        $query = 'SELECT *
+            FROM ::attachments_pos
+            WHERE id>=?i:id AND id<=?i:max
+            ORDER BY id';
+
+        $this->stmt = $db->query($query, $vars);
+
+        return false !== $this->stmt;
+    }
+
+    public function attachments_posGet(int &$id): ?array
+    {
+        $vars = $this->stmt->fetch();
+
+        if (false === $vars) {
+            $this->stmt->closeCursor();
+            $this->stmt = null;
+
+            return null;
+        }
+
+        $id = (int) $vars['id'];
+
+        return $vars;
+    }
 
     /*************************************************************************/
     /* attachments_pos_pm                                                    */
     /*************************************************************************/
+    public function attachments_pos_pmPre(DB $db, int $id): bool
+    {
+        $tables = $db->getMap();
+
+        if (empty($tables['attachments_pos_pm'])) {
+            return null;
+        }
+
+        $vars = [
+            ':id'    => $id,
+            ':limit' => $this->c->LIMIT,
+        ];
+        $query = 'SELECT id
+            FROM ::attachments_pos_pm
+            WHERE id>=?i:id
+            ORDER BY id
+            LIMIT ?i:limit';
+
+        $ids = $db->query($query, $vars)->fetchAll(PDO::FETCH_COLUMN);
+
+        if (empty($ids)) {
+            $max = $id;
+        } else {
+            $max = \array_pop($ids);
+        }
+
+        $this->insertQuery = 'INSERT INTO ::attachments_pos_pm (id, pid)
+            SELECT (
+                SELECT id
+                FROM ::attachments
+                WHERE id_old=?i:id
+            ), (
+                SELECT id
+                FROM ::pm_posts
+                WHERE id_old=?i:pid
+            )';
+
+        $vars = [
+            ':id'  => $id,
+            ':max' => $max,
+        ];
+        $query = 'SELECT *
+            FROM ::attachments_pos_pm
+            WHERE id>=?i:id AND id<=?i:max
+            ORDER BY id';
+
+        $this->stmt = $db->query($query, $vars);
+
+        return false !== $this->stmt;
+    }
+
+    public function attachments_pos_pmGet(int &$id): ?array
+    {
+        $vars = $this->stmt->fetch();
+
+        if (false === $vars) {
+            $this->stmt->closeCursor();
+            $this->stmt = null;
+
+            return null;
+        }
+
+        $id = (int) $vars['id'];
+
+        return $vars;
+    }
 }

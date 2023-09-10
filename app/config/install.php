@@ -46,7 +46,7 @@ if (! empty($extNotFound)) {
 
 return [
     'BASE_URL'         => forkGetBaseURL(),
-    'LIMIT'            => 300,
+    'LIMIT'            => 1000,
     'DEBUG'            => 2,
     'EOL'              => \PHP_EOL,
     'MAX_EMAIL_LENGTH' => 80,
@@ -118,11 +118,13 @@ return [
         27 => 'providers',
         28 => 'providers_users',
         29 => 'attachments',
+        30 => 'attachments_pos',
+        31 => 'attachments_pos_pm',
 //      'online',
 //      'search_cache',
 //      'search_matches',
 //      'search_words',
-        30 => 'schema re-modification',
+        32 => 'schema re-modification',
     ],
 
     'shared' => [
