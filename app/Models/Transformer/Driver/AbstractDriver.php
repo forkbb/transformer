@@ -374,6 +374,16 @@ abstract class AbstractDriver extends Model
     /*************************************************************************/
     /* smilies                                                               */
     /*************************************************************************/
+    public function smiliesPre(DB $db, int $id): ?bool
+    {
+        return null;
+    }
+
+    public function smiliesGet(int &$id): ?array
+    {
+        return null;
+    }
+
     public function smiliesSet(DB $db, array $vars): bool
     {
         return false !== $db->exec($this->insertQuery, $vars);

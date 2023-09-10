@@ -433,7 +433,7 @@ class FluxBB_by_Visman extends AbstractDriver
                     $mods[$row['id']] = $row['username'];
                 }
 
-                $vars['moderators'] = \json_encode($mods);
+                $vars['moderators'] = \json_encode($mods, FORK_JSON_ENCODE);
             } else {
                 $vars['moderators'] = '';
             }
