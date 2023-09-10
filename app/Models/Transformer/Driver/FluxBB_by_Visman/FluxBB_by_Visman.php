@@ -13,15 +13,9 @@ namespace ForkBB\Models\Transformer\Driver\FluxBB_by_Visman;
 use ForkBB\Core\DB;
 use ForkBB\Models\Transformer\Driver\AbstractDriver;
 use PDO;
-use PDOException;
-use InvalidArgumentException;
-use RuntimeException;
 
 class FluxBB_by_Visman extends AbstractDriver
 {
-    /**
-     * @var array
-     */
     protected array $reqTables = [
         'bans',
         'categories',
@@ -48,15 +42,7 @@ class FluxBB_by_Visman extends AbstractDriver
         'users',
         'warnings',
     ];
-
-    /**
-     * @var string
-     */
     protected string $min = '51';
-
-    /**
-     * @var string
-     */
     protected string $max = '84';
 
     public function getType(): string
@@ -1299,10 +1285,7 @@ class FluxBB_by_Visman extends AbstractDriver
     /*************************************************************************/
     /* config                                                                */
     /*************************************************************************/
-    /**
-     * @var array
-     */
-    protected $newConfig;
+    protected array $newConfig;
 
     public function configPre(DB $db, int $id): bool
     {

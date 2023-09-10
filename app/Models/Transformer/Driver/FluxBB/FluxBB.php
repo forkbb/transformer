@@ -13,15 +13,9 @@ namespace ForkBB\Models\Transformer\Driver\FluxBB;
 use ForkBB\Core\DB;
 use ForkBB\Models\Transformer\Driver\AbstractDriver;
 use PDO;
-use PDOException;
-use InvalidArgumentException;
-use RuntimeException;
 
 class FluxBB extends AbstractDriver
 {
-    /**
-     * @var array
-     */
     protected array $reqTables = [
         'bans',
         'categories',
@@ -41,15 +35,7 @@ class FluxBB extends AbstractDriver
         'topic_subscriptions',
         'users',
     ];
-
-    /**
-     * @var string
-     */
     protected string $min = '1.5.0';
-
-    /**
-     * @var string
-     */
     protected string $max = '1.5.11';
 
     public function getType(): string
@@ -1299,10 +1285,7 @@ class FluxBB extends AbstractDriver
     /*************************************************************************/
     /* config                                                                */
     /*************************************************************************/
-    /**
-     * @var array
-     */
-    protected $newConfig;
+    protected array $newConfig;
 
     public function configPre(DB $db, int $id): bool
     {

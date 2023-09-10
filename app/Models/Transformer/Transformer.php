@@ -12,7 +12,6 @@ namespace ForkBB\Models\Transformer;
 
 use ForkBB\Models\Model;
 use ForkBB\Models\Transformer\Driver\AbstractDriver;
-use InvalidArgumentException;
 use RuntimeException;
 use function \ForkBB\__;
 
@@ -20,13 +19,9 @@ class Transformer extends Model
 {
     /**
      * Ключ модели для контейнера
-     * @var string
      */
     protected string $cKey = 'Transformer';
 
-    /**
-     * @var array
-     */
     protected array $oldAdd = [
         'categories',
         'forums',
@@ -39,10 +34,6 @@ class Transformer extends Model
         'warnings',
         'attachments',
     ];
-
-    /**
-     * @var array
-     */
     protected array $errors = [];
 
     public function getErrors(): array

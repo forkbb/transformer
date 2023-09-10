@@ -13,15 +13,9 @@ namespace ForkBB\Models\Transformer\Driver\PunBB;
 use ForkBB\Core\DB;
 use ForkBB\Models\Transformer\Driver\AbstractDriver;
 use PDO;
-use PDOException;
-use InvalidArgumentException;
-use RuntimeException;
 
 class PunBB extends AbstractDriver
 {
-    /**
-     * @var array
-     */
     protected array $reqTables = [
         'bans',
         'categories',
@@ -44,15 +38,7 @@ class PunBB extends AbstractDriver
         'topics',
         'users',
     ];
-
-    /**
-     * @var string
-     */
     protected string $min = '1.4.4';
-
-    /**
-     * @var string
-     */
     protected string $max = '1.4.6';
 
     public function getType(): string
@@ -1306,10 +1292,7 @@ class PunBB extends AbstractDriver
     /*************************************************************************/
     /* config                                                                */
     /*************************************************************************/
-    /**
-     * @var array
-     */
-    protected $newConfig;
+    protected array $newConfig;
 
     public function configPre(DB $db, int $id): bool
     {

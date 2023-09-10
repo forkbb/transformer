@@ -13,15 +13,9 @@ namespace ForkBB\Models\Transformer\Driver\ForkBB;
 use ForkBB\Core\DB;
 use ForkBB\Models\Transformer\Driver\AbstractDriver;
 use PDO;
-use PDOException;
-use InvalidArgumentException;
-use RuntimeException;
 
 class ForkBB extends AbstractDriver
 {
-    /**
-     * @var array
-     */
     protected array $reqTables = [
         'bans',
         'bbcode',
@@ -51,15 +45,7 @@ class ForkBB extends AbstractDriver
         'users',
         'warnings',
     ];
-
-    /**
-     * @var string
-     */
     protected string $min = '42';
-
-    /**
-     * @var string
-     */
     protected string $max = '68';
 
     public function getType(): string

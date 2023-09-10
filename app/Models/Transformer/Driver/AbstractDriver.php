@@ -14,31 +14,13 @@ use ForkBB\Core\DB;
 use ForkBB\Models\Model;
 use PDO;
 use PDOException;
-use InvalidArgumentException;
-use RuntimeException;
 
 abstract class AbstractDriver extends Model
 {
-    /**
-     * @var array
-     */
     protected array $reqTables = [];
-
-    /**
-     * @var string|array;
-     */
     protected string|array $error = '';
-
-    /**
-     * @var string
-     */
     protected string $min = '0';
-
-    /**
-     * @var string
-     */
     protected string $max = '0';
-
     protected array $defGroups = [
         FORK_GROUP_UNVERIFIED => false,
         FORK_GROUP_ADMIN      => true,
