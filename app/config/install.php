@@ -85,6 +85,7 @@ return [
         'ForkBB'           => 'ForkBBDriver',
         'FluxBB_by_Visman' => 'FluxBB_by_VismanDriver',
         'FluxBB'           => 'FluxBBDriver',
+        'PunBB'            => 'PunBBDriver',
     ],
 
     'STEPS' => [
@@ -230,5 +231,6 @@ return [
         'ForkBBDriver'           => \ForkBB\Models\Transformer\Driver\ForkBB\ForkBB::class,
         'FluxBB_by_VismanDriver' => \ForkBB\Models\Transformer\Driver\FluxBB_by_Visman\FluxBB_by_Visman::class,
         'FluxBBDriver'           => \ForkBB\Models\Transformer\Driver\FluxBB\FluxBB::class,
+        'PunBBDriver'            => \ForkBB\Models\Transformer\Driver\PunBB\PunBB::class,
     ],
 ];
