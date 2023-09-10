@@ -10,6 +10,7 @@ Supports (convert/merge):
 1. ForkBB rev.42 - rev.68
 2. FluxBB_by_Visman rev.51 - rev.84
 3. FluxBB 1.5.0 - 1.5.11
+4. PunBB 1.4.4 - 1.4.6
 
 ## Requirements
 
