@@ -1014,6 +1014,16 @@ abstract class AbstractDriver extends Model
     /*************************************************************************/
     /* pm_block                                                              */
     /*************************************************************************/
+    public function pm_blockPre(DB $db, int $id): ?bool
+    {
+        return null;
+    }
+
+    public function pm_blockGet(int &$id): ?array
+    {
+        return null;
+    }
+
     public function pm_blockSet(DB $db, array $vars): bool
     {
         return false !== $db->exec($this->insertQuery, $vars);

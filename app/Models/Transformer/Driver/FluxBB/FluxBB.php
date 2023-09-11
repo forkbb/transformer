@@ -698,7 +698,6 @@ class FluxBB extends AbstractDriver
     public function warningsPre(DB $db, int $id): ?bool
     {
         return null;
-
     }
 
     public function warningsGet(int &$id): ?array

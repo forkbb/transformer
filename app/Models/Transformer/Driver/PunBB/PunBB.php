@@ -705,7 +705,6 @@ class PunBB extends AbstractDriver
     public function warningsPre(DB $db, int $id): ?bool
     {
         return null;
-
     }
 
     public function warningsGet(int &$id): ?array
@@ -1030,7 +1029,7 @@ class PunBB extends AbstractDriver
     {
         $tables = $db->getMap();
 
-        if (empty($tables['pms_new_topics'])) {
+        if (empty($tables['pun_pm_messages'])) {
             return null;
         }
 
@@ -1046,7 +1045,7 @@ class PunBB extends AbstractDriver
             ':limit' => $this->c->LIMIT,
         ];
         $query = 'SELECT *
-            FROM ::pms_new_topics
+            FROM ::pun_pm_messages
             WHERE id>=?i:id
             ORDER BY id
             LIMIT ?i:limit';
@@ -1054,21 +1053,6 @@ class PunBB extends AbstractDriver
         $this->stmt = $db->query($query, $vars);
 
         return false !== $this->stmt;
-    }
-
-    protected function pmStatus(int $status, int $visit): int
-    {
-        switch ($status) {
-            case 0:
-            case 1:
-                $status = 2;
-
-                break;
-            case 2:
-                $status = empty($visit) ? 1 : 0;
-        }
-
-        return $status;
     }
 
     public function pm_topicsGet(int &$id): ?array
@@ -1086,20 +1070,32 @@ class PunBB extends AbstractDriver
 
         return [
             'id_old'        => $id,
-            'subject'       => (string) $vars['topic'],
-            'poster'        => (string) $vars['starter'],
-            'poster_id'     => (int) $vars['starter_id'],
-            'poster_status' => $this->pmStatus((int) $vars['topic_st'], (int) $vars['see_st']),
-            'poster_visit'  => (int) $vars['see_st'],
-            'target'        => (string) $vars['to_user'],
-            'target_id'     => (int) $vars['to_id'],
-            'target_status' => $this->pmStatus((int) $vars['topic_to'], (int) $vars['see_to']),
-            'target_visit'  => (int) $vars['see_to'],
-            'num_replies'   => (int) $vars['replies'],
+            'subject'       => (string) $vars['subject'],
+            'poster'        => '???',
+            'poster_id'     => (int) $vars['sender_id'],
+            'poster_status' => ! empty((int) $vars['deleted_by_sender'])
+                ? 0
+                : (
+                    'draft' === $vars['status']
+                    ? 3
+                    : 2
+                ),
+            'poster_visit'  => (int) $vars['lastedited_at'],
+            'target'        => '???',
+            'target_id'     => (int) $vars['receiver_id'],
+            'target_status' => ! empty((int) $vars['deleted_by_receiver'])
+                ? 0
+                : (
+                    'draft' === $vars['status']
+                    ? 1
+                    : 2
+                ),
+            'target_visit'  => (int) $vars['read_at'],
+            'num_replies'   => 0,
             'first_post_id' => 0,
-            'last_post'     => (int) $vars['last_posted'],
+            'last_post'     => (int) $vars['lastedited_at'],
             'last_post_id'  => 0,
-            'last_number'   => (int) $vars['last_poster'],
+            'last_number'   => 0,
         ];
     }
 
@@ -1110,7 +1106,7 @@ class PunBB extends AbstractDriver
     {
         $tables = $db->getMap();
 
-        if (empty($tables['pms_new_posts'])) {
+        if (empty($tables['pun_pm_messages'])) {
             return null;
         }
 
@@ -1126,7 +1122,7 @@ class PunBB extends AbstractDriver
             ':limit' => $this->c->LIMIT,
         ];
         $query = 'SELECT *
-            FROM ::pms_new_posts
+            FROM ::pun_pm_messages
             WHERE id>=?i:id
             ORDER BY id
             LIMIT ?i:limit';
@@ -1151,14 +1147,14 @@ class PunBB extends AbstractDriver
 
         return [
             'id_old'       => $id,
-            'poster'       => (string) $vars['poster'],
-            'poster_id'    => (int) $vars['poster_id'],
-            'poster_ip'    => (string) $vars['poster_ip'],
-            'message'      => (string) $vars['message'],
-            'hide_smilies' => (int) $vars['hide_smilies'],
-            'posted'       => (int) $vars['posted'],
-            'edited'       => (int) $vars['edited'],
-            'topic_id'     => (int) $vars['topic_id'],
+            'poster'       => '???',
+            'poster_id'    => (int) $vars['sender_id'],
+            'poster_ip'    => '0.0.0.0',
+            'message'      => (string) $vars['body'],
+            'hide_smilies' => 0,
+            'posted'       => (int) $vars['lastedited_at'],
+            'edited'       => 0,
+            'topic_id'     => $id,
         ];
     }
 
@@ -1169,75 +1165,6 @@ class PunBB extends AbstractDriver
     /*************************************************************************/
     /* pm_block                                                              */
     /*************************************************************************/
-    public function pm_blockPre(DB $db, int $id): ?bool
-    {
-        $tables = $db->getMap();
-
-        if (empty($tables['pms_new_block'])) {
-            return null;
-        }
-
-        $vars = [
-            ':id'    => $id,
-            ':limit' => $this->c->LIMIT,
-        ];
-        $query = 'SELECT bl_id
-            FROM ::pms_new_block
-            WHERE bl_id>=?i:id
-            ORDER BY bl_id
-            LIMIT ?i:limit';
-
-        $ids = $db->query($query, $vars)->fetchAll(PDO::FETCH_COLUMN);
-
-        if (empty($ids)) {
-            $max = $id;
-        } else {
-            $max = \array_pop($ids);
-        }
-
-        $this->insertQuery = 'INSERT INTO ::pm_block (bl_first_id, bl_second_id)
-            SELECT (
-                SELECT id
-                FROM ::users
-                WHERE id_old=?i:bl_first_id
-            ), (
-                SELECT id
-                FROM ::users
-                WHERE id_old=?i:bl_second_id
-            )';
-
-        $vars = [
-            ':id'  => $id,
-            ':max' => $max,
-        ];
-        $query = 'SELECT *
-            FROM ::pms_new_block
-            WHERE bl_id>=?i:id AND bl_id<=?i:max
-            ORDER BY bl_id';
-
-        $this->stmt = $db->query($query, $vars);
-
-        return false !== $this->stmt;
-    }
-
-    public function pm_blockGet(int &$id): ?array
-    {
-        $vars = $this->stmt->fetch();
-
-        if (false === $vars) {
-            $this->stmt->closeCursor();
-            $this->stmt = null;
-
-            return null;
-        }
-
-        $id = (int) $vars['bl_id'];
-
-        return [
-            'bl_first_id'  => (int) $vars['bl_id'],
-            'bl_second_id' => (int) $vars['bl_user_id'],
-        ];
-    }
 
     /*************************************************************************/
     /* bans                                                                  */
