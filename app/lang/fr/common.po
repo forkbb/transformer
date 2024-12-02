@@ -1,7 +1,7 @@
 #
 msgid ""
 msgstr ""
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
 "Project-Id-Version: ForkBB\n"
 "POT-Creation-Date: \n"
 "PO-Revision-Date: \n"
@@ -10,23 +10,23 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: en\n"
+"Language: fr\n"
 
 msgid "lang_direction"
 msgstr "ltr"
 
 msgid "lang_identifier"
-msgstr "en"
+msgstr "fr"
 
 msgid "lang_decimal_point"
-msgstr "."
+msgstr ","
 
 msgid "lang_thousands_sep"
-msgstr ","
+msgstr " "
 
 # date format short ([0])
 msgid "Y-m-d"
-msgstr "Y-m-d"
+msgstr "d-m-Y"
 
 # date format long ([1])
 msgid "d M Y"
@@ -41,161 +41,161 @@ msgid "H:i:s"
 msgstr "H:i:s"
 
 msgid "Cancel"
-msgstr "Cancel"
+msgstr "Annuler"
 
 msgid "Cancel redirect"
-msgstr "Operation cancelled."
+msgstr "Opération annulée."
 
 msgid "No confirm redirect"
-msgstr "No confirmation provided. Operation cancelled."
+msgstr "Absence de confirmation. Opération annulée."
 
 msgid "Confirm action"
-msgstr "Confirm action"
+msgstr "Confirmer l’action"
 
 msgid "Forum rules"
-msgstr "Forum rules"
+msgstr "Règles du forum"
 
 msgid "Redirecting to index"
-msgstr "Redirecting to Index page."
+msgstr "Redirection vers la page d’accueil."
 
 msgid "Error mail"
-msgstr "When sending email there was an error. Please try again later or contact the forum administrator at <a href=\"mailto:%1$s\">%1$s</a>."
+msgstr "Erreur lors de l’envoi d’email. Essayez plus tard ou contactez l’administrateur du forum <a href=\"mailto:%1$s\">%1$s</a>."
 
 msgid "Bad request"
-msgstr "Bad request. The request currently contains incorrect data."
+msgstr "Mauvaise requête. La requête contient des données invalides."
 
 msgid "Not Found"
-msgstr "Not Found. The link is incorrect or outdated."
+msgstr "Non trouvé. Le lien est incorrect ou périmé."
 
 msgid "No permission"
-msgstr "You do not have permission to access this page."
+msgstr "Vous n’avez pas la permission d’accéder à cette page."
 
 msgid "Bad token"
-msgstr "Bad token."
+msgstr "Erreur de jeton. Veuillez réessayer."
 
 msgid "Expired token"
-msgstr "Expired token."
+msgstr "Jeton expiré. Veuillez réessayer."
 
 msgid "Hidden text"
-msgstr "Hidden text"
+msgstr "Texte caché"
 
 msgid "Announcement"
-msgstr "Announcement:"
+msgstr "Annonce:"
 
 msgid "Options"
 msgstr "Options"
 
 msgid "Submit"
-msgstr "Submit"
+msgstr "Soumettre"
 
 msgid "You are banned"
-msgstr "You are banned from this forum."
+msgstr "Vous êtes banni de ce forum."
 
 msgid "Your IP is blocked"
-msgstr "Your IP is blocked from this forum."
+msgstr "Votre IP est bloquée sur ce forum."
 
 msgid "The ban expires %s"
-msgstr "The ban expires at the end of %s"
+msgstr "Le bannissement expire après %s"
 
 msgid "Ban message for you"
-msgstr "The administrator or moderator that banned you left the following message:"
+msgstr "L'administrateur/modérateur qui vous à banni à laisser ce message:"
 
 msgid "Ban message contact %s"
-msgstr "Please direct any inquiries to the forum administrator at <a href=\"mailto:%1$s\">%1$s</a>."
+msgstr "Pour contester ce bannissement vous pouvez contacter <a href=\"mailto:%1$s\">%1$s</a>."
 
 msgid "Never"
-msgstr "Never"
+msgstr "Jamais"
 
 msgid "Today"
-msgstr "Today"
+msgstr "Aujourd’hui"
 
 msgid "Yesterday"
-msgstr "Yesterday"
+msgstr "Hier"
 
 msgid "Info"
 msgstr "Info"
 
 msgid "Go back"
-msgstr "Go back"
+msgstr "Revenir en arrière"
 
 msgid "Maintenance"
 msgstr "Maintenance"
 
 msgid "Redirecting"
-msgstr "Redirecting"
+msgstr "Redirection"
 
 msgid "Redirecting..."
-msgstr "<br><a href=\"%s\">Redirecting …</a>"
+msgstr "<br><a href=\"%s\">Redirection…</a>"
 
 msgid "on"
-msgstr "on"
+msgstr "allumé"
 
 msgid "off"
-msgstr "off"
+msgstr "éteint"
 
 msgid "Last post"
-msgstr "Last post"
+msgstr "dernier message"
 
 msgid "by %s"
-msgstr "by %s"
+msgstr "par %s"
 
 msgid "New posts"
-msgstr "New posts"
+msgstr "Nouveaux messages"
 
 msgid "New posts info"
-msgstr "Go to the first new post in this topic"
+msgstr "Aller au premier nouveau message de cette discussion"
 
 msgid "Unread posts"
-msgstr "Unread posts"
+msgstr "Messages non lus"
 
 msgid "Unread posts info"
-msgstr "Go to the first unread post in this topic"
+msgstr "Aller au premier message non lu de cette discussion"
 
 msgid "Username"
-msgstr "Username"
+msgstr "Nom d’utilisateur"
 
 msgid "Passphrase"
-msgstr "Passphrase"
+msgstr "Phrase de passe"
 
 msgid "Email"
 msgstr "Email"
 
 msgid "Send email"
-msgstr "Send email"
+msgstr "Envoyer un email"
 
 msgid "Registered"
-msgstr "Registered"
+msgstr "Enregistré"
 
 msgid "Subject"
-msgstr "Subject"
+msgstr "Sujet"
 
 msgid "Message"
 msgstr "Message"
 
 msgid "Topic"
-msgstr "Topic"
+msgstr "Discussion"
 
 msgid "Forum"
 msgstr "Forum"
 
 msgid "Stats"
-msgstr "Statistics"
+msgstr "Statistiques"
 
 msgid "Posts"
-msgstr "Posts"
+msgstr "Messages"
 
 msgid "Replies"
-msgstr "Replies"
+msgstr "Réponses"
 
 msgid "%s Reply"
 msgid_plural "%s Replies"
-msgstr[0] "<b>%s</b> Reply"
-msgstr[1] "<b>%s</b> Replies"
+msgstr[0] "<b>%s</b> Réponse"
+msgstr[1] "<b>%s</b> Réponses"
 
 msgid "%s View"
 msgid_plural "%s Views"
-msgstr[0] "<b>%s</b> View"
-msgstr[1] "<b>%s</b> Views"
+msgstr[0] "<b>%s</b> Vue"
+msgstr[1] "<b>%s</b> Vues"
 
 msgid "Pages"
 msgstr "Pages:"
@@ -204,136 +204,136 @@ msgid "Page %s"
 msgstr "Page %s"
 
 msgid "Page %1$s of %2$s"
-msgstr "Page %1$s of %2$s ·"
+msgstr "Page %1$s sur %2$s ·"
 
 msgid "Image link"
 msgstr "image"
 
 msgid "%s wrote"
-msgstr "%s wrote:"
+msgstr "%s à écrit:"
 
 msgid "Mailer"
 msgstr "%s"
 
 msgid "Previous"
-msgstr "Previous"
+msgstr "Précédent"
 
 msgid "Next"
-msgstr "Next"
+msgstr "Suivant"
 
 msgid "Spacer"
 msgstr "&hellip;"
 
 msgid "Title"
-msgstr "Title"
+msgstr "Titre"
 
 msgid "Member"
-msgstr "Member"
+msgstr "Membre"
 
 msgid "Moderator"
-msgstr "Moderator"
+msgstr "Modérateur"
 
 msgid "Administrator"
-msgstr "Administrator"
+msgstr "Administrateur"
 
 msgid "Banned"
-msgstr "Banned"
+msgstr "Banni"
 
 msgid "Guest"
-msgstr "Guest"
+msgstr "Invité"
 
 msgid "Unverified"
-msgstr "Unverified"
+msgstr "Non vérifié"
 
 msgid "Index"
 msgstr "Index"
 
 msgid "Home page"
-msgstr "Home page"
+msgstr "Page d’accueil"
 
 msgid "User list"
-msgstr "User list"
+msgstr "liste d’utilisateur"
 
 msgid "List of users"
-msgstr "User list"
+msgstr "liste d’utilisateurs"
 
 msgid "Rules"
-msgstr "Rules"
+msgstr "Règles"
 
 msgid "Board rules"
-msgstr "Board rules"
+msgstr "Règles du forum"
 
 msgid "Search"
-msgstr "Search"
+msgstr "Recherche"
 
 msgid "Search topics and posts"
-msgstr "Search topics and posts"
+msgstr "Recherche messages et discussions"
 
 msgid "Register"
-msgstr "Register"
+msgstr "S’enregistrer"
 
 msgid "Login"
-msgstr "Login"
+msgstr "Entrer"
 
 msgid "Profile"
-msgstr "Profile"
+msgstr "Profil"
 
 msgid "Your profile"
-msgstr "Your profile"
+msgstr "Votre profil"
 
 msgid "Logout"
-msgstr "Logout"
+msgstr "Se déconnecter"
 
 msgid "Admin"
-msgstr "Admin area"
+msgstr "Zone administrateur"
 
 msgid "Administration functions"
-msgstr "Administration functions"
+msgstr "Fonctions d’administration"
 
 msgid "Title separator"
 msgstr " - "
 
 msgid "PM"
-msgstr "PM"
+msgstr "MP"
 
 msgid "PM %s"
-msgstr "<span class="f-spantxtpm">PM </span><b>(%s)</b>"
+msgstr "<span class="f-spantxtpm">MP </span><b>(%s)</b>"
 
 msgid "Private messages"
-msgstr "Private messages"
+msgstr "Messages privés"
 
 msgid "Send PM"
-msgstr "Send private message"
+msgstr "Envoyer un message privé"
 
 msgid "Board footer"
-msgstr "Board footer:"
+msgstr "Pied de page forum:"
 
 msgid "Powered by"
-msgstr "Powered by <a href=\"https://forkbb.ru\">ForkBB</a>"
+msgstr "Propulsé par <a href=\"https://forkbb.ru\">ForkBB</a>"
 
 msgid "Debug table"
-msgstr "Debug information:"
+msgstr "Informations de débugging:"
 
 msgid "Generated in %1$s, %2$s queries"
-msgstr "Generated in %1$s seconds, %2$s queries executed"
+msgstr "Généré en %1$s secondes, %2$s requêtes exécutées"
 
 msgid "Memory %1$s, Peak %2$s"
-msgstr "Memory usage: %1$s (Peak: %2$s)"
+msgstr "Usage mémoire: %1$s (Pic: %2$s)"
 
 msgid "Query times"
-msgstr "Time (s)"
+msgstr "Temps (s)"
 
 msgid "Query"
-msgstr "Query"
+msgstr "Requête"
 
 msgid "The most recent posts at %s board"
-msgstr "The most recent posts at \"%s\" board."
+msgstr "Le plus récent message sur \"%s\" ."
 
 msgid "The most recent posts in %s forum"
-msgstr "The most recent posts in \"%s\" forum."
+msgstr "Le plus récent message sur \"%s\"."
 
 msgid "The most recent posts in %s topic"
-msgstr "The most recent posts in \"%s\" topic."
+msgstr "Le plus récent message sur \"%s\" sujets."
 
 msgid "RSS reply"
 msgstr "Re: "
@@ -371,11 +371,12 @@ msgstr " h"
 msgid "After time d"
 msgstr " d"
 
+
 msgid "New reports"
-msgstr "<a href=\"%s\">There are new reports</a>"
+msgstr "<a href=\"%s\">Il y a de nouveaux signalements</a>"
 
 msgid "Maintenance mode enabled"
-msgstr "<a href=\"%s\">Maintenance mode is enabled!</a>"
+msgstr "<a href=\"%s\">Mode maintenance activé</a>"
 
 msgid "%s B"
 msgstr "%sB"
@@ -399,64 +400,67 @@ msgid "%s EiB"
 msgstr "%sE"
 
 msgid "Latest active topics"
-msgstr "Latest active topics"
+msgstr "Derniers sujets actifs"
 
 msgid "Find latest active topics"
-msgstr "Find latest active topics"
+msgstr "Trouver les derniers sujets actifs"
 
 msgid "Unanswered topics"
-msgstr "Unanswered topics"
+msgstr "Discussions sans réponses"
 
 msgid "Find unanswered topics"
-msgstr "Find unanswered topics"
+msgstr "Trouver des discussions sans réponse"
 
 msgid "Topics with your posts"
-msgstr "Topics with your posts"
+msgstr "Discussion avec vos messages"
 
 msgid "Find topics with your posts"
-msgstr "Find topics with your posts"
+msgstr "Trouver les discussions avec vos messages"
 
 msgid "Male"
-msgstr "Male"
+msgstr "Mâle"
 
 msgid "Female"
-msgstr "Female"
+msgstr "Femelle"
 
 msgid "Save changes"
-msgstr "Save changes"
+msgstr "Enregistrer"
 
 msgid "Save"
-msgstr "Save"
+msgstr "Enregistrer"
 
 msgid "Yes"
-msgstr "Yes"
+msgstr "Oui"
 
 msgid "No"
-msgstr "No"
+msgstr "Non"
 
 msgid "Your passphrase"
-msgstr "Your passphrase"
+msgstr "Votre phrase de passe"
 
 msgid "User %s"
 msgstr "%s"
 
 msgid "Unsubscribe"
-msgstr "Unsubscribe"
+msgstr "Se désabonner"
 
 msgid "Subscribe"
-msgstr "Subscribe"
+msgstr "S’abonner"
 
 msgid "Post from topic %s"
-msgstr "This post is moved from the topic &quot;%s&quot;"
+msgstr "Ce message à été déplacé de la discussion &quot;%s&quot;"
 
 msgid "The search may be case sensitive"
-msgstr "The search may be case sensitive for non-Basic Latin characters."
+msgstr "La recherche peut être sensible à la casse pour les langues non latines."
 
 msgid "%s"
 msgstr "%s"
+
+msgid "\"%s\""
+msgstr "&quot;%s&quot;"
 
 msgid "ACTIONS"
 msgstr "ACTIONS"
 
 msgid "Main menu"
-msgstr "Main menu"
+msgstr "Menu principal"
