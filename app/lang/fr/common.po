@@ -371,7 +371,6 @@ msgstr " h"
 msgid "After time d"
 msgstr " d"
 
-
 msgid "New reports"
 msgstr "<a href=\"%s\">Il y a de nouveaux signalements</a>"
 

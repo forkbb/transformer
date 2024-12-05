@@ -225,7 +225,6 @@ msgstr "La base de données doit être crée avec la classification de caractèr
 msgid "Cookie setup"
 msgstr "<b>Réglage du cookie</b>"
 
-
 msgid "Info 12"
 msgstr "Les cookies sont des fichiers dédiés au site, ils permettent de stocker des données dans le navigateur de l’utilisateur, ce qui est utilisé pour son authentification."
 
