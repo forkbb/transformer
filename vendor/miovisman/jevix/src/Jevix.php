@@ -12,7 +12,7 @@
  * @author     https://github.com/altocms/Jevix
  * @author     Agel_Nash <agel-nash@mail.ru>
  * @author     Visman <mio.visman@yandex.ru>
- * @version    2.2.1
+ * @version    2.3.0
  * @link       https://github.com/MioVisman/Jevix
  * @license    https://opensource.org/licenses/MIT The MIT License (MIT)
  */
@@ -912,10 +912,10 @@ class Jevix
 
     /**
      * Восстановить
-     * @param int $index
+     * @param ?int $index
      * @throws RuntimeException
      */
-    protected function restoreState(int $index = null): void
+    protected function restoreState(?int $index = null): void
     {
         if (empty($this->states)) {
             throw new RuntimeException('End of stack');
@@ -1112,7 +1112,7 @@ class Jevix
     }
 
     /**
-     *  Получает имя (тега, параметра) по принципу 1 сиивол далее цифра или символ
+     *  Получает имя (тега, параметра) по принципу 1 символ далее цифра или символ
      *
      * @param string $name
      * @param bool $minus

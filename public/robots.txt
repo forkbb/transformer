@@ -5,6 +5,10 @@ Disallow: /mod
 Disallow: /reg
 Disallow: /search
 Disallow: /post
+Disallow: /feed
 Disallow: /forum/scroll
-Disallow: /userlist/*/DESC/
-Disallow: /userlist/*/ASC/
+Disallow: /forum/*/new/topic
+Disallow: /topic/*/new/reply
+Disallow: /userlist
+Disallow: /draft
+Disallow: /premod

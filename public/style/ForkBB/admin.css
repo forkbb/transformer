@@ -1,5 +1,5 @@
 #forka {
-  --c-log-in-c: hsl(220,5%,12%);
+  --c-log-in-c: hsl(0,0%,0%);
 }
 
 /******************/
@@ -8,17 +8,6 @@
 #fork #fork-a-nav {
   position: sticky;
   top: 1rem;
-}
-
-#fork-a-menu .f-menu-a.active {
-  background-color: var(--bg-active);
-  color: var(--c-active);
-}
-
-#fork-a-menu .f-menu-a:hover,
-#fork-a-menu .f-menu-a:focus {
-  background-color: var(--c-a-and-btn);
-  color: var(--c-nav-focus);
 }
 
 #fork-a-menu #id-an-label {
@@ -75,6 +64,10 @@
   display: flex;
   flex-direction: column;
   gap: 1rem;
+}
+
+#forka textarea {
+  min-height: 7rem;
 }
 
 /*#forka .f-admin .f-fdiv,*/
@@ -186,9 +179,26 @@
   }
 }
 
+/******************/
+/* Хлебные крошки */
+/******************/
+#fork .f-cr-admin-a:not(.active)::before {
+  display: inline-block;
+  font: 900 0.875rem "fa";
+  content: "\a0\f7d9\a0";
+}
+
+#fork .f-cr-admin-a:not(.active) > span {
+  display: none;
+}
+
 /*************/
 /* Установка */
 /*************/
+#fork .f-install > h2 {
+  display: block;
+  padding: 0 0.625rem 0.625rem 0.625rem;
+}
 
 /****************************************/
 /* Админка/Форма в линию                */
@@ -402,7 +412,7 @@
 /* Админка/Пользователи */
 /************************/
 #fork-ausersrch-rs .f-btns {
-  text-align: end;
+  justify-content: flex-end;
 }
 
 #fork-ausersrch-rs .f-btns .f-fbtn,
@@ -691,7 +701,6 @@
 #fork-smls .f-fs-smile .f-fleg,
 #fork-smls .f-fs-new-smile .f-fleg {
   border: 0.0625rem solid var(--br-fprimary);
-  background-color: var(--bg-submenu);
 }
 
 #forka .f-field-bbcode.f-field-tag .f-link,
@@ -1048,9 +1057,9 @@
   text-align: center;
 }
 
-#fork #fork-logview summary.f-lgsu {
+/*#fork #fork-logview summary.f-lgsu {
   margin: 0;
-}
+}*/
 
 #fork #fork-logview summary.f-lgsu::after {
   content: none;
@@ -1148,6 +1157,11 @@
 
 #fork-uploads-files .f-field-action {
   border-inline-start: 0.0625rem dotted var(--br-fprimary);
+}
+
+#forka .f-deletefile-form .f-fbtn {
+  width: auto;
+  display: inline-block;
 }
 
 @media screen and (max-width: 85.9999rem) {
@@ -1260,4 +1274,89 @@
     display: block;
     width: 100%;
   }
+}
+
+/****************************************/
+/* Админка/Расширения                   */
+/****************************************/
+#forka #fork-extsinfo summary.f-extsu::after {
+  content: none;
+}
+
+#fork-extsinfo .f-extli:first-child {
+  border-top: 0.0625rem dotted var(--br-fprimary);
+}
+
+#fork-extsinfo .f-extli {
+  border-bottom: 0.0625rem dotted var(--br-fprimary);
+  padding: 0.625rem;
+}
+
+#fork-extsinfo .f-extsu {
+  display: block;
+}
+
+#fork-extsinfo .f-extdata {
+  color: var(--c-fprimary);
+  border: 0.0625rem solid var(--br-fprimary);
+  padding: 0.3125rem;
+}
+
+#fork-extsinfo .f-extdt-empty {
+  display: none;
+}
+
+#fork-extsinfo .f-extdd-author,
+#fork-extsinfo .f-extdd-confirm {
+  width: 100%;
+}
+
+#fork-extsinfo .f-ext-status0 {
+  color: var(--c-log-in-c);
+  background-color: #90CAF9;
+}
+
+#fork-extsinfo .f-ext-status4,
+#fork-extsinfo .f-ext-status5,
+#fork-extsinfo .f-ext-status6 {
+  color: var(--c-log-in-c);
+  background-color: #1976D2;
+}
+
+#fork-extsinfo .f-ext-status8 {
+  color: var(--c-log-in-c);
+  background-color: #4CAF50;
+}
+
+#fork-extsinfo .f-ext-status9,
+#fork-extsinfo .f-ext-status10 {
+  color: var(--c-log-in-c);
+  background-color: #FF5722;
+}
+
+#fork-extsinfo .f-ext-status12 {
+  color: var(--c-log-in-c);
+  background-color: #D32F2F;
+}
+
+#forka #fork-extsinfo .f-fbtn {
+  width: auto;
+}
+
+#forka .f-fbtn[name="uninstall"]:not(.origin) {
+  color: red;
+
+  &:hover,
+  &:focus {
+    color: var(--c-focus);
+    background-color: red;
+  }
+}
+
+/*********************/
+/* Админка - Реакции */
+/*********************/
+#forka .f-retype::before{
+  display: inline-block;
+  padding-inline-end: 0.3125rem;
 }

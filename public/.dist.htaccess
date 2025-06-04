@@ -4,6 +4,9 @@
 #
 AddDefaultCharset UTF-8
 
+#Options +FollowSymLinks                           # For extensions with symlinks
+##Options -FollowSymLinks +SymLinksIfOwnerMatch    # or this (more security(?), more checks(!!!))
+
 <IfModule mod_autoindex.c>
     Options -Indexes
 </IfModule>
@@ -12,23 +15,33 @@ AddDefaultCharset UTF-8
   RewriteEngine On
   #RewriteBase /
 
-  RewriteCond %{REQUEST_FILENAME} !-f
-  RewriteCond %{REQUEST_URI} !^/style/
-  RewriteCond %{REQUEST_URI} !^/img/
-  RewriteCond %{REQUEST_URI} !^/js/
-  RewriteCond %{REQUEST_URI} !^/upload/
-  RewriteCond %{REQUEST_URI} !^/favicon\.ico$
-  RewriteCond %{REQUEST_URI} !^/apple-touch-icon\.png$
-  RewriteCond %{REQUEST_URI} !^/robots\.txt$
-  RewriteRule . index.php [L]
-
   <IfModule !litespeed>
-    RewriteRule \.dist\. index.php [L]
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_URI} !^/style/
+    RewriteCond %{REQUEST_URI} !^/img/
+    RewriteCond %{REQUEST_URI} !^/js/
+    RewriteCond %{REQUEST_URI} !^/upload/
+    RewriteCond %{REQUEST_URI} !^/favicon\.ico$
+    RewriteCond %{REQUEST_URI} !^/apple-touch-icon\.png$
+    RewriteCond %{REQUEST_URI} !^/robots\.txt$
+    RewriteRule . index.php [END]
+
+    RewriteRule \.dist\. index.php [END]
 
     RewriteCond %{REQUEST_URI} \.v\.[0-9]
     RewriteRule ^(.+)\.v\.[0-9]+\.([^.\\/]++)$ $1.$2 [L]
   </IfModule>
   <IfModule litespeed>
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_URI} !^/style/
+    RewriteCond %{REQUEST_URI} !^/img/
+    RewriteCond %{REQUEST_URI} !^/js/
+    RewriteCond %{REQUEST_URI} !^/upload/
+    RewriteCond %{REQUEST_URI} !^/favicon\.ico$
+    RewriteCond %{REQUEST_URI} !^/apple-touch-icon\.png$
+    RewriteCond %{REQUEST_URI} !^/robots\.txt$
+    RewriteRule . index.php [L]
+
     RewriteRule \.dist\. index.php
 
     RewriteCond %{REQUEST_URI} \.v\.[0-9]
@@ -38,11 +51,11 @@ AddDefaultCharset UTF-8
 
 # Set Cache-Control header for caching statics
 <ifModule mod_headers.c>
-  <FilesMatch "\.(css|js|gif|png|jpg|jpeg|webp|avif|woff|woff2)$">
+  <FilesMatch "\.(css|js|gif|png|jpg|jpeg|webp|avif|woff|woff2|svg)$">
     Header set Cache-Control "public,max-age=31536000,immutable"
     Header unset ETag
   </FilesMatch>
-  <FilesMatch "\.(ico)$">
+  <FilesMatch "\.(ico|webmanifest)$">
     Header set Cache-Control "public,max-age=604800"
     Header unset ETag
   </FilesMatch>
@@ -55,12 +68,12 @@ AddDefaultCharset UTF-8
   ### Only works in Apache 2.4.10+ (Reason, condition  -> "expr = -z% {resp: ...}") ###
   #
   Header always set Content-Security-Policy "default-src 'self';object-src 'none';frame-ancestors 'none';base-uri 'none';form-action 'self'" "expr=-z %{resp:Content-Security-Policy}"
-  Header always set Feature-Policy "accelerometer 'none';ambient-light-sensor 'none';autoplay 'none';battery 'none';camera 'none';document-domain 'self';fullscreen 'self';geolocation 'none';gyroscope 'none';magnetometer 'none';microphone 'none';midi 'none';payment 'none';picture-in-picture 'none';sync-xhr 'self';usb 'none'" "expr=-z %{resp:Feature-Policy}"
+#  Header always set Feature-Policy "accelerometer 'none';ambient-light-sensor 'none';autoplay 'none';battery 'none';camera 'none';document-domain 'self';fullscreen 'self';geolocation 'none';gyroscope 'none';magnetometer 'none';microphone 'none';midi 'none';payment 'none';picture-in-picture 'none';sync-xhr 'self';usb 'none'" "expr=-z %{resp:Feature-Policy}"
   Header always set Referrer-Policy "strict-origin-when-cross-origin" "expr=-z %{resp:Referrer-Policy}"
 #  Header set Strict-Transport-Security "max-age=31536000" "expr=-z %{resp:Strict-Transport-Security}"
   Header always set X-Content-Type-Options "nosniff" "expr=-z %{resp:X-Content-Type-Options}"
   Header always set X-Frame-Options "DENY" "expr=-z %{resp:X-Frame-Options}"
-  Header always set X-XSS-Protection "1; mode=block" "expr=-z %{resp:X-XSS-Protection}"
+#  Header always set X-XSS-Protection "1; mode=block" "expr=-z %{resp:X-XSS-Protection}"
   Header always set Permissions-Policy "accelerometer=(),ambient-light-sensor=(),autoplay=(),battery=(),camera=(),document-domain=(self),fullscreen=(self),geolocation=(),gyroscope=(),magnetometer=(),microphone=(),midi=(),payment=(),picture-in-picture=(),sync-xhr=(self),usb=()" "expr=-z %{resp:Permissions-Policy}"
 
   # Remove headers containing php information
