@@ -24,21 +24,8 @@ msgstr ","
 msgid "lang_thousands_sep"
 msgstr " "
 
-# date format short ([0])
-msgid "Y-m-d"
-msgstr "d-m-Y"
-
-# date format long ([1])
-msgid "d M Y"
-msgstr "d M Y"
-
-# time format short ([1])
-msgid "H:i"
-msgstr "H:i"
-
-# time format long ([0])
-msgid "H:i:s"
-msgstr "H:i:s"
+msgid "lang_locales"
+msgstr "fr|fr_BE|fr_BF|fr_BI|fr_BJ|fr_BL|fr_CA|fr_CD|fr_CF|fr_CG|fr_CH|fr_CI|fr_CM|fr_DJ|fr_DZ|fr_FR|fr_GA|fr_GF|fr_GN|fr_GP|fr_GQ|fr_HT|fr_KM|fr_LU|fr_MA|fr_MC|fr_MF|fr_MG|fr_ML|fr_MQ|fr_MR|fr_MU|fr_NC|fr_NE|fr_PF|fr_PM|fr_RE|fr_RW|fr_SC|fr_SN|fr_SY|fr_TD|fr_TG|fr_TN|fr_VU|fr_WF|fr_YT"
 
 msgid "Cancel"
 msgstr "Annuler"
@@ -188,14 +175,14 @@ msgid "Replies"
 msgstr "Réponses"
 
 msgid "%s Reply"
-msgid_plural "%s Replies"
-msgstr[0] "<b>%s</b> Réponse"
-msgstr[1] "<b>%s</b> Réponses"
+msgid_plural "%s Réponses"
+msgstr[0] "<b class=\"f-num\">%s</b><span class=\"f-txt\"> Réponse</span>"
+msgstr[1] "<b class=\"f-num\">%s</b><span class=\"f-txt\"> Réponses</span>"
 
 msgid "%s View"
-msgid_plural "%s Views"
-msgstr[0] "<b>%s</b> Vue"
-msgstr[1] "<b>%s</b> Vues"
+msgid_plural "%s Vues"
+msgstr[0] "<b class=\"f-num\">%s</b><span class=\"f-txt\"> Vue</span>"
+msgstr[1] "<b class=\"f-num\">%s</b><span class=\"f-txt\"> Vues</span>"
 
 msgid "Pages"
 msgstr "Pages:"
@@ -252,7 +239,7 @@ msgid "Home page"
 msgstr "Page d’accueil"
 
 msgid "User list"
-msgstr "liste d’utilisateur"
+msgstr "liste d’utilisateurs"
 
 msgid "List of users"
 msgstr "liste d’utilisateurs"
@@ -377,6 +364,9 @@ msgstr "<a href=\"%s\">Il y a de nouveaux signalements</a>"
 msgid "Maintenance mode enabled"
 msgstr "<a href=\"%s\">Mode maintenance activé</a>"
 
+msgid "Maintenance mode enabled off"
+msgstr "<a href=\"%s\">Mode maintenance bloqué par le paramètre MAINTENANCE_OFF</a>"
+
 msgid "%s B"
 msgstr "%sB"
 
@@ -463,3 +453,63 @@ msgstr "ACTIONS"
 
 msgid "Main menu"
 msgstr "Menu principal"
+
+msgid ":like:"
+msgstr "J’aime"
+
+msgid ":fire:"
+msgstr "Feu"
+
+msgid ":lol:"
+msgstr "LOL"
+
+msgid ":smile:"
+msgstr "Sourire"
+
+msgid ":frown:"
+msgstr "Fronce les sourcils"
+
+msgid ":sad:"
+msgstr "Triste"
+
+msgid ":cry:"
+msgstr "Pleure"
+
+msgid ":angry:"
+msgstr "En colère"
+
+msgid ":dislike:"
+msgstr "N’aime pas"
+
+msgid ":meh:"
+msgstr "Meh"
+
+msgid ":shock:"
+msgstr "Choqué"
+
+msgid "Drafts (%s)"
+msgstr "<span class="f-spantxtpm">Brouillons </span><b>(%s)</b>"
+
+msgid "Your drafts"
+msgstr "Vos brouillons"
+
+msgid "bb hide"
+msgstr "Les visiteurs ne peuvent voir ce contenu."
+
+msgid "bb hide admin"
+msgstr "Seuls les administrateurs peuvent voir ce contenu."
+
+msgid "bb hide mod"
+msgstr "Seuls les administrateurs et modérateurs du forum peuvent voir ce contenu."
+
+msgid "bb hide %s posts"
+msgstr "Ce contenu est visible pour les utilisateurs totalisant %s ou plus de messages."
+
+msgid "Pre-moderation"
+msgstr "Pre-moderation"
+
+msgid "Queue of new topics and posts for moderation"
+msgstr "Liste des nouveaux sujets et messages pour modération"
+
+msgid "Pre-moderation (%s)"
+msgstr "<span class="f-spantxtpm">Pre-moderation </span><b>(%s)</b>"

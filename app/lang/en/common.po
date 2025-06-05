@@ -24,21 +24,8 @@ msgstr "."
 msgid "lang_thousands_sep"
 msgstr ","
 
-# date format short ([0])
-msgid "Y-m-d"
-msgstr "Y-m-d"
-
-# date format long ([1])
-msgid "d M Y"
-msgstr "d M Y"
-
-# time format short ([1])
-msgid "H:i"
-msgstr "H:i"
-
-# time format long ([0])
-msgid "H:i:s"
-msgstr "H:i:s"
+msgid "lang_locales"
+msgstr "en|en_001|en_150|en_AG|en_AI|en_AS|en_AT|en_AU|en_BB|en_BE|en_BI|en_BM|en_BS|en_BW|en_BZ|en_CA|en_CC|en_CH|en_CK|en_CM|en_CX|en_CY|en_DE|en_DG|en_DK|en_DM|en_ER|en_FI|en_FJ|en_FK|en_FM|en_GB|en_GD|en_GG|en_GH|en_GI|en_GM|en_GU|en_GY|en_HK|en_IE|en_IL|en_IM|en_IN|en_IO|en_JE|en_JM|en_KE|en_KI|en_KN|en_KY|en_LC|en_LR|en_LS|en_MG|en_MH|en_MO|en_MP|en_MS|en_MT|en_MU|en_MW|en_MY|en_NA|en_NF|en_NG|en_NL|en_NR|en_NU|en_NZ|en_PG|en_PH|en_PK|en_PN|en_PR|en_PW|en_RW|en_SB|en_SC|en_SD|en_SE|en_SG|en_SH|en_SI|en_SL|en_SS|en_SX|en_SZ|en_TC|en_TK|en_TO|en_TT|en_TV|en_TZ|en_UG|en_UM|en_US|en_US_POSIX|en_VC|en_VG|en_VI|en_VU|en_WS|en_ZA|en_ZM|en_ZW"
 
 msgid "Cancel"
 msgstr "Cancel"
@@ -71,10 +58,10 @@ msgid "No permission"
 msgstr "You do not have permission to access this page."
 
 msgid "Bad token"
-msgstr "Bad token."
+msgstr "Bad token. Please try to repeat the action."
 
 msgid "Expired token"
-msgstr "Expired token."
+msgstr "Expired token. Please try to repeat the action."
 
 msgid "Hidden text"
 msgstr "Hidden text"
@@ -189,13 +176,13 @@ msgstr "Replies"
 
 msgid "%s Reply"
 msgid_plural "%s Replies"
-msgstr[0] "<b>%s</b> Reply"
-msgstr[1] "<b>%s</b> Replies"
+msgstr[0] "<b class=\"f-num\">%s</b><span class=\"f-txt\"> Reply</span>"
+msgstr[1] "<b class=\"f-num\">%s</b><span class=\"f-txt\"> Replies</span>"
 
 msgid "%s View"
 msgid_plural "%s Views"
-msgstr[0] "<b>%s</b> View"
-msgstr[1] "<b>%s</b> Views"
+msgstr[0] "<b class=\"f-num\">%s</b><span class=\"f-txt\"> View</span>"
+msgstr[1] "<b class=\"f-num\">%s</b><span class=\"f-txt\"> Views</span>"
 
 msgid "Pages"
 msgstr "Pages:"
@@ -375,7 +362,10 @@ msgid "New reports"
 msgstr "<a href=\"%s\">There are new reports</a>"
 
 msgid "Maintenance mode enabled"
-msgstr "<a href=\"%s\">Maintenance mode is enabled!</a>"
+msgstr "<a href=\"%s\">Maintenance mode is enabled</a>"
+
+msgid "Maintenance mode enabled off"
+msgstr "<a href=\"%s\">Maintenance mode is blocked by the MAINTENANCE_OFF parameter</a>"
 
 msgid "%s B"
 msgstr "%sB"
@@ -455,8 +445,71 @@ msgstr "The search may be case sensitive for non-Basic Latin characters."
 msgid "%s"
 msgstr "%s"
 
+msgid "\"%s\""
+msgstr "&quot;%s&quot;"
+
 msgid "ACTIONS"
 msgstr "ACTIONS"
 
 msgid "Main menu"
 msgstr "Main menu"
+
+msgid ":like:"
+msgstr "Like"
+
+msgid ":fire:"
+msgstr "Fire"
+
+msgid ":lol:"
+msgstr "LOL"
+
+msgid ":smile:"
+msgstr "Smile"
+
+msgid ":frown:"
+msgstr "Frown"
+
+msgid ":sad:"
+msgstr "Sad"
+
+msgid ":cry:"
+msgstr "Cry"
+
+msgid ":angry:"
+msgstr "Angry"
+
+msgid ":dislike:"
+msgstr "Dislike"
+
+msgid ":meh:"
+msgstr "Meh"
+
+msgid ":shock:"
+msgstr "Shock"
+
+msgid "Drafts (%s)"
+msgstr "<span class="f-spantxtpm">Drafts </span><b>(%s)</b>"
+
+msgid "Your drafts"
+msgstr "Your drafts"
+
+msgid "bb hide"
+msgstr "Guests cannot see this content."
+
+msgid "bb hide admin"
+msgstr "Only admins can see this content."
+
+msgid "bb hide mod"
+msgstr "Only admins and forum moderators can see this content."
+
+msgid "bb hide %s posts"
+msgstr "This content is visible to users with %s or more posts."
+
+msgid "Pre-moderation"
+msgstr "Pre-moderation"
+
+msgid "Queue of new topics and posts for moderation"
+msgstr "Queue of new topics and posts for moderation"
+
+msgid "Pre-moderation (%s)"
+msgstr "<span class="f-spantxtpm">Pre-moderation </span><b>(%s)</b>"

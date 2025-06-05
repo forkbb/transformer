@@ -112,7 +112,7 @@ msgid "Invalid closing %1$s tag. Expected closing %2$s tag"
 msgstr "Marqueur de fermeture invalide &lt;/ %1$s &gt; tag. Attendu le marqueur &lt;/ %2$s &gt; ."
 
 msgid "%2$s attribute is not allowed in %1$s tag"
-msgstr "L’attribut '%2$s' n'est pas autorisé dans le marqueur &lt; %1$s &gt; ."
+msgstr "L’attribut '%2$s' nvest pas autorisé dans le marqueur &lt; %1$s &gt; ."
 
 msgid "Attempting to insert JavaScript into %2$s attribute of %1$s tag"
 msgstr "Tentative d’insérer du  JavaScript dans l’attribut '%2$s' due marqueur &lt; %1$s &gt; ."
@@ -136,7 +136,7 @@ msgid "The :alias should be absent"
 msgstr "Le champ :alias est superflu."
 
 msgid "The :alias is required"
-msgstr "Le champ :alias est requis."
+msgstr "Le champ :alias est recquis."
 
 msgid "The :alias must be string"
 msgstr "Le champ :alias doit être une chaine de caractères."
@@ -218,3 +218,6 @@ msgstr "Phrase de passe invalide."
 
 msgid "Javascript disabled or bot"
 msgstr "Votre navigateur nr supporte pas javascript ou vous êtes un robot :)"
+
+msgid "The :alias contains time before start of Unix"
+msgstr "Le champ :alias contient une date datant d’avant l’époque Unix."

@@ -24,21 +24,8 @@ msgstr ","
 msgid "lang_thousands_sep"
 msgstr " "
 
-# date format short ([0])
-msgid "Y-m-d"
-msgstr "d.m.Y"
-
-# date format long ([1])
-msgid "d M Y"
-msgstr "j M Y г."
-
-# time format short ([1])
-msgid "H:i"
-msgstr "H:i"
-
-# time format long ([0])
-msgid "H:i:s"
-msgstr "H:i:s"
+msgid "lang_locales"
+msgstr "ru|ru_BY|ru_KG|ru_KZ|ru_MD|ru_RU|ru_UA"
 
 msgid "Cancel"
 msgstr "Отменить"
@@ -71,10 +58,10 @@ msgid "No permission"
 msgstr "У вас нет прав на просмотр этой страницы."
 
 msgid "Bad token"
-msgstr "Неверный токен."
+msgstr "Неверный токен. Пожалуйста, попробуйте повторить действие."
 
 msgid "Expired token"
-msgstr "Токен просрочен."
+msgstr "Токен просрочен. Пожалуйста, попробуйте повторить действие."
 
 msgid "Hidden text"
 msgstr "Скрытый текст"
@@ -189,15 +176,15 @@ msgstr "Ответов"
 
 msgid "%s Reply"
 msgid_plural "%s Replies"
-msgstr[0] "<b>%s</b> Ответ"
-msgstr[1] "<b>%s</b> Ответа"
-msgstr[2] "<b>%s</b> Ответов"
+msgstr[0] "<b class=\"f-num\">%s</b><span class=\"f-txt\"> Ответ</span>"
+msgstr[1] "<b class=\"f-num\">%s</b><span class=\"f-txt\"> Ответа</span>"
+msgstr[2] "<b class=\"f-num\">%s</b><span class=\"f-txt\"> Ответов</span>"
 
 msgid "%s View"
 msgid_plural "%s Views"
-msgstr[0] "<b>%s</b> Просмотр"
-msgstr[1] "<b>%s</b> Просмотра"
-msgstr[2] "<b>%s</b> Просмотров"
+msgstr[0] "<b class=\"f-num\">%s</b><span class=\"f-txt\"> Просмотр</span>"
+msgstr[1] "<b class=\"f-num\">%s</b><span class=\"f-txt\"> Просмотра</span>"
+msgstr[2] "<b class=\"f-num\">%s</b><span class=\"f-txt\"> Просмотров</span>"
 
 msgid "Pages"
 msgstr "Страницы"
@@ -299,7 +286,7 @@ msgid "PM"
 msgstr "ЛС"
 
 msgid "PM %s"
-msgstr "<span class="f-spantxtpm">ЛС </span><b>(%s)</b>"
+msgstr "<span class=\"f-spantxtpm\">ЛС </span><b>(%s)</b>"
 
 msgid "Private messages"
 msgstr "Личные сообщения"
@@ -377,7 +364,10 @@ msgid "New reports"
 msgstr "<a href=\"%s\">Есть новые сигналы</a>"
 
 msgid "Maintenance mode enabled"
-msgstr "<a href=\"%s\">Включен режим обслуживания!</a>"
+msgstr "<a href=\"%s\">Включен режим обслуживания</a>"
+
+msgid "Maintenance mode enabled off"
+msgstr "<a href=\"%s\">Режим обслуживания заблокирован параметром MAINTENANCE_OFF</a>"
 
 msgid "%s B"
 msgstr "%sб"
@@ -457,8 +447,71 @@ msgstr "Поиск может быть чувствителен к регист�
 msgid "%s"
 msgstr "%s"
 
+msgid "\"%s\""
+msgstr "&quot;%s&quot;"
+
 msgid "ACTIONS"
 msgstr "ДЕЙСТВИЯ"
 
 msgid "Main menu"
 msgstr "Главное меню"
+
+msgid ":like:"
+msgstr "Нравится"
+
+msgid ":fire:"
+msgstr "Огонь"
+
+msgid ":lol:"
+msgstr "Ухахатываюсь"
+
+msgid ":smile:"
+msgstr "Улыбаюсь"
+
+msgid ":frown:"
+msgstr "Хмурюсь"
+
+msgid ":sad:"
+msgstr "Печалюсь"
+
+msgid ":cry:"
+msgstr "Я плачу"
+
+msgid ":angry:"
+msgstr "Злюсь"
+
+msgid ":dislike:"
+msgstr "Не нравится"
+
+msgid ":meh:"
+msgstr "Мне безразлично"
+
+msgid ":shock:"
+msgstr "Я в шоке"
+
+msgid "Drafts (%s)"
+msgstr "<span class="f-spantxtpm">Черн. </span><b>(%s)</b>"
+
+msgid "Your drafts"
+msgstr "Ваши черновики"
+
+msgid "bb hide"
+msgstr "Гости не могут видеть содержимое."
+
+msgid "bb hide admin"
+msgstr "Только админы видят содержимое."
+
+msgid "bb hide mod"
+msgstr "Только админы и модераторы раздела видят содержимое."
+
+msgid "bb hide %s posts"
+msgstr "Содержимое видно пользователям с числом сообщений от %s и больше."
+
+msgid "Pre-moderation"
+msgstr "Премодерация"
+
+msgid "Queue of new topics and posts for moderation"
+msgstr "Очередь новых тем и сообщений на модерацию"
+
+msgid "Pre-moderation (%s)"
+msgstr "<span class="f-spantxtpm">Премод. </span><b>(%s)</b>"

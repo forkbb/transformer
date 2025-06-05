@@ -69,9 +69,6 @@ msgstr "Действие"
 msgid "Data updated redirect"
 msgstr "Данные изменены."
 
-msgid "\"%s\""
-msgstr "\"%s\""
-
 msgid "Logs"
 msgstr "Логи"
 
@@ -83,3 +80,9 @@ msgstr "Загрузки"
 
 msgid "Antispam"
 msgstr "Антиспам"
+
+msgid "Maintenance only"
+msgstr "Доступно только в режиме обслуживания."
+
+msgid "Extensions"
+msgstr "Расширения"

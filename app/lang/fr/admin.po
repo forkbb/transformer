@@ -25,7 +25,7 @@ msgid "Users"
 msgstr "Utilisateurs"
 
 msgid "User groups"
-msgstr "Groupes utilisateur"
+msgstr "Groupes utilisateurs"
 
 msgid "Admin options"
 msgstr "Options"
@@ -46,7 +46,7 @@ msgid "Reports"
 msgstr "Rapports"
 
 msgid "Server statistics"
-msgstr "Statistiques serveur"
+msgstr "Statistique serveur"
 
 msgid "Admin title"
 msgstr "Administration"
@@ -69,9 +69,6 @@ msgstr "Action"
 msgid "Data updated redirect"
 msgstr "Données mises à jour."
 
-msgid "\"%s\""
-msgstr "\"%s\""
-
 msgid "Logs"
 msgstr "Logs"
 
@@ -79,7 +76,13 @@ msgid "Admin menu"
 msgstr "Menu administrateur"
 
 msgid "Uploads"
-msgstr "Uploads"
+msgstr "Envois"
 
 msgid "Antispam"
 msgstr "Antispam"
+
+msgid "Maintenance only"
+msgstr "Disponible uniquement en mode maintenance."
+
+msgid "Extensions"
+msgstr "Extensions"
