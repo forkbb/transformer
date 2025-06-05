@@ -1,13 +1,23 @@
+        <!-- PRE start -->
 @if ($form['action'])
         <form @if ($form['id']) id="{{ $form['id'] }}" @endif class="f-form" method="post" action="{{ $form['action'] }}" @if ($form['enctype']) enctype="{{ $form['enctype'] }}" @endif>
+          <!-- PRE formStart -->
+    @if ($form['maxfsz'])
+          <input type="hidden" name="MAX_FILE_SIZE" value="{{ $form['maxfsz'] }}">
+    @endif
 @endif
 @foreach ($form['sets'] as $setKey => $setVal)
     @if ($setVal['inform'])
         @foreach ($setVal['inform'] as $key => $cur)
           <p class="f-finform">{!! $cur['html'] or __($cur['message']) !!}</p>
         @endforeach
+    @elseif (isset($setVal['tabs']))
+        @foreach ($setVal['tabs'] as $key => $cur)
+          <input class="f-tab-input" id="id-{{ $setKey }}-{{ $key }}" type="radio" name="tn-{{ $setKey }}" @if ($cur[1]) checked @endif hidden>
+          <label class="f-tab-label" id="id-{{ $setKey }}-{{ $key }}-label" for="id-{{ $setKey }}-{{ $key }}">{!! __($cur[0]) !!}</label>
+        @endforeach
     @elseif (isset($setVal['fields']))
-          <fieldset id="id-fs-{{ $setKey }}" @if ($setVal['class']) class="f-fs-{{ \implode(' f-fs-', $setVal['class']) }}" @endif>
+          <fieldset id="id-fs-{{ $setKey }}" @if ($setVal['class']) @class([[$setVal['class'], 'f-fs-']]) @endif>
         @if ($setVal['legend'])
             <legend class="f-fleg">{!! __($setVal['legend']) !!}</legend>
         @endif
@@ -17,25 +27,27 @@
             <p id="id-{{ $cur['id'] or $setKey.$key }}" class="f-yinfo">{!! __($cur['value']) !!}</p>
                     @break
                 @case ('wrap')
-            <div id="id-{{ $cur['id'] or $setKey.$key }}" @if ($cur['class']) class="f-wrap-{{ \implode(' f-wrap-', $cur['class']) }}" @endif>
+            <div id="id-{{ $cur['id'] or $setKey.$key }}" @if ($cur['class']) @class([[$cur['class'], 'f-wrap-']]) @endif>
                     @break
                 @case('endwrap')
             </div>
                     @break
                 @default
-            <dl id="id-dl-{{ $cur['id'] or $key }}" @if ($cur['class']) class="f-field-{{ \implode(' f-field-', $cur['class']) }}" @endif>
+            <dl id="id-dl-{{ $cur['id'] or $key }}" @class([[$cur['type'], 'f-ft-'], [$cur['class'] ?? null, 'f-field-']])>
               <dt>
                     @if ($cur['caption'])
-                <label class="f-ycaption @if ($cur['required']) f-req @endif" @if (false === \strpos('.radio.yield.str.btn.link.', ".{$cur['type']}.")) for="id-{{ $key }}" @endif>{!! __($cur['caption']) !!}</label>
+                <label class="f-ycaption f-yc-{{ $cur['type'] }} @if ($cur['required']) f-req @endif" @if (false === \strpos('.radio.yield.str.btn.link.label.include.', ".{$cur['type']}.")) for="id-{{ $key }}" @endif>{!! __($cur['caption']) !!}</label>
                     @endif
               </dt>
               <dd>
                     @switch ($cur['type'])
+                <!-- PRE switchStart -->
                         @case ('text')
                         @case ('email')
                         @case ('number')
                         @case ('password')
                         @case ('file')
+                        @case ('datetime-local')
                 <input id="id-{{ $key }}" name="{{ $key }}" class="f-ctrl" type="{{ $cur['type'] }}" @foreach ($cur as $k => $v) @if (\in_array($k, ['autofocus', 'disabled', 'multiple', 'readonly', 'required'], true) && ! empty($v)) {!! $k !!} @elseif (\in_array($k, ['accept', 'autocapitalize', 'autocomplete', 'max', 'maxlength', 'min', 'minlength', 'pattern', 'placeholder', 'step', 'title', 'value'], true)) {!! $k !!}="{{ $v }}" @endif @endforeach>
                             @break
                         @case ('textarea')
@@ -52,10 +64,10 @@
                                         @endif
                 <optgroup label="{{ $option[0] }}">
                                     @else
-                  <option value="{{ $option[0] }}" @if ((\is_array($cur['value']) && \in_array($option[0], $cur['value'])) || $option[0] == $cur['value']) selected @endif @if ($option[2]) disabled @endif>{{ $option[1] }}</option>
+                  <option value="{{ $option[0] }}" @if ($cur['cprefix']) class="{{ $cur['cprefix'] . $option[0] }}" @endif @if ((\is_array($cur['value']) && \in_array($option[0], $cur['value'])) || $option[0] == $cur['value']) selected @endif @if ($option[2]) disabled @endif>{{ $option[1] }}</option>
                                     @endif
                                 @else
-                  <option value="{{ $v }}" @if ((\is_array($cur['value']) && \in_array($v, $cur['value'])) || $v == $cur['value']) selected @endif>{{ $option }}</option>
+                  <option value="{{ $v }}" @if ($cur['cprefix']) class="{{ $cur['cprefix'] . $v }}" @endif @if ((\is_array($cur['value']) && \in_array($v, $cur['value'])) || $v == $cur['value']) selected @endif>{{ $option }}</option>
                                 @endif
                             @endforeach
                             @if (null !== $count)
@@ -80,6 +92,9 @@
                         @case ('str')
                 <p id="id-{{ $key }}" class="f-str"> @if ($cur['html']){!! $cur['value'] !!} @else{{ $cur['value'] }} @endif</p>
                             @break
+                        @case ('label')
+                <label id="id-{{ $key }}" class="f-label" for="id-{{ $cur['for'] }}"> @if ($cur['html']){!! $cur['value'] !!} @else{{ $cur['value'] }} @endif</label>
+                            @break
                         @case ('yield')
                 @yield($cur['value'])
                             @break
@@ -93,6 +108,7 @@
               </dd>
             </dl>
                     @break
+                <!-- PRE switchEnd -->
             @endswitch
         @endforeach
           </fieldset>
@@ -112,12 +128,16 @@
     @endif
           <p class="f-btns">
     @foreach ($form['btns'] as $key => $cur)
+            <!-- PRE btnsForeachStart -->
         @if ('submit' === $cur['type'])
-            <button class="f-btn f-fbtn @if($cur['class']) {{ \implode(' ', $cur['class']) }} @endif" name="{{ $key }}" value="{{ $cur['value'] }}" @isset ($cur['accesskey']) accesskey="{{ $cur['accesskey'] }}" @endisset title="{{ $cur['value'] }}"><span>{{ $cur['value'] }}</span></button>
+            <button @class(['f-btn', 'f-fbtn', [$cur['class'] ?? null]]) type="submit" name="{{ $key }}" value="{{ $cur['value'] }}" @isset ($cur['accesskey']) accesskey="{{ $cur['accesskey'] }}" @endisset title="{{ $cur['title'] or $cur['value'] }}" @if ($cur['disabled']) disabled @endif><span>{{ $cur['value'] }}</span></button>
         @elseif ('btn'=== $cur['type'])
-            <a class="f-btn f-fbtn @if($cur['class']) {{ \implode(' ', $cur['class']) }} @endif" data-name="{{ $key }}" href="{{ $cur['href'] }}" @isset ($cur['accesskey']) accesskey="{{ $cur['accesskey'] }}" @endisset title="{{ $cur['value'] }}"><span>{{ $cur['value'] }}</span></a>
+            <a @class(['f-btn', 'f-fbtn', [$cur['class'] ?? null]]) data-name="{{ $key }}" href="{{ $cur['href'] }}" @isset ($cur['accesskey']) accesskey="{{ $cur['accesskey'] }}" @endisset title="{{ $cur['title'] or $cur['value'] }}"><span>{{ $cur['value'] }}</span></a>
         @endif
+            <!-- PRE btnsForeachEnd -->
     @endforeach
           </p>
+          <!-- PRE formEnd -->
         </form>
 @endif
+        <!-- PRE end -->
