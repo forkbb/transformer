@@ -1,6 +1,6 @@
 <?php
 /**
- * This file is part of the ForkBB <https://github.com/forkbb>.
+ * This file is part of the ForkBB <https://forkbb.ru, https://github.com/forkbb>.
  *
  * @copyright (c) Visman <mio.visman@yandex.ru, https://github.com/MioVisman>
  * @license   The MIT License (MIT)
@@ -15,6 +15,7 @@ use ForkBB\Core\File;
 use ForkBB\Core\Image;
 use ForkBB\Core\Image\DefaultDriver;
 use ForkBB\Core\Exceptions\FileException;
+use Transliterator;
 use InvalidArgumentException;
 use RuntimeException;
 
@@ -56,6 +57,11 @@ class Files
     protected array $tmpFiles = [];
 
     /**
+     * Для кэширования транслитератора
+     */
+    protected Transliterator|false|null $transl = null;
+
+    /**
      * Список mime типов считающихся картинками
      */
     protected array $imageType = [
@@ -64,7 +70,7 @@ class Files
         'image/png'  => 'png',
         'image/bmp'  => 'bmp',
         'image/webp' => 'webp',
-# non-standard mime types
+// non-standard mime types
         'image/x-ms-bmp' => 'bmp',
         'image/avif' => 'avif',
         'image/heif' => 'heif',
@@ -849,7 +855,7 @@ class Files
         'video/x-sgi-movie' => 'movie',
         'video/x-smv' => 'smv',
         'x-conference/x-cooltalk' => 'ice',
-# non-standard mime types
+// non-standard mime types
         'image/x-ms-bmp' => 'bmp',
         'image/avif' => 'avif',
         'image/heif' => 'heif',
@@ -863,10 +869,15 @@ class Files
         $init = \min(
             \PHP_INT_MAX,
             $this->size(\ini_get('upload_max_filesize') ?: 0),
-            $this->size(\ini_get('post_max_size') ?: 0)
+            $this->size(\ini_get('post_max_size') ?: '512M')
         );
+        $limit = \ini_get('memory_limit') ?: '32M';
 
-        $this->maxPixels   = (int) ($this->size(\ini_get('memory_limit') ?: 0) / 10);
+        if ('-' === $limit[0]) {
+            $limit = '512M';
+        }
+
+        $this->maxPixels   = (int) ($this->size($limit) / 10);
         $this->maxImgSize  = \min(
             $this->size($maxImgSize),
             $init,
@@ -901,7 +912,7 @@ class Files
     /**
      * Возвращает максимальный размер картинки для загрузки
      */
-    public function maxImgSize(string $unit = null): int
+    public function maxImgSize(?string $unit = null): int
     {
         return $this->size($this->maxImgSize, $unit);
     }
@@ -909,7 +920,7 @@ class Files
     /**
      * Возвращает максимальный размер файла для загрузки
      */
-    public function maxFileSize(string $unit = null): int
+    public function maxFileSize(?string $unit = null): int
     {
         return $this->size($this->maxFileSize, $unit);
     }
@@ -926,7 +937,7 @@ class Files
      * Переводит объем информации из одних единиц в другие
      * кило = 1024, а не 1000
      */
-    public function size(int|float|string $value, string $to = null): int
+    public function size(int|float|string $value, ?string $to = null): int
     {
         if (\is_string($value)) {
             if (! \preg_match('%^([^a-z]+)([a-z]+)?$%i', \trim($value), $matches)) {
@@ -971,18 +982,17 @@ class Files
      */
     public function filterName(string $name): string
     {
-        $name = \transliterator_transliterate(
-            "Any-Latin; NFD; [:Nonspacing Mark:] Remove; NFC; Lower();",
-            $name
-        );
-
-        $name = \trim(\preg_replace(['%[^\w-]+%', '%_+%'], ['-', '_'], $name), '-_');
-
-        if (! isset($name[0])) {
-            $name = (string) \time();
+        if (null === $this->transl) {
+            $this->transl = Transliterator::create('Any-Latin;Latin-ASCII;Lower();') ?? false;
         }
 
-        return $name;
+        if ($this->transl instanceof Transliterator) {
+            $name = $this->transl->transliterate($name);
+        }
+
+        $name = \trim(\preg_replace(['%[^\w]+%', '%_+%'], ['-', '_'], $name), '-_');
+
+        return isset($name[0]) ? $name : (string) \time();
     }
 
     /**
@@ -1000,8 +1010,10 @@ class Files
     {
         if ($file instanceof Image) {
             return $file->ext();
+
         } elseif (\is_string($file)) {
             return $this->imageType[$this->mimeType($file)] ?? null;
+
         } else {
             return null;
         }
@@ -1024,6 +1036,7 @@ class Files
 
         if (\function_exists('\\mime_content_type')) {
             return \mime_content_type($path) ?: $default;
+
         } else {
             return $default;
         }
@@ -1075,6 +1088,7 @@ class Files
             }
 
             return empty($result) ? null : $result;
+
         } else {
             if (
                 '' == $file['name']
@@ -1095,32 +1109,16 @@ class Files
     protected function uploadFile(array $file, bool $isUploaded = true): ?File
     {
         if (\UPLOAD_ERR_OK !== $file['error']) {
-            switch ($file['error']) {
-                case \UPLOAD_ERR_INI_SIZE:
-                    $this->error = 'The uploaded file exceeds the upload_max_filesize';
-                    break;
-                case \UPLOAD_ERR_FORM_SIZE:
-                    $this->error = 'The uploaded file exceeds the MAX_FILE_SIZE';
-                    break;
-                case \UPLOAD_ERR_PARTIAL:
-                    $this->error = 'The uploaded file was only partially uploaded';
-                    break;
-                case \UPLOAD_ERR_NO_FILE:
-                    $this->error = 'No file was uploaded';
-                    break;
-                case \UPLOAD_ERR_NO_TMP_DIR:
-                    $this->error = 'Missing a temporary folder';
-                    break;
-                case \UPLOAD_ERR_CANT_WRITE:
-                    $this->error = 'Failed to write file to disk';
-                    break;
-                case \UPLOAD_ERR_EXTENSION:
-                    $this->error = 'A PHP extension stopped the file upload';
-                    break;
-                default:
-                    $this->error = 'Unknown upload error';
-                    break;
-            }
+            $this->error = match ($file['error']) {
+                \UPLOAD_ERR_INI_SIZE   => 'The uploaded file exceeds the upload_max_filesize',
+                \UPLOAD_ERR_FORM_SIZE  => 'The uploaded file exceeds the MAX_FILE_SIZE',
+                \UPLOAD_ERR_PARTIAL    => 'The uploaded file was only partially uploaded',
+                \UPLOAD_ERR_NO_FILE    => 'No file was uploaded',
+                \UPLOAD_ERR_NO_TMP_DIR => 'Missing a temporary folder',
+                \UPLOAD_ERR_CANT_WRITE => 'Failed to write file to disk',
+                \UPLOAD_ERR_EXTENSION  => 'A PHP extension stopped the file upload',
+                default                => 'Unknown upload error',
+            };
 
             return null;
         }
@@ -1143,30 +1141,10 @@ class Files
         if (false === ($pos = \strrpos($file['name'], '.'))) {
             $name = $file['name'];
             $ext  = '';
+
         } else {
             $name = \substr($file['name'], 0, $pos);
             $ext  = \mb_strtolower(\substr($file['name'], $pos + 1), 'UTF-8');
-        }
-
-        $imageExt = $this->imageExt($file['tmp_name']);
-
-        if (\is_string($imageExt)) {
-            if ($file['size'] > $this->maxImgSize) {
-                $this->error = 'The image too large';
-
-                return null;
-            }
-
-            $ext       = $imageExt;
-            $className = Image::class;
-        } else {
-            if ($file['size'] > $this->maxFileSize) {
-                $this->error = 'The file too large';
-
-                return null;
-            }
-
-            $className = File::class;
         }
 
         $mimeType = $this->mimeType($file['tmp_name']);
@@ -1175,6 +1153,26 @@ class Files
             $this->error = "Unknown mime type of the file: {$mimeType}";
 
             return null;
+        }
+
+        if (isset($this->imageType[$mimeType])) {
+            if ($file['size'] > $this->maxImgSize) {
+                $this->error = 'The image too large';
+
+                return null;
+            }
+
+            $ext       = $this->imageType[$mimeType];
+            $className = Image::class;
+
+        } else {
+            if ($file['size'] > $this->maxFileSize) {
+                $this->error = 'The file too large';
+
+                return null;
+            }
+
+            $className = File::class;
         }
 
         $realExt = $this->mimeToExt[$mimeType];
@@ -1201,20 +1199,32 @@ class Files
     }
 
     /**
-     * Получает файл по внешней ссылке
+     * Получает файл по внешней ссылке или из строки data:...;base64,...
      */
     public function uploadFromLink(string $url): ?File
     {
-        $cmpn = \parse_url($url);
+        if (\preg_match('%^data:(.*?);base64,%', $url, $matches)) {
+            $name   = '';
+            $type   = $matches[1];
+            $offset = \strlen($matches[0]);
 
-        if (
-            ! isset($cmpn['scheme'], $cmpn['host'], $cmpn['path'])
-            || ! \in_array($cmpn['scheme'], ['https', 'http'], true)
-        ) {
-            $this->error = 'Bad url';
+        } else {
+            $cmpn = \parse_url($url);
 
-            return null;
+            if (
+                ! isset($cmpn['scheme'], $cmpn['host'], $cmpn['path'])
+                || ! \in_array($cmpn['scheme'], ['https', 'http'], true)
+            ) {
+                $this->error = 'Bad url';
+
+                return null;
+            }
+
+            $name   = \basename($cmpn['path']) ?: '';
+            $type   = '';
+            $offset = 0;
         }
+
 
         $tmpName = $this->c->DIR_CACHE . '/' .  $this->c->Secury->randomPass(32) . '.tmp';
 
@@ -1230,8 +1240,24 @@ class Files
 
         $result = null;
 
-        if (\extension_loaded('curl')) {
+        if ($offset > 0) {
+            $content = \base64_decode(\substr($url, $offset), true);
+
+            if (false === $content) {
+                $this->error = 'Bad base64';
+
+                return null;
+            }
+
+            $result = (bool) @\fwrite($tmpFile, $content);
+
+            if (false === $result) {
+                $this->error = "Failed fwrite() to temp file";
+            }
+
+        } elseif (\extension_loaded('curl')) {
             $result = $this->curlAction($url, $tmpFile);
+
         } elseif (\filter_var(\ini_get('allow_url_fopen'), \FILTER_VALIDATE_BOOL)) {
             $result = $this->streamAction($url, $tmpFile);
         }
@@ -1242,13 +1268,14 @@ class Files
             return $this->uploadFile(
                 [
                     'tmp_name' => $tmpName,
-                    'name'     => \basename($cmpn['path']) ?: '',
-                    'type'     => '',
+                    'name'     => $name,
+                    'type'     => $type,
                     'error'    => \UPLOAD_ERR_OK,
                     'size'     => \filesize($tmpName),
                 ],
                 false
             );
+
         } elseif (null === $result) {
             $this->error = 'No cURL and allow_url_fopen OFF';
         }
@@ -1259,7 +1286,7 @@ class Files
     /**
      * Переменные конфига подключения
      */
-    protected int    $actMaxRedir = 10;
+    protected int    $actMaxRedir = 5;
     protected float  $actTimeout  = 15.0;
     protected string $actUAgent   = 'ForkBB downloader (%s)';
     protected array  $actHeader   = [
@@ -1279,6 +1306,8 @@ class Files
             return false;
         }
 
+        \curl_setopt($ch, \CURLOPT_PROTOCOLS, \CURLPROTO_HTTPS | \CURLPROTO_HTTP);
+        \curl_setopt($ch, \CURLOPT_REDIR_PROTOCOLS, \CURLPROTO_HTTPS);
         \curl_setopt($ch, \CURLOPT_HTTPGET, true);
         \curl_setopt($ch, \CURLOPT_HEADER, false);
         \curl_setopt($ch, \CURLOPT_HTTPHEADER, $this->actHeader);
@@ -1304,7 +1333,6 @@ class Files
      */
     protected function streamAction(string $url, $tmpFile): bool
     {
-
         $context = \stream_context_create(
             [
                 'http' => [

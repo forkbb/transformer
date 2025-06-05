@@ -1,6 +1,6 @@
 <?php
 /**
- * This file is part of the ForkBB <https://github.com/forkbb>.
+ * This file is part of the ForkBB <https://forkbb.ru, https://github.com/forkbb>.
  *
  * @copyright (c) Visman <mio.visman@yandex.ru, https://github.com/MioVisman>
  * @license   The MIT License (MIT)
@@ -58,8 +58,10 @@ class SqliteStatement extends AbstractStatement
 
             if (null === $declType) {
                 $type = $this->nativeTypeRepl[$meta['native_type']] ?? null;
+
             } elseif (\preg_match('%INT%i', $declType)) {
                 $type = self::INTEGER;
+
             } elseif (\preg_match('%BOOL%i', $declType)) {
                 $type = self::BOOLEAN;
 //            } elseif (\preg_match('%REAL|FLOA|DOUB|NUMERIC|DECIMAL%i', $declType)) {

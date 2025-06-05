@@ -1,6 +1,6 @@
 <?php
 /**
- * This file is part of the ForkBB <https://github.com/forkbb>.
+ * This file is part of the ForkBB <https://forkbb.ru, https://github.com/forkbb>.
  *
  * @copyright (c) Visman <mio.visman@yandex.ru, https://github.com/MioVisman>
  * @license   The MIT License (MIT)
@@ -14,9 +14,9 @@ return [
         'type' => 'block',
         'handler' => <<<'HANDLER'
 $body = '<p>' . $body . '</p>';
-$body = \str_replace('<p><br>', '<p>', $body);
+$body = \preg_replace('%<p>\s*<br>%u', '<p>', $body);
 $body = \str_replace('<p></p>', '', $body);
-$body = \preg_replace('%<br>(?:\s*?<br>){3,}%', '<br><br><br>', $body);
+$body = \preg_replace('%<br>(?:\s*<br>){3,}%u', '<br><br><br>', $body);
 
 return $body;
 HANDLER,
@@ -36,63 +36,63 @@ return '</p><pre class="f-bb-code f-bbivert">' . \trim($body, "\n\r") . '</pre><
 HANDLER,
     ],
     [   'tag' => 'b',
-        'parents' => ['inline', 'block', 'url'],
+        'parents' => ['inline', 'block', 'url', 'h'],
         'handler' => <<<'HANDLER'
 return "<b>{$body}</b>";
 HANDLER,
     ],
     [
         'tag' => 'i',
-        'parents' => ['inline', 'block', 'url'],
+        'parents' => ['inline', 'block', 'url', 'h'],
         'handler' => <<<'HANDLER'
 return "<i>{$body}</i>";
 HANDLER,
     ],
     [
         'tag' => 'em',
-        'parents' => ['inline', 'block', 'url'],
+        'parents' => ['inline', 'block', 'url', 'h'],
         'handler' => <<<'HANDLER'
 return "<em>{$body}</em>";
 HANDLER,
     ],
     [
         'tag' => 'u',
-        'parents' => ['inline', 'block', 'url'],
+        'parents' => ['inline', 'block', 'url', 'h'],
         'handler' => <<<'HANDLER'
 return "<u>{$body}</u>";
 HANDLER,
     ],
     [
         'tag' => 's',
-        'parents' => ['inline', 'block', 'url'],
+        'parents' => ['inline', 'block', 'url', 'h'],
         'handler' => <<<'HANDLER'
 return "<s>{$body}</s>";
 HANDLER,
     ],
     [
         'tag' => 'del',
-        'parents' => ['inline', 'block', 'url'],
+        'parents' => ['inline', 'block', 'url', 'h'],
         'handler' => <<<'HANDLER'
 return "<del>{$body}</del>";
 HANDLER,
     ],
     [
         'tag' => 'ins',
-        'parents' => ['inline', 'block', 'url'],
+        'parents' => ['inline', 'block', 'url', 'h'],
         'handler' => <<<'HANDLER'
 return "<ins>{$body}</ins>";
 HANDLER,
     ],
     [
         'tag' => 'sub',
-        'parents' => ['inline', 'block', 'url'],
+        'parents' => ['inline', 'block', 'url', 'h'],
         'handler' => <<<'HANDLER'
 return "<sub>{$body}</sub>";
 HANDLER,
     ],
     [
         'tag' => 'sup',
-        'parents' => ['inline', 'block', 'url'],
+        'parents' => ['inline', 'block', 'url', 'h'],
         'handler' => <<<'HANDLER'
 return "<sup>{$body}</sup>";
 HANDLER,
@@ -101,7 +101,77 @@ HANDLER,
         'tag' => 'h',
         'type' => 'h',
         'handler' => <<<'HANDLER'
-return "</p><p class=\"f-bb-header\">{$body}</p><p>";
+$text  = $parser->getText($id);
+$ident = $parser->createIdentifier($text);
+$ident = $parser->e($ident);
+
+return "</p><div id=\"{$ident}\" class=\"f-bb-h3\"><p>{$body}</p></div><p>";
+HANDLER,
+    ],
+    [
+        'tag' => 'h1',
+        'type' => 'h',
+        'handler' => <<<'HANDLER'
+$text  = $parser->getText($id);
+$ident = $parser->createIdentifier($text);
+$ident = $parser->e($ident);
+
+return "</p><div id=\"{$ident}\" class=\"f-bb-h1\"><p>{$body}</p></div><p>";
+HANDLER,
+    ],
+    [
+        'tag' => 'h2',
+        'type' => 'h',
+        'handler' => <<<'HANDLER'
+$text  = $parser->getText($id);
+$ident = $parser->createIdentifier($text);
+$ident = $parser->e($ident);
+
+return "</p><div id=\"{$ident}\" class=\"f-bb-h2\"><p>{$body}</p></div><p>";
+HANDLER,
+    ],
+    [
+        'tag' => 'h3',
+        'type' => 'h',
+        'handler' => <<<'HANDLER'
+$text  = $parser->getText($id);
+$ident = $parser->createIdentifier($text);
+$ident = $parser->e($ident);
+
+return "</p><div id=\"{$ident}\" class=\"f-bb-h3\"><p>{$body}</p></div><p>";
+HANDLER,
+    ],
+    [
+        'tag' => 'h4',
+        'type' => 'h',
+        'handler' => <<<'HANDLER'
+$text  = $parser->getText($id);
+$ident = $parser->createIdentifier($text);
+$ident = $parser->e($ident);
+
+return "</p><div id=\"{$ident}\" class=\"f-bb-h4\"><p>{$body}</p></div><p>";
+HANDLER,
+    ],
+    [
+        'tag' => 'h5',
+        'type' => 'h',
+        'handler' => <<<'HANDLER'
+$text  = $parser->getText($id);
+$ident = $parser->createIdentifier($text);
+$ident = $parser->e($ident);
+
+return "</p><div id=\"{$ident}\" class=\"f-bb-h5\"><p>{$body}</p></div><p>";
+HANDLER,
+    ],
+    [
+        'tag' => 'h6',
+        'type' => 'h',
+        'handler' => <<<'HANDLER'
+$text  = $parser->getText($id);
+$ident = $parser->createIdentifier($text);
+$ident = $parser->e($ident);
+
+return "</p><div id=\"{$ident}\" class=\"f-bb-h6\"><p>{$body}</p></div><p>";
 HANDLER,
     ],
     [
@@ -114,7 +184,7 @@ HANDLER,
     ],
     [
         'tag' => 'color',
-        'parents' => ['inline', 'block', 'url'],
+        'parents' => ['inline', 'block', 'url', 'h'],
         'self_nesting' => 5,
         'attrs' => [
             'Def' => [
@@ -158,7 +228,7 @@ HANDLER,
     ],
     [
         'tag' => 'colour',
-        'parents' => ['inline', 'block', 'url'],
+        'parents' => ['inline', 'block', 'url', 'h'],
         'self_nesting' => 5,
         'attrs' => [
             'Def' => [
@@ -202,7 +272,7 @@ HANDLER,
     ],
     [
         'tag' => 'background',
-        'parents' => ['inline', 'block', 'url'],
+        'parents' => ['inline', 'block', 'url', 'h'],
         'self_nesting' => 5,
         'attrs' => [
             'Def' => [
@@ -260,6 +330,7 @@ HANDLER,
     [
         'tag' => 'left',
         'type' => 'block',
+        'parents' => ['block', 'h'],
         'handler' => <<<'HANDLER'
 return "</p><p class=\"f-bb-left\">{$body}</p><p>";
 HANDLER,
@@ -267,6 +338,7 @@ HANDLER,
     [
         'tag' => 'right',
         'type' => 'block',
+        'parents' => ['block', 'h'],
         'handler' => <<<'HANDLER'
 return "</p><p class=\"f-bb-right\">{$body}</p><p>";
 HANDLER,
@@ -274,6 +346,7 @@ HANDLER,
     [
         'tag' => 'center',
         'type' => 'block',
+        'parents' => ['block', 'h'],
         'handler' => <<<'HANDLER'
 return "</p><p class=\"f-bb-center\">{$body}</p><p>";
 HANDLER,
@@ -281,6 +354,7 @@ HANDLER,
     [
         'tag' => 'justify',
         'type' => 'block',
+        'parents' => ['block', 'h'],
         'handler' => <<<'HANDLER'
 return "</p><p class=\"f-bb-justify\">{$body}</p><p>";
 HANDLER,
@@ -294,7 +368,7 @@ HANDLER,
     ],
     [
         'tag' => 'font',
-        'parents' => ['inline', 'block', 'url'],
+        'parents' => ['inline', 'block', 'url', 'h'],
         'self_nesting' => 5,
         'attrs' => [
             'Def' => [
@@ -696,6 +770,41 @@ if (\is_string($link)) {
 } else {
     return "<span class=\"f-bb-hashtag\">{$body}</span>";
 }
+HANDLER,
+    ],
+    [
+        'tag' => 'hide',
+        'type' => 'block',
+        'attrs' => [
+            'No_attr' => true,
+            'Def' => [
+                'format' => '%^(?:admin|mod|[1-9]\\d{0,8})$%',
+            ],
+        ],
+        'handler' => <<<'HANDLER'
+$user  = $parser->attr('user');
+$isMod = $parser->attr('isModerator');
+$def   = $attrs['Def'] ?? 'guest';
+$type  = $def;
+
+if ('admin' === $def && ! $user->isAdmin) {
+    $body = __('bb hide admin');
+
+} elseif ('mod' === $def && ! $user->isAdmin && ! $isMod) {
+    $body = __('bb hide mod');
+
+} elseif ('guest' === $def && $user->isGuest) {
+    $body = __('bb hide');
+
+} elseif (! $user->isAdmin && ! $isMod && $user->num_posts < ($int = (int) $def)) {
+    $body = __(['bb hide %s posts', $int]);
+    $def  = 'post';
+
+} else {
+    $def  = 'visible';
+}
+
+return "</p><div class=\"f-bb-hide f-bb-hide-{$def}\" data-bb=\"{$type}\"><p>{$body}</p></div><p>";
 HANDLER,
     ],
 ];

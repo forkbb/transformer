@@ -1,6 +1,6 @@
 <?php
 /**
- * This file is part of the ForkBB <https://github.com/forkbb>.
+ * This file is part of the ForkBB <https://forkbb.ru, https://github.com/forkbb>.
  *
  * @copyright (c) Visman <mio.visman@yandex.ru, https://github.com/MioVisman>
  * @license   The MIT License (MIT)
@@ -11,6 +11,7 @@ declare(strict_types=1);
 namespace ForkBB\Core;
 
 use Psr\SimpleCache\CacheInterface;
+use FilesystemIterator;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use RegexIterator;
@@ -76,8 +77,9 @@ class LogViewer
 
     protected function getFileList(): array
     {
-        $dir      = new RecursiveDirectoryIterator($this->dir, RecursiveDirectoryIterator::SKIP_DOTS);
-        $iterator = new RecursiveIteratorIterator($dir);
+        $iterator = new RecursiveIteratorIterator(
+            new RecursiveDirectoryIterator($this->dir, FilesystemIterator::SKIP_DOTS)
+        );
         $files    = new RegexIterator($iterator, $this->namePattern, RegexIterator::MATCH);
         $result   = [];
 
@@ -152,6 +154,7 @@ class LogViewer
                 && $cache[$hash]['time'] === $this->fileList[$key]
             ) {
                 $result[$hash] = $cache[$hash]['data'];
+
             } else {
                 $result[$hash] = $this->generateInfo($key);
                 $cache[$hash]  = [
@@ -233,6 +236,7 @@ class LogViewer
 
                         $current  = $line;
                         $matches1 = $matches;
+
                     } else {
                         $current .= $line;
                     }
@@ -256,6 +260,7 @@ class LogViewer
             $result['context'] = \json_decode($result['context'], true, 512, \JSON_THROW_ON_ERROR);
 
             return $result;
+
         } else {
             return $this->clearMatches($matches1) + [
                 'message' => 'LOG PARSER ERROR',

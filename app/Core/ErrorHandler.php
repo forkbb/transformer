@@ -1,6 +1,6 @@
 <?php
 /**
- * This file is part of the ForkBB <https://github.com/forkbb>.
+ * This file is part of the ForkBB <https://forkbb.ru, https://github.com/forkbb>.
  *
  * @copyright (c) Visman <mio.visman@yandex.ru, https://github.com/MioVisman>
  * @license   The MIT License (MIT)
@@ -37,22 +37,23 @@ class ErrorHandler
      * Список ошибок
      */
     protected array $type = [
-        0                    => ['OTHER_ERROR',         'error'],
-        \E_ERROR             => ['E_ERROR',             'error'],
-        \E_WARNING           => ['E_WARNING',           'warning'],
+        -1                   => ['DELETE_FILE_TO_RESTORE', 'alert'],
+        0                    => ['OTHER_ERROR',            'error'],
+        \E_ERROR             => ['E_ERROR',                'error'],
+        \E_WARNING           => ['E_WARNING',            'warning'],
         \E_PARSE             => ['E_PARSE',             'critical'],
-        \E_NOTICE            => ['E_NOTICE',            'notice'],
-        \E_CORE_ERROR        => ['E_CORE_ERROR',        'error'],
-        \E_CORE_WARNING      => ['E_CORE_WARNING',      'warning'],
-        \E_COMPILE_ERROR     => ['E_COMPILE_ERROR',     'error'],
-        \E_COMPILE_WARNING   => ['E_COMPILE_WARNING',   'warning'],
-        \E_USER_ERROR        => ['E_USER_ERROR',        'error'],
-        \E_USER_WARNING      => ['E_USER_WARNING',      'warning'],
-        \E_USER_NOTICE       => ['E_USER_NOTICE',       'notice'],
-        \E_STRICT            => ['E_STRICT',            'error'],
-        \E_RECOVERABLE_ERROR => ['E_RECOVERABLE_ERROR', 'error'],
-        \E_DEPRECATED        => ['E_DEPRECATED',        'warning'],
-        \E_USER_DEPRECATED   => ['E_USER_DEPRECATED',   'warning'],
+        \E_NOTICE            => ['E_NOTICE',              'notice'],
+        \E_CORE_ERROR        => ['E_CORE_ERROR',           'error'],
+        \E_CORE_WARNING      => ['E_CORE_WARNING',       'warning'],
+        \E_COMPILE_ERROR     => ['E_COMPILE_ERROR',        'error'],
+        \E_COMPILE_WARNING   => ['E_COMPILE_WARNING',    'warning'],
+        \E_USER_ERROR        => ['E_USER_ERROR',           'error'],
+        \E_USER_WARNING      => ['E_USER_WARNING',       'warning'],
+        \E_USER_NOTICE       => ['E_USER_NOTICE',         'notice'],
+//        \E_STRICT            => ['E_STRICT',               'error'],
+        \E_RECOVERABLE_ERROR => ['E_RECOVERABLE_ERROR',    'error'],
+        \E_DEPRECATED        => ['E_DEPRECATED',         'warning'],
+        \E_USER_DEPRECATED   => ['E_USER_DEPRECATED',    'warning'],
     ];
 
     /**
@@ -67,8 +68,8 @@ class ErrorHandler
         \set_error_handler([$this, 'errorHandler'], \E_ALL);
         \set_exception_handler([$this, 'exceptionHandler']);
         \register_shutdown_function([$this, 'shutdownHandler']);
-
         \ob_start();
+
         $this->obLevel = \ob_get_level();
     }
 
@@ -122,6 +123,7 @@ class ErrorHandler
                 $this->error = [];
 
                 \error_clear_last();
+
             } else {
                 exit(1);
             }
@@ -156,6 +158,7 @@ class ErrorHandler
 
         if (isset($this->error['type'])) {
             $show = true;
+
         } elseif (
             \is_array($this->error = \error_get_last())
             && $this->error['type'] & \error_reporting()
@@ -165,19 +168,59 @@ class ErrorHandler
             $this->log($this->error);
         }
 
+        if (
+            true === $show
+            && \is_string($this->badFile)
+        ) {
+            $this->log([
+                'type'    => -1,
+                'message' => $this->badFile,
+                'file'    => null,
+                'line'    => null,
+                'trace'   => null,
+            ]);
+
+            if (
+                \is_file($this->badFile)
+                && true === \unlink($this->badFile)
+                && \function_exists('\\opcache_invalidate')
+            ) {
+                \opcache_invalidate($this->badFile, true);
+            }
+        }
+
         while (\ob_get_level() > $this->obLevel) {
             \ob_end_clean();
         }
 
         if (\ob_get_level() === $this->obLevel) {
-            if ($show) {
+            if (true === $show) {
                 \ob_end_clean();
 
                 $this->show($this->error);
+
             } else {
                 \ob_end_flush();
             }
         }
+    }
+
+    /**
+     * Файл (кэша!!?), который (вероятно) содержит неперехватываемую ошибку
+     * и должен быть удален для повторного формирования
+     */
+    protected ?string $badFile = null;
+
+    /**
+     * Добавляет файл в список на удаление
+     */
+    public function addBadFile(?string $file): ?string
+    {
+        $old = $this->badFile;
+
+        $this->badFile = $file;
+
+        return $old;
     }
 
     /**
@@ -198,6 +241,7 @@ class ErrorHandler
                 if (isset($error['exception'])) {
                     $context['exception'] = $error['exception'];
                 }
+
                 $context['headers'] = false;
 
                 $this->c->Log->{$method}($this->message($error), $context);
@@ -262,9 +306,11 @@ EOT;
 
                     $line = $cur['file'] ?? '-';
                     $line .= '(' . ($cur['line'] ?? '-') . '): ';
+
                     if (isset($cur['class'])) {
                         $line .= $cur['class'] . $cur['type'];
                     }
+
                     $line .= ($cur['function'] ?? 'unknown') . '(';
 
                     if (
@@ -279,15 +325,19 @@ EOT;
                             switch ($type) {
                                 case 'boolean':
                                     $type = $arg ? 'true' : 'false';
+
                                     break;
                                 case 'array':
                                     $type .= '(' . \count($arg) . ')';
+
                                     break;
                                 case 'resource':
                                     $type = \get_resource_type($arg);
+
                                     break;
                                 case 'object':
                                     $type .= '{' . \get_class($arg) . '}';
+
                                     break;
                             }
 
@@ -296,13 +346,14 @@ EOT;
                         }
                     }
                     $line .= ')';
+                    $line  = $this->e(\str_replace($this->hidePath, '...', $line));
 
-                    $line = $this->e(\str_replace($this->hidePath, '...', $line));
                     echo "<li>{$line}</li>";
                 }
 
                 echo '</ol></div>';
             }
+
         } else {
             echo '<p>Server is tired :(</p>';
         }
@@ -329,8 +380,9 @@ EOT;
             && $error['exception'] instanceof Throwable
         ) {
             $result = "PHP {$type}: {$error['exception']}";
+
         } else {
-            $result = "PHP {$type}: {$error['message']} in {$error['file']}:[{$error['line']}]";
+            $result = "PHP {$type}: {$error['message']}" . (isset($error['file']) ? " in {$error['file']}:[{$error['line']}]" : '');
         }
 
         return \preg_replace('%[\x00-\x1F]%', ' ', \str_replace($this->hidePath, '...', $result));

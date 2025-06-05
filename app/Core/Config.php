@@ -1,6 +1,6 @@
 <?php
 /**
- * This file is part of the ForkBB <https://github.com/forkbb>.
+ * This file is part of the ForkBB <https://forkbb.ru, https://github.com/forkbb>.
  *
  * @copyright (c) Visman <mio.visman@yandex.ru, https://github.com/MioVisman>
  * @license   The MIT License (MIT)
@@ -54,9 +54,11 @@ class Config
         if (! \is_file($path)) {
             throw new ForkException('Config not found');
         }
+
         if (! \is_readable($path)) {
             throw new ForkException('Config can not be read');
         }
+
         if (! \is_writable($path)) {
             throw new ForkException('Config can not be write');
         }
@@ -172,6 +174,7 @@ class Config
                 switch ($type) {
                     case 'ZERO':
                         $type = 'NEW';
+
                         break;
                     case 'NEW':
                     case '=>':
@@ -180,6 +183,7 @@ class Config
                         $value_before    = $other;
                         $other           = '';
                         $type            = 'VALUE';
+
                         break;
                     default:
                         throw new ForkException('Config array cannot be parsed (3)');
@@ -202,9 +206,11 @@ class Config
 
                             if (null !== $key) {
                                 $result[$this->clearKey($key)] = $value;
+
                             } else {
                                 $result[] = $value;
                             }
+
                         } elseif (null !== $key) {
                             throw new ForkException('Config array cannot be parsed (4)');
                         }
@@ -213,16 +219,19 @@ class Config
                     default:
                         throw new ForkException('Config array cannot be parsed (5)');
                 }
+
             // новый элемент
             } elseif (',' === $token) {
                 switch ($type) {
                     case 'VALUE':
                     case 'VALUE_OR_KEY':
                         $type = 'NEW';
+
                         break;
                     default:
                         throw new ForkException('Config array cannot be parsed (6)');
                 }
+
             // присвоение значения
             } elseif ('=>' === $token) {
                 switch ($type) {
@@ -234,6 +243,7 @@ class Config
                         $value        = null;
                         $value_before = '';
                         $type         = '=>';
+
                         break;
                     default:
                         throw new ForkException('Config array cannot be parsed (7)');
@@ -251,17 +261,20 @@ class Config
                     case 'VALUE_OR_KEY':
                     case 'VALUE':
                     case '=>':
-                            $other .= $token;
+                        $other .= $token;
+
                         break;
                     default:
                         throw new ForkException('Config array cannot be parsed (8)');
                 }
+
             // какое-то значение
             } else {
                 switch ($type) {
                     case 'NEW':
                         if (null !== $value) {
                             \preg_match('%^([^\r\n]*+)(.*)$%s', $other, $matches);
+
                             $value_after = $matches[1];
                             $other       = $matches[2];
 
@@ -280,20 +293,24 @@ class Config
 
                             if (null !== $key) {
                                 $result[$this->clearKey($key)] = $value;
+
                             } else {
                                 $result[] = $value;
                             }
 
                             $value = null;
                             $key   = null;
+
                         } elseif (null !== $key) {
                             throw new ForkException('Config array cannot be parsed (9)');
                         }
 
                         $type = 'VALUE_OR_KEY';
+
                         break;
                     case '=>':
                         $type = 'VALUE';
+
                         break;
                     default:
                         throw new ForkException('Config array cannot be parsed (10)');
@@ -311,17 +328,17 @@ class Config
     protected function isFormat(mixed $data): bool
     {
         return \is_array($data)
-        && \array_key_exists('value', $data)
-        && \array_key_exists('value_before', $data)
-        && \array_key_exists('value_after', $data)
-        && \array_key_exists('key_before', $data)
-        && \array_key_exists('key_after', $data);
+            && \array_key_exists('value', $data)
+            && \array_key_exists('value_before', $data)
+            && \array_key_exists('value_after', $data)
+            && \array_key_exists('key_before', $data)
+            && \array_key_exists('key_after', $data);
     }
 
     /**
      * Добавляет/заменяет элемент в конфиг(е)
      */
-    public function add(string $path, mixed $value, string $after = null): bool
+    public function add(string $path, mixed $value, ?string $after = null): bool
     {
         if (empty($this->configArray)) {
             $this->configArray = $this->getArray();
@@ -338,11 +355,13 @@ class Config
             if (\is_numeric($key)) { //???? O_o
                 $config[] = [];
                 $config   = &$config[\array_key_last($config)];
+
             } else {
                 $config[$key] ??= [];
 
                 if ($this->isFormat($config[$key])) {
                     $config = &$config[$key]['value'];
+
                 } else {
                     $config = &$config[$key];
                 }
@@ -358,26 +377,31 @@ class Config
             || \is_numeric($after) //???? O_o O_o O_o
         ) {
             $config[] = $value;
+
         } elseif (isset($config[$key])) {
             if (
                 $this->isFormat($config[$key])
                 && ! $this->isFormat($value)
             ) {
                 $config[$key]['value'] = $value;
+
             } else {
                 $config[$key] = $value;
             }
+
         } elseif (
             null === $after
             || ! isset($config[$after])
         ) {
             $config[$key] = $value;
+
         } else {
             $new = [];
 
             foreach ($config as $k => $v) {
                 if (\is_int($k)) {
                     $new[] = $v;
+
                 } else {
                     $new[$k] = $v;
 
@@ -416,6 +440,7 @@ class Config
 
             if ($this->isFormat($config[$key])) {
                 $config = &$config[$key]['value'];
+
             } else {
                 $config = &$config[$key];
             }
@@ -427,8 +452,10 @@ class Config
 
         if (! \array_key_exists($key, $config)) {
             return false;
+
         } else {
             $result = $config[$key];
+
             unset($config[$key]);
 
             return $result;
@@ -471,26 +498,31 @@ class Config
             if ($this->isFormat($cur)) {
                 if (\is_string($key)) {
                     $result .= "{$cur['key_before']}'{$key}'{$cur['key_after']}=>{$cur['value_before']}";
+
                 } else {
                     $result .= "{$cur['value_before']}";
                 }
 
                 if (\is_array($cur['value'])) {
                     $result .= $this->toStr($cur['value'], $level + 1) . ",{$cur['value_after']}";
+
                 } else {
                     $result .= "{$cur['value']},{$cur['value_after']}";
                 }
+
             } else {
                 if (\is_string($key)) {
                     $result  = \rtrim($result, "\n\t ");
                     $result .= "\n{$space}'{$key}' => ";
                     $tail    = "\n" . \str_repeat('    ', $level - 1);
+
                 } else {
                     $result .= ' ';
                 }
 
                 if (\is_array($cur)) {
                     $result .= $this->toStr($cur, $level + 1) . ',';
+
                 } else {
                     $result .= "{$cur},";
                 }

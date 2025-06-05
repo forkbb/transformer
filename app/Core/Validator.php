@@ -1,6 +1,6 @@
 <?php
 /**
- * This file is part of the ForkBB <https://github.com/forkbb>.
+ * This file is part of the ForkBB <https://forkbb.ru, https://github.com/forkbb>.
  *
  * @copyright (c) Visman <mio.visman@yandex.ru, https://github.com/MioVisman>
  * @license   The MIT License (MIT)
@@ -140,13 +140,7 @@ class Validator
     public function addRules(array $list): Validator
     {
         foreach ($list as $field => $raw) {
-            $rules  = [];
-            $suffix = null;
-
-            // правило для элементов массива
-            if (\strpos($field, '.') > 0) {
-                list($field, $suffix) = \explode('.', $field, 2);
-            }
+            $rules = [];
 
             if (! \is_array($raw)) {
                 $raw = \explode('|', $raw);
@@ -167,28 +161,52 @@ class Validator
 
                     if ($validator instanceof RulesValidator) {
                         $this->validators[$name] = [$validator, $name];
+
                     } else {
                         throw new RuntimeException("{$name} validator not found");
                     }
                 }
 
+                if (
+                    'array' === $name
+                    && ! \is_array($rule)
+                ) {
+                    $rule = [];
+                }
+
                 $rules[$name] = $rule ?? '';
             }
 
-            if (isset($suffix)) {
-                if (
-                    isset($this->rules[$field]['array'])
-                    && ! \is_array($this->rules[$field]['array'])
-                ) {
-                    $this->rules[$field]['array'] = [];
+            if (\strpos($field, '.') > 0) {
+                $fields = \explode('.', $field);
+                $n      = \count($fields);
+                $start  = true;
+                $r      = &$this->rules;
+
+                foreach ($fields as $field) {
+                    if (true === $start) {
+                        $this->fields[$field] = $field;
+                        $start                = false;
+                    }
+
+                    if (--$n) {
+                        if (! isset($r[$field]['array'])) {
+                            $r[$field]['array'] = [];
+                        }
+
+                        $r = &$r[$field]['array'];
+
+                    } else {
+                        $r[$field] = $rules;
+                    }
                 }
 
-                $this->rules[$field]['array'][$suffix] = $rules;
-            } else {
-                $this->rules[$field] = $rules;
-            }
+                unset ($r);
 
-            $this->fields[$field] = $field;
+            } else {
+                $this->rules[$field]  = $rules;
+                $this->fields[$field] = $field;
+            }
         }
 
         return $this;
@@ -271,12 +289,14 @@ class Validator
     {
         if (isset($this->status[$field])) {
             return $this->result[$field];
+
         } elseif (empty($this->rules[$field])) {
             throw new RuntimeException("No rules for '{$field}' field");
         }
 
         if (isset($this->raw[$field])) {
             $value = $this->c->Secury->replInvalidChars($this->raw[$field]);
+
         } else {
             $value = null;
         }
@@ -286,6 +306,7 @@ class Validator
             && isset($this->rules[$field]['required'])
         ) {
             $rules = ['required' => ''];
+
         } else {
             $rules = $this->rules[$field];
         }
@@ -352,11 +373,17 @@ class Validator
                 list($type, $message) = $message;
             }
 
+            if (\is_array($attr)) {
+                $attr = \implode(',', $attr);
+            }
+
             $this->errors[$type][] = \is_array($message)
                 ? $message
                 : [$message, [':alias' => __($alias), ':attr' => $attr]];
+
         } elseif (\is_array($error)) {
             $this->errors[$type][] = $error;
+
         } else {
             throw new InvalidArgumentException('Expected string or array');
         }
@@ -388,20 +415,22 @@ class Validator
      * Возвращает проверенные данные
      * Поля с ошибками содержат значения по умолчанию или значения с ошибками
      */
-    public function getData(bool $all = false, array $doNotUse = null): array
+    public function getData(bool $all = false, array $doNotUse = []): array
     {
         if (empty($this->status)) {
             throw new RuntimeException('Data not found');
         }
 
-        if (null === $doNotUse) {
+        if (empty($doNotUse)) {
             $result = $this->result;
+
         } else {
             $result = \array_diff_key($this->result, \array_flip($doNotUse));
         }
 
         if ($all) {
             return $result;
+
         } else {
             return \array_filter($result, function ($value) {
                 return null !== $value;
@@ -446,10 +475,13 @@ class Validator
     {
         if (null === $value) {
             return true;
+
         } elseif (\is_string($value)) {
             return '' === $this->trim($value);
+
         } elseif (\is_array($value)) {
             return $withArray && empty($value);
+
         } else {
             return false;
         }
@@ -471,6 +503,7 @@ class Validator
             if (isset($attr[0])) {
                 $value = $attr;
             }
+
         } else {
             $this->addError('The :alias should be absent');
         }
@@ -521,15 +554,19 @@ class Validator
                     switch ($action) {
                         case 'trim':
                             $value = $this->trim($value);
+
                             break;
                         case 'lower':
                             $value = \mb_strtolower($value, 'UTF-8');
+
                             break;
                         case 'spaces':
                             $value = \preg_replace('%\s+%u', ' ', $value);
+
                             break;
                         case 'linebreaks':
                             $value = \str_replace(["\r\n", "\r"], "\n", $value);
+
                             break;
                         case 'null':
                             if ('' === $value) {
@@ -554,8 +591,10 @@ class Validator
                     }
                 }
             }
+
         } elseif (null === $value) {
             $this->addError(null);
+
         } else {
             $this->addError('The :alias must be string');
 
@@ -569,6 +608,7 @@ class Validator
     {
         if (\is_numeric($value)) {
             $value += 0;
+
         } elseif (
             null === $value
             || '' === $value
@@ -576,6 +616,7 @@ class Validator
             $this->addError(null);
 
             $value = null;
+
         } else {
             $this->addError('The :alias must be numeric');
 
@@ -592,6 +633,7 @@ class Validator
             && \is_int(0 + $value)
         ) {
             $value += 0;
+
         } elseif (
             null === $value
             || '' === $value
@@ -599,6 +641,7 @@ class Validator
             $this->addError(null);
 
             $value = null;
+
         } else {
             $this->addError('The :alias must be integer');
 
@@ -617,6 +660,7 @@ class Validator
             $this->addError('The :alias must be array');
 
             return null;
+
         } elseif (! $attr) {
             return $value;
         }
@@ -638,36 +682,40 @@ class Validator
     {
         if ('' === $name) {
             $result = $this->checkValue($value, $rules, $field);
+
         } else {
-            if (! \preg_match('%^([^.]+)(?:\.(.+))?$%', $name, $matches)) {
+            if (false !== \strpos((string) $name, '.')) {
                 throw new RuntimeException("Bad path '{$name}'");
             }
 
-            $key  = $matches[1];
-            $name = $matches[2] ?? '';
-
             if (
-                '*' === $key
+                '*' === $name
                 && \is_array($value)
             ) {
                 foreach ($value as $i => $cur) {
-                    $this->recArray($value[$i], $result[$i], $name, $rules, $field);
+                    $this->recArray($value[$i], $result[$i], '', $rules, $field);
                 }
+
             } elseif (
-                '*' !== $key
+                '*' !== $name
                 && \is_array($value)
-                && \array_key_exists($key, $value)
+                && \array_key_exists($name, $value)
             ) {
-                $this->recArray($value[$key], $result[$key], $name, $rules, $field);
+                $this->recArray($value[$name], $result[$name], '', $rules, $field);
+
             } elseif (isset($rules['required'])) {
                 $tmp1 = null;
                 $tmp2 = null;
-                $this->recArray($tmp1, $tmp2, $name, $rules, $field);
-            } elseif ('*' === $key) {
+
+                $this->recArray($tmp1, $tmp2, '', $rules, $field);
+
+            } elseif ('*' === $name) {
                 $result = []; // ???? а может там не отсутствие элемента, а не array?
+
             } else {
-                $value[$key] = null;
-                $this->recArray($value[$key], $result[$key], $name, $rules, $field);
+                $value[$name] = null;
+
+                $this->recArray($value[$name], $result[$name], '', $rules, $field);
             }
         }
     }
@@ -694,14 +742,17 @@ class Validator
             ) {
                 $this->addError('The :alias minimum is :attr characters');
             }
+
         } elseif (\is_numeric($value)) {
             if (0 + $value < $min) {
                 $this->addError('The :alias minimum is :attr');
             }
+
         } elseif (\is_array($value)) {
             if (\count($value) < $min) {
                 $this->addError('The :alias minimum is :attr elements');
             }
+
         } else {
             $this->addError('The :alias minimum is :attr');
 
@@ -733,10 +784,12 @@ class Validator
             ) {
                 $this->addError('The :alias maximum is :attr characters');
             }
+
         } elseif (\is_numeric($value)) {
             if (0 + $value > $max) {
                 $this->addError('The :alias maximum is :attr');
             }
+
         } elseif (\is_array($value)) {
             if (\reset($value) instanceof File) {
                 foreach ($value as $file) {
@@ -748,15 +801,18 @@ class Validator
                         break;
                     }
                 }
+
             } elseif (\count($value) > $max) {
                 $this->addError('The :alias maximum is :attr elements');
             }
+
         } elseif ($value instanceof File) {
             if ($value->size() > $max * 1024) {
                 $this->addError('The :alias contains too large a file');
 
                 $value = null;
             }
+
         } else {
             $this->addError('The :alias maximum is :attr');
 
@@ -775,6 +831,7 @@ class Validator
         if (\preg_match('%^([1-9]\d+):(.+)$%', $attr, $matches)) {
             $lifetime = (int) $matches[1];
             $attr     = $matches[2];
+
         } else {
             $lifetime = null;
         }
@@ -797,8 +854,10 @@ class Validator
             $this->addError(null);
 
             $value = false;
+
         } elseif (\is_scalar($value)) {
             $value = (string) $value;
+
         } else {
             $this->addError('The :alias contains an invalid value');
 
@@ -912,14 +971,17 @@ class Validator
             $this->addError(null);
 
             return null;
+
         } elseif (false === $value) {
             $this->addError($this->c->Files->error());
 
             return null;
+
         } elseif ('multiple' === $attr) {
             if (! \is_array($value)) {
                 $value = [$value];
             }
+
         } elseif (\is_array($value)) {
             $this->addError('The :alias contains more than one file');
 
@@ -941,6 +1003,7 @@ class Validator
                     return null;
                 }
             }
+
         } elseif (
             null !== $value
             && null === $this->c->Files->imageExt($value)
@@ -956,16 +1019,23 @@ class Validator
     protected function vDate(Validator $v, mixed $value): ?string
     {
         if ($this->noValue($value)) {
-            $value = null;
-        } elseif (
-            ! \is_string($value)
-            || false === \strtotime("{$value} UTC")
-        ) {
-            $v->addError('The :alias does not contain a date');
-
-            $value = \is_scalar($value) ? (string) $value : null;
+            return null;
         }
 
-        return $value;
+        if (\is_string($value)) {
+            $timestamp = $this->c->Func->dateToTime($value);
+
+        } else {
+            $timestamp = false;
+        }
+
+        if (false === $timestamp) {
+            $v->addError('The :alias does not contain a date');
+
+        } elseif ($timestamp < 0) {
+            $v->addError('The :alias contains time before start of Unix');
+        }
+
+        return \is_scalar($value) ? (string) $value : null;
     }
 }

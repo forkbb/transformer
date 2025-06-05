@@ -1,6 +1,6 @@
 <?php
 /**
- * This file is part of the ForkBB <https://github.com/forkbb>.
+ * This file is part of the ForkBB <https://forkbb.ru, https://github.com/forkbb>.
  *
  * @copyright (c) Visman <mio.visman@yandex.ru, https://github.com/MioVisman>
  * @license   The MIT License (MIT)
@@ -50,6 +50,7 @@ class ImagickDriver extends DefaultDriver
             || $this->files->isBadPath($path)
         ) {
             return false;
+
         } else {
             try {
                 return new Imagick(\realpath($path));
@@ -71,9 +72,11 @@ class ImagickDriver extends DefaultDriver
             switch ($type) {
                 case 'png':
                     $imagick->setImageCompressionQuality(0); // ???? пересчитать как в GD?
+
                     break;
                 default:
                     $imagick->setImageCompressionQuality($quality);
+
                     break;
             }
 
@@ -113,6 +116,7 @@ class ImagickDriver extends DefaultDriver
                 }
 
                 return $images->deconstructImages();
+
             // нет анимации
             } else {
                 $imagick->resizeImage($width, $height, Imagick::FILTER_LANCZOS, 1);

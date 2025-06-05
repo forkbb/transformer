@@ -1,6 +1,6 @@
 <?php
 /**
- * This file is part of the ForkBB <https://github.com/forkbb>.
+ * This file is part of the ForkBB <https://forkbb.ru, https://github.com/forkbb>.
  *
  * @copyright (c) Visman <mio.visman@yandex.ru, https://github.com/MioVisman>
  * @license   The MIT License (MIT)
@@ -88,10 +88,10 @@ class Lang
     /**
      * Ищет сообщение в загруженных переводах
      */
-    public function get(string $message, string $lang = null): null|string|array
+    public function get(string $message, string $lang = ''): null|string|array
     {
         if (
-            null !== $lang
+            '' !== $lang
             && isset($this->tr[$lang][$message])
         ) {
             return $this->tr[$lang][$message];
@@ -109,15 +109,16 @@ class Lang
     /**
      * Загружает языковой файл
      */
-    public function load(string $name, string $lang = null, string $path = null): void
+    public function load(string $name, string $lang = '', string $path = ''): void
     {
-        if (null !== $lang) {
+        if ('' !== $lang) {
             // смена порядка перебора языка
             $this->langOrder = [$lang => $lang] + $this->langOrder;
 
             if (isset($this->loaded[$name][$lang])) {
                 return;
             }
+
         } elseif (isset($this->loaded[$name])) {
             return;
         }
@@ -140,6 +141,7 @@ class Lang
                     && $cache['time'] === $time
                 ) {
                     $data = $cache['data'];
+
                 } else {
                     $data = $this->arrayFromStr(\file_get_contents($fullPath));
 
@@ -154,6 +156,7 @@ class Lang
 
                 if (isset($this->tr[$lang])) {
                     $this->tr[$lang] += $data;
+
                 } else {
                     $this->tr[$lang]  = $data;
                 }
@@ -163,6 +166,7 @@ class Lang
                 $this->langOrder += [$lang => $lang];
 
                 $flag = false;
+
             } elseif ('en' === $lang) {
                 $flag = false;
             }
@@ -223,11 +227,14 @@ class Lang
                         }
 
                         $curVal = [];
+
                         for ($v = 0; $v < $nplurals; ++$v) {
                             if (! isset($cur[$v][0])) {
                                 $curVal = null;
+
                                 break;
                             }
+
                             $curVal[$v] = $cur[$v];
                         }
 
@@ -276,39 +283,39 @@ class Lang
                 case 'msgid_plural':
                     $curComm = $command;
                     $curVal  = $v;
-                    break;
 
+                    break;
                 case 'msgstr':
                 case 'msgstr[0]':
                     $curComm = 0;
                     $curVal  = $v;
-                    break;
 
+                    break;
                 case 'msgstr[1]':
                     $curComm = 1;
                     $curVal  = $v;
-                    break;
 
+                    break;
                 case 'msgstr[2]':
                     $curComm = 2;
                     $curVal  = $v;
-                    break;
 
+                    break;
                 case 'msgstr[3]':
                     $curComm = 3;
                     $curVal  = $v;
-                    break;
 
+                    break;
                 case 'msgstr[4]':
                     $curComm = 4;
                     $curVal  = $v;
-                    break;
 
+                    break;
                 case 'msgstr[5]':
                     $curComm = 5;
                     $curVal  = $v;
-                    break;
 
+                    break;
                 default:
                     throw new RuntimeException("File ({$this->cur}) format error");
             }
@@ -363,6 +370,7 @@ class Lang
                 if ('(' === $token) {
                     // функция
                     $stack[] = "$any()";
+
                 } else {
                     // переменная
                     $postfix[] = $any;
@@ -399,6 +407,7 @@ class Lang
                     // стек до ( переложить в postfix
                     if ('(' !== $peek) {
                         $postfix[] = $peek;
+
                     } else {
                         // переложить функцию в postfix
                         if (
@@ -421,8 +430,10 @@ class Lang
 
                 if ('' === $trim) {
                     $postfix[] = (int) $token;
+
                 } elseif ('.' === $trim) {
                     $postfix[] = (float) $token;
+
                 } else {
                     // то ли функция, то ли переменная
                     $any = $token;
@@ -508,6 +519,7 @@ class Lang
                         if (\is_array($v1)) {
                             $v1[]    = $v2;
                             $stack[] = $v1;
+
                         } else {
                             $stack[] = [$v1, $v2];
                         }
@@ -523,6 +535,7 @@ class Lang
 
                         throw new RuntimeException('Unexpected operation: ' . $token);
                 }
+
             } else {
                 $stack[] = $token;
             }

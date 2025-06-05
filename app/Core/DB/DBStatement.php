@@ -1,6 +1,6 @@
 <?php
 /**
- * This file is part of the ForkBB <https://github.com/forkbb>.
+ * This file is part of the ForkBB <https://forkbb.ru, https://github.com/forkbb>.
  *
  * @copyright (c) Visman <mio.visman@yandex.ru, https://github.com/MioVisman>
  * @license   The MIT License (MIT)
@@ -70,6 +70,7 @@ class DBStatement
                 foreach ($data as $bParam) {
                     $this->stmt->bindValue($bParam, \array_shift($bValue), $bType); //????
                 }
+
             } else {
                 foreach ($data as $bParam) {
                     $this->stmt->bindValue($bParam, $bValue, $bType); //????
@@ -81,12 +82,9 @@ class DBStatement
     /**
      * Метод расширяет PDOStatement::execute()
      */
-    public function execute(array $params = null): bool
+    public function execute(?array $params = null): bool
     {
-        if (
-            \is_array($params)
-            && ! empty($params)
-        ) {
+        if (! empty($params)) {
             $this->bindValueList($params);
         }
 

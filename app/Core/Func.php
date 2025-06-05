@@ -1,6 +1,6 @@
 <?php
 /**
- * This file is part of the ForkBB <https://github.com/forkbb>.
+ * This file is part of the ForkBB <https://forkbb.ru, https://github.com/forkbb>.
  *
  * @copyright (c) Visman <mio.visman@yandex.ru, https://github.com/MioVisman>
  * @license   The MIT License (MIT)
@@ -11,6 +11,9 @@ declare(strict_types=1);
 namespace ForkBB\Core;
 
 use ForkBB\Core\Container;
+use DateTime;
+use DateTimeZone;
+use Transliterator;
 use function \ForkBB\__;
 
 class Func
@@ -30,8 +33,29 @@ class Func
      */
     protected ?array $nameLangs = null;
 
+    /**
+     * Смещение времени для текущего пользователя
+     */
+    protected ?int $offset = null;
+
+    /**
+     * Копия $this->c->FRIENDLY_URL
+     */
+    protected array $fUrl;
+
+    /**
+     * Для кэширования транслитератора
+     */
+    protected Transliterator|false|null $transl = null;
+
+    /**
+     * Массив подмены символов перед/вместо траслитератор(ом/а)
+     */
+    protected ?array $translArray = null;
+
     public function __construct(protected Container $c)
     {
+        $this->fUrl = $c->isInit('FRIENDLY_URL') ? $c->FRIENDLY_URL : [];
     }
 
     /**
@@ -123,11 +147,13 @@ class Func
                 $pn = $args['page'];
 
                 unset($args[$pn]);
+
             } else {
                 $pn = 'page';
             }
 
             unset($args['page']);
+
         } else {
             $pn = 'page';
         }
@@ -160,13 +186,16 @@ class Func
             }
 
             $tpl[$all] = $all;
+
         } else {
             $tpl = [];
 
             if ($all > 999) {
                 $d = 2;
+
             } elseif ($all > 99) {
                 $d = 3;
+
             } else {
                 $d = \min(4, $all - 2);
             }
@@ -239,6 +268,7 @@ class Func
                 }
 
                 $q = (float) $q;
+
             } else {
                 $q = 1;
             }
@@ -253,5 +283,85 @@ class Func
         \arsort($result, \SORT_NUMERIC);
 
         return \array_keys($result);
+    }
+
+    /**
+     * Возвращает смещение в секундах для часовой зоны текущего пользователя или 0
+     */
+    public function offset(): int
+    {
+        if (null !== $this->offset) {
+            return $this->offset;
+
+        } elseif (\in_array($this->c->user->timezone, DateTimeZone::listIdentifiers(), true)) {
+            $dateTimeZone = new DateTimeZone($this->c->user->timezone);
+            $dateTime     = new DateTime('now', $dateTimeZone);
+
+            return $this->offset = $dateTime->getOffset();
+
+        } else {
+            return $this->offset = 0;
+        }
+    }
+
+    /**
+     * Переводит метку времени в дату-время с учетом/без учета часового пояса пользователя
+     */
+    public function timeToDate(int $timestamp, bool $useOffset = true): string
+    {
+        return \gmdate('Y-m-d\TH:i:s', $timestamp + ($useOffset ? $this->offset() : 0));
+    }
+
+    /**
+     * Переводит дату-время в метку времени с учетом/без учета часового пояса пользователя
+     */
+    public function dateToTime(string $date, bool $useOffset = true): int|false
+    {
+        $timestamp = \strtotime("{$date} UTC");
+
+        if (! \is_int($timestamp)) {
+            return false;
+
+        } elseif ($useOffset) {
+            return $timestamp - $this->offset();
+
+        } else {
+            return $timestamp;
+        }
+    }
+
+    /**
+     * Преобразует строку в соотвествии с правилами FRIENDLY_URL
+     */
+    public function friendly(string $str): string
+    {
+        if (! empty($this->fUrl['translit'])) {
+            if (! empty($this->fUrl['file'])) {
+                $this->translArray ??= include "{$this->c->DIR_CONFIG}/{$this->fUrl['file']}";
+
+                $str = \strtr($str, $this->translArray);
+            }
+
+            if (
+                \is_string($this->fUrl['translit'])
+                && \preg_match('%[\x80-\xFF]%', $str)
+            ) {
+                $this->transl ??= Transliterator::create($this->fUrl['translit']) ?? false;
+
+                if ($this->transl instanceof Transliterator) {
+                    $str = $this->transl->transliterate($str);
+                }
+            }
+        }
+
+        if (true === $this->fUrl['lowercase']) {
+            $str = \mb_strtolower($str, 'UTF-8');
+        }
+
+        if (true === $this->fUrl['WtoHyphen']) {
+            $str = \trim(\preg_replace(['%[^\w]+%u', '%_+%'], ['-', '_'], $str), '-_');
+        }
+
+        return isset($str[0]) ? $str : '-';
     }
 }

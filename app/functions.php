@@ -1,6 +1,6 @@
 <?php
 /**
- * This file is part of the ForkBB <https://github.com/forkbb>.
+ * This file is part of the ForkBB <https://forkbb.ru, https://github.com/forkbb>.
  *
  * @copyright (c) Visman <mio.visman@yandex.ru, https://github.com/MioVisman>
  * @license   The MIT License (MIT)
@@ -11,8 +11,7 @@ declare(strict_types=1);
 namespace ForkBB;
 
 use ForkBB\Core\Container;
-use DateTime;
-use DateTimeZone;
+use IntlDateFormatter;
 use InvalidArgumentException;
 
 /**
@@ -21,7 +20,7 @@ use InvalidArgumentException;
 function _init(Container $c): void
 {
     __([$c]);
-    dt(0, true, '', '', true, true, $c);
+    dt(0, null, null, false, $c);
 }
 
 /**
@@ -41,6 +40,7 @@ function __(string|array $arg): string
             }
 
             return '';
+
         } else {
             $lang = $c->Lang;
         }
@@ -52,6 +52,7 @@ function __(string|array $arg): string
 
         if (null === $tr) {
             $tr = e($str);
+
         } elseif (\is_array($tr)) {
             $num = \array_shift($arg);
             $tr  = $lang->getForm($tr, $num);
@@ -59,12 +60,15 @@ function __(string|array $arg): string
 
         if (empty($arg)) {
             return $tr;
+
         } elseif (\is_array(\reset($arg))) {
             return \strtr($tr, \array_map('\\ForkBB\\e', \reset($arg)));
+
         } else {
             $arg = \array_map('\\ForkBB\\e', $arg);
             return \sprintf($tr, ...$arg);
         }
+
     } else {
         return $lang->get($arg) ?? e($arg);
     }
@@ -91,57 +95,45 @@ function num(mixed $number, int $decimals = 0): string
 /**
  * Возвращает дату/время в формате текущего пользователя
  */
-function dt(int $arg, bool $dateOnly = false, string $dateFormat = null, string $timeFormat = null, bool $timeOnly = false, bool $noText = false, Container $container = null): string
+function dt(int $arg, ?int $dateType = null, ?int $timeType = null, bool $noText = false, ?Container $container = null): string
 {
-    static $c, $offset;
+    static $c, $idfs = [],
+        $types = [
+            0 => IntlDateFormatter::NONE,
+            1 => IntlDateFormatter::SHORT,
+            2 => IntlDateFormatter::MEDIUM,
+            3 => IntlDateFormatter::LONG,
+            4 => IntlDateFormatter::FULL,
+        ],
+        $typesR = [
+            0 => IntlDateFormatter::NONE,
+            1 => IntlDateFormatter::RELATIVE_SHORT,
+            2 => IntlDateFormatter::RELATIVE_MEDIUM,
+            3 => IntlDateFormatter::RELATIVE_LONG,
+            4 => IntlDateFormatter::RELATIVE_FULL,
+        ];
 
-    if (null !== $container) {
-        $c = $container;
-        return '';
-    }
+    if (0 === $arg) {
+        if (null !== $container) {
+            $c = $container;
 
-    if (empty($arg)) {
-        return __('Never');
-    }
+            return '';
 
-    if (null === $offset) {
-        if (\in_array($c->user->timezone, DateTimeZone::listIdentifiers(), true)) {
-            $dateTimeZone = new DateTimeZone($c->user->timezone);
-            $dateTime     = new DateTime('now', $dateTimeZone);
-            $offset       = $dateTime->getOffset();
         } else {
-            $offset      = 0;
+            return __('Never');
         }
     }
 
-    $arg += $offset;
+    $dateType ??= \min(4, \max(1, $c->user->date_format));
+    $timeType ??= \min(4, \max(1, $c->user->time_format));
 
-    if (null === $dateFormat) {
-        $dateFormat = $c->DATE_FORMATS[$c->user->date_format];
-    }
-    if (null === $timeFormat) {
-        $timeFormat = $c->TIME_FORMATS[$c->user->time_format];
-    }
+    $key = "i,{$noText},{$dateType},{$timeType}";
 
-    $date = \gmdate($dateFormat, $arg);
-
-    if (! $noText) {
-        $now = \time() + $offset;
-
-        if ($date == \gmdate($dateFormat, $now)) {
-            $date = __('Today');
-        } elseif ($date == \gmdate($dateFormat, $now - 86400)) {
-            $date = __('Yesterday');
-        }
+    if (! isset($idfs[$key])) {
+        $idfs[$key] = new IntlDateFormatter($c->user->locale, $noText ? $types[$dateType] : $typesR[$dateType], $types[$timeType], $c->user->timezone);
     }
 
-    if ($dateOnly) {
-        return $date;
-    } elseif ($timeOnly) {
-        return \gmdate($timeFormat, $arg);
-    } else {
-        return $date . ' ' . \gmdate($timeFormat, $arg);
-    }
+    return $idfs[$key]->format($arg);
 }
 
 /**
@@ -200,6 +192,7 @@ function url(string $url): string
                 }
 
                 $schemeOn = true;
+
             } else {
                 $schemeOn = false;
                 $url      = 'http://' . $url;
@@ -266,6 +259,7 @@ function url(string $url): string
 
                 if (\is_string($host)) {
                     $result .= $host;
+
                 } elseif (
                     isset($p['host'][1])
                     && '[' === $p['host'][0]
@@ -273,6 +267,7 @@ function url(string $url): string
                     && \filter_var(\substr($p['host'], 1, -1), \FILTER_VALIDATE_IP, \FILTER_FLAG_IPV6)
                 ) {
                     $result .= $p['host'];
+
                 } else {
                     return '';
                 }

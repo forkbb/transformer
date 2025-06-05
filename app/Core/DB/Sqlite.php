@@ -1,6 +1,6 @@
 <?php
 /**
- * This file is part of the ForkBB <https://github.com/forkbb>.
+ * This file is part of the ForkBB <https://forkbb.ru, https://github.com/forkbb>.
  *
  * @copyright (c) Visman <mio.visman@yandex.ru, https://github.com/MioVisman>
  * @license   The MIT License (MIT)
@@ -95,6 +95,7 @@ class Sqlite
                 $this->nameCheck($matches[1]);
 
                 $value = "\"{$matches[1]}\"";
+
             } else {
                 $this->nameCheck($value);
 
@@ -122,10 +123,13 @@ class Sqlite
     {
         if (\is_string($data)) {
             return $this->db->quote($data);
+
         } elseif (\is_numeric($data)) {
             return (string) $data;
+
         } elseif (\is_bool($data)) {
             return $data ? 'true' : 'false';
+
         } else {
             throw new PDOException('Invalid data type for DEFAULT');
         }
@@ -151,6 +155,7 @@ class Sqlite
                     && \preg_match('%bin%i', $data[3])
                 ) {
                     $query .= 'BINARY';
+
                 } else {
                     $query .= 'NOCASE';
                 }
@@ -405,6 +410,7 @@ class Sqlite
             }
 
             return false;
+
         } else {
             $vars = [
                 ':tname'  => $table,
@@ -491,7 +497,7 @@ class Sqlite
     /**
      * Добавляет поле в таблицу
      */
-    public function addField(string $table, string $field, string $type, bool $allowNull, mixed $default = null, string $collate = null, string $after = null): bool
+    public function addField(string $table, string $field, string $type, bool $allowNull, mixed $default = null, ?string $collate = null, ?string $after = null): bool
     {
         $table = $this->tName($table);
 
@@ -507,7 +513,7 @@ class Sqlite
     /**
      * Модифицирует поле в таблице
      */
-    public function alterField(string $table, string $field, string $type, bool $allowNull, mixed $default = null, string $collate = null, string $after = null): bool
+    public function alterField(string $table, string $field, string $type, bool $allowNull, mixed $default = null, ?string $collate = null, ?string $after = null): bool
     {
         $this->nameCheck($field);
 
@@ -614,6 +620,7 @@ class Sqlite
                 FROM \"{$table}\"";
 
             return $this->tmpToTable($schema, $query);
+
         } else {
             $index  = $table . '_' . $index;
 
@@ -673,6 +680,7 @@ class Sqlite
                 FROM \"{$table}\"";
 
             return $this->tmpToTable($schema, $query);
+
         } else {
             $this->nameCheck($index);
 
@@ -709,8 +717,8 @@ class Sqlite
     public function statistics(): array
     {
         $vars = [
-            ':tname'  => \str_replace('_', '#_', $this->dbPrefix) . '%',
-            ':ttype'  => 'table',
+            ':tname' => \str_replace('_', '#_', $this->dbPrefix) . '%',
+            ':ttype' => 'table',
         ];
         $query = 'SELECT tbl_name FROM sqlite_master WHERE tbl_name LIKE ?s:tname ESCAPE \'#\' AND type=?s:ttype';
 
@@ -750,7 +758,7 @@ class Sqlite
             'tables'       => (string) \count($tables),
             'records'      => $records,
             'size'         => $size,
-#            'server info'  => $this->db->getAttribute(PDO::ATTR_SERVER_INFO),
+//            'server info'  => $this->db->getAttribute(PDO::ATTR_SERVER_INFO),
             'encoding'     => $this->db->query('PRAGMA encoding;')->fetchColumn(),
             'journal_mode' => $this->db->query('PRAGMA journal_mode;')->fetchColumn(),
             'synchronous'  => $this->db->query('PRAGMA synchronous;')->fetchColumn(),

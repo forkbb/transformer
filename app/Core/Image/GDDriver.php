@@ -1,6 +1,6 @@
 <?php
 /**
- * This file is part of the ForkBB <https://github.com/forkbb>.
+ * This file is part of the ForkBB <https://forkbb.ru, https://github.com/forkbb>.
  *
  * @copyright (c) Visman <mio.visman@yandex.ru, https://github.com/MioVisman>
  * @license   The MIT License (MIT)
@@ -29,6 +29,7 @@ class GDDriver extends DefaultDriver
     {
         if ($this->isBadData(\substr($data, 0, 64))) {
             return false;
+
         } else {
             return $this->tuning($this->ready ? \imagecreatefromstring($data) : false);
         }
@@ -42,6 +43,7 @@ class GDDriver extends DefaultDriver
             || $this->isBadData(\file_get_contents($path, false, null, 0, 64))
         ) {
             return false;
+
         } else {
             return $this->tuning(\imagecreatefromstring(\file_get_contents($path)));
         }
@@ -72,6 +74,7 @@ class GDDriver extends DefaultDriver
             )
         ) {
             throw new FileException('Failed to adjust image');
+
         } else {
             return $image;
         }
@@ -87,10 +90,12 @@ class GDDriver extends DefaultDriver
                 break;
             case 'png':
                 $args[] = 9; //(int) \floor((100 - $quality) / 11);
+
                 break;
             case 'jpg':
                 $type   = 'jpeg';
                 $args[] = $quality;
+
                 break;
             case 'webp':
             case 'avif':
@@ -101,6 +106,7 @@ class GDDriver extends DefaultDriver
                 }
 
                 $args[] = $quality;
+
                 break;
             default:
                 return null;
@@ -110,6 +116,7 @@ class GDDriver extends DefaultDriver
 
         if (\function_exists($function)) {
             return $function(...$args);
+
         } else {
             return null;
         }

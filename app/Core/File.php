@@ -1,6 +1,6 @@
 <?php
 /**
- * This file is part of the ForkBB <https://github.com/forkbb>.
+ * This file is part of the ForkBB <https://forkbb.ru, https://github.com/forkbb>.
  *
  * @copyright (c) Visman <mio.visman@yandex.ru, https://github.com/MioVisman>
  * @license   The MIT License (MIT)
@@ -50,11 +50,11 @@ class File
     {
         if ($files->isBadPath($path)) {
             throw new FileException('Bad path to file');
-        }
-        if (! \is_file($path)) {
+
+        } elseif (! \is_file($path)) {
             throw new FileException('File not found');
-        }
-        if (! \is_readable($path)) {
+
+        } elseif (! \is_readable($path)) {
             throw new FileException('File can not be read');
         }
 
@@ -91,6 +91,7 @@ class File
 
         if ('*' === $matches[3]) {
             $matches[3] = $this->ext;
+
         } elseif (
             '(' === $matches[3][0]
             && ')' === $matches[3][-1]
@@ -141,6 +142,7 @@ class File
                 return false;
             }
         }
+
         if (! \is_writable($dirname)) {
             $this->error = 'No write access for directory';
 
@@ -161,6 +163,7 @@ class File
 
                 return false;
             }
+
         } else {
             if (! \copy($this->path, $path)) {
                 $this->error = 'Error copying file';
@@ -177,18 +180,20 @@ class File
     /**
      * Сохраняет файл по указанному шаблону пути
      */
-    public function toFile(string $path, int $maxSize = null): bool
+    public function toFile(string $path, ?int $maxSize = null): bool
     {
         $info = $this->pathinfo($path);
 
         if (empty($info)) {
             return false;
         }
+
         if ($this->files->isBadPath($info['dirname'])) {
             $this->error = 'Bad path to file';
 
             return false;
         }
+
         if (
             ! $this->dirProc($info['dirname'])
         ) {
@@ -213,6 +218,7 @@ class File
                     $info['filename'] = $name . '_' . $i;
 
                     continue;
+
                 } elseif (! $this->rewrite) {
                     $this->error = 'Such file already exists';
 
@@ -242,6 +248,7 @@ class File
             $this->ext  = $info['extension'];
 
             return true;
+
         } else {
             return false;
         }

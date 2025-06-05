@@ -1,6 +1,6 @@
 <?php
 /**
- * This file is part of the ForkBB <https://github.com/forkbb>.
+ * This file is part of the ForkBB <https://forkbb.ru, https://github.com/forkbb>.
  *
  * @copyright (c) Visman <mio.visman@yandex.ru, https://github.com/MioVisman>
  * @license   The MIT License (MIT)
@@ -89,6 +89,7 @@ class Mysql
                 $this->nameCheck($matches[1]);
 
                 $value = "`{$matches[1]}`{$matches[2]}";
+
             } else {
                 $this->nameCheck($value);
 
@@ -116,10 +117,13 @@ class Mysql
     {
         if (\is_string($data)) {
             return $this->db->quote($data);
+
         } elseif (\is_numeric($data)) {
             return (string) $data;
+
         } elseif (\is_bool($data)) {
             return $data ? 'true' : 'false';
+
         } else {
             throw new PDOException('Invalid data type for DEFAULT');
         }
@@ -144,6 +148,7 @@ class Mysql
                 $this->nameCheck($data[3]);
 
                 $query .= $data[3];
+
             } else {
                 $query .= 'unicode_ci';
             }
@@ -257,6 +262,7 @@ class Mysql
 
         if (isset($schema['ENGINE'])) {
             $engine = $schema['ENGINE'];
+
         } else {
             // при отсутствии типа таблицы он определяется на основании типов других таблиц в базе
             $prefix = \str_replace('_', '\\_', $this->dbPrefix);
@@ -266,6 +272,7 @@ class Mysql
             while ($row = $stmt->fetch()) {
                 if (isset($engine[$row['Engine']])) {
                     ++$engine[$row['Engine']];
+
                 } else {
                     $engine[$row['Engine']] = 1;
                 }
@@ -273,6 +280,7 @@ class Mysql
             // в базе нет таблиц
             if (empty($engine)) {
                 $engine = 'MyISAM';
+
             } else {
                 \arsort($engine);
                 // берем тип наиболее часто встречаемый у имеющихся таблиц
@@ -319,7 +327,7 @@ class Mysql
     /**
      * Добавляет поле в таблицу
      */
-    public function addField(string $table, string $field, string $type, bool $allowNull, mixed $default = null, string $collate = null, string $after = null): bool
+    public function addField(string $table, string $field, string $type, bool $allowNull, mixed $default = null, ?string $collate = null, ?string $after = null): bool
     {
         $table = $this->tName($table);
 
@@ -341,7 +349,7 @@ class Mysql
     /**
      * Модифицирует поле в таблице
      */
-    public function alterField(string $table, string $field, string $type, bool $allowNull, mixed $default = null, string $collate = null, string $after = null): bool
+    public function alterField(string $table, string $field, string $type, bool $allowNull, mixed $default = null, ?string $collate = null, ?string $after = null): bool
     {
         $table = $this->tName($table);
         $query = "ALTER TABLE `{$table}` MODIFY " . $this->buildColumn($field, [$type, $allowNull, $default, $collate]);
@@ -429,6 +437,7 @@ class Mysql
 
         if ('PRIMARY' == $index) {
             $query .= 'PRIMARY KEY';
+
         } else {
             $this->nameCheck($index);
 
@@ -456,6 +465,7 @@ class Mysql
 
         if ('PRIMARY' == $index) {
             $query .= "PRIMARY KEY";
+
         } else {
             $this->nameCheck($index);
 
@@ -487,9 +497,11 @@ class Mysql
 
         while ($row = $stmt->fetch()) {
             $records += $row['Rows'];
-            $size += $row['Data_length'] + $row['Index_length'];
+            $size    += $row['Data_length'] + $row['Index_length'];
+
             if (isset($engine[$row['Engine']])) {
                 ++$engine[$row['Engine']];
+
             } else {
                 $engine[$row['Engine']] = 1;
             }
@@ -503,11 +515,19 @@ class Mysql
             $tmp[] = "{$key}({$val})";
         }
 
-        $other = [];
-        $stmt  = $this->db->query("SHOW VARIABLES LIKE 'character\\_set\\_%'");
+        $other   = [];
+        $queries = [
+            "SHOW VARIABLES LIKE 'character\\_set\\_%'",
+            "SHOW VARIABLES LIKE '%max\\_conn%'",
+            "SHOW STATUS LIKE '%\\_conn%'",
+        ];
 
-        while ($row = $stmt->fetch(PDO::FETCH_NUM)) {
-            $other[$row[0]] = $row[1];
+        foreach ($queries as $query) {
+            $stmt  = $this->db->query($query);
+
+            while ($row = $stmt->fetch(PDO::FETCH_NUM)) {
+                $other[$row[0]] = $row[1];
+            }
         }
 
         return [

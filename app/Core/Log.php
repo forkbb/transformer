@@ -1,6 +1,6 @@
 <?php
 /**
- * This file is part of the ForkBB <https://github.com/forkbb>.
+ * This file is part of the ForkBB <https://forkbb.ru, https://github.com/forkbb>.
  *
  * @copyright (c) Visman <mio.visman@yandex.ru, https://github.com/MioVisman>
  * @license   The MIT License (MIT)
@@ -17,6 +17,7 @@ use Psr\Log\InvalidArgumentException;
 use DateTimeZone;
 use DateTime;
 use RuntimeException;
+use Stringable;
 use Throwable;
 
 class Log implements LoggerInterface
@@ -44,16 +45,8 @@ class Log implements LoggerInterface
 
     /**
      * Logs with an arbitrary level.
-     *
-     * @param mixed  $level
-     * @param string $message
-     * @param array  $context
-     *
-     * @return void
-     *
-     * @throws \Psr\Log\InvalidArgumentException
      */
-    public function log($level, $message, array $context = [])
+    public function log($level, string|Stringable $message, array $context = []): void
     {
         if (
             \is_object($message)
@@ -115,6 +108,7 @@ class Log implements LoggerInterface
                 case LogLevel::ERROR:
                 case LogLevel::WARNING:
                     $ext = true;
+
                     break;
             }
         }
@@ -214,6 +208,7 @@ class Log implements LoggerInterface
     protected function interpolate(string $message, array $context): string
     {
         $replace = [];
+
         foreach ($context as $key => $val) {
             // check that the value can be cast to string
             if (
@@ -233,13 +228,8 @@ class Log implements LoggerInterface
 
     /**
      * System is unusable.
-     *
-     * @param string $message
-     * @param array  $context
-     *
-     * @return void
      */
-    public function emergency($message, array $context = [])
+    public function emergency(string|Stringable $message, array $context = []): void
     {
         $this->log(LogLevel::EMERGENCY, $message, $context);
     }
@@ -249,13 +239,8 @@ class Log implements LoggerInterface
      *
      * Example: Entire website down, database unavailable, etc. This should
      * trigger the SMS alerts and wake you up.
-     *
-     * @param string $message
-     * @param array  $context
-     *
-     * @return void
      */
-    public function alert($message, array $context = [])
+    public function alert(string|Stringable $message, array $context = []): void
     {
         $this->log(LogLevel::ALERT, $message, $context);
     }
@@ -264,13 +249,8 @@ class Log implements LoggerInterface
      * Critical conditions.
      *
      * Example: Application component unavailable, unexpected exception.
-     *
-     * @param string $message
-     * @param array  $context
-     *
-     * @return void
      */
-    public function critical($message, array $context = [])
+    public function critical(string|Stringable $message, array $context = []): void
     {
         $this->log(LogLevel::CRITICAL, $message, $context);
     }
@@ -278,13 +258,8 @@ class Log implements LoggerInterface
     /**
      * Runtime errors that do not require immediate action but should typically
      * be logged and monitored.
-     *
-     * @param string $message
-     * @param array  $context
-     *
-     * @return void
      */
-    public function error($message, array $context = [])
+    public function error(string|Stringable $message, array $context = []): void
     {
         $this->log(LogLevel::ERROR, $message, $context);
     }
@@ -294,26 +269,16 @@ class Log implements LoggerInterface
      *
      * Example: Use of deprecated APIs, poor use of an API, undesirable things
      * that are not necessarily wrong.
-     *
-     * @param string $message
-     * @param array  $context
-     *
-     * @return void
      */
-    public function warning($message, array $context = [])
+    public function warning(string|Stringable $message, array $context = []): void
     {
         $this->log(LogLevel::WARNING, $message, $context);
     }
 
     /**
      * Normal but significant events.
-     *
-     * @param string $message
-     * @param array  $context
-     *
-     * @return void
      */
-    public function notice($message, array $context = [])
+    public function notice(string|Stringable $message, array $context = []): void
     {
         $this->log(LogLevel::NOTICE, $message, $context);
     }
@@ -322,26 +287,16 @@ class Log implements LoggerInterface
      * Interesting events.
      *
      * Example: User logs in, SQL logs.
-     *
-     * @param string $message
-     * @param array  $context
-     *
-     * @return void
      */
-    public function info($message, array $context = [])
+    public function info(string|Stringable $message, array $context = []): void
     {
         $this->log(LogLevel::INFO, $message, $context);
     }
 
     /**
      * Detailed debug information.
-     *
-     * @param string $message
-     * @param array  $context
-     *
-     * @return void
      */
-    public function debug($message, array $context = [])
+    public function debug(string|Stringable $message, array $context = []): void
     {
         $this->log(LogLevel::DEBUG, $message, $context);
     }

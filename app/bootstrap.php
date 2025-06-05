@@ -1,6 +1,6 @@
 <?php
 /**
- * This file is part of the ForkBB <https://github.com/forkbb>.
+ * This file is part of the ForkBB <https://forkbb.ru, https://github.com/forkbb>.
  *
  * @copyright (c) Visman <mio.visman@yandex.ru, https://github.com/MioVisman>
  * @license   The MIT License (MIT)
@@ -41,13 +41,14 @@ define('FORK_GEN_MAN', 1);
 define('FORK_GEN_FEM', 2);
 
 define('FORK_JSON_ENCODE', \JSON_UNESCAPED_SLASHES | \JSON_UNESCAPED_UNICODE | \JSON_THROW_ON_ERROR);
+define('FORK_SFID', 2147483647);
+define('FORK_CLI', false);
 
 define('TRANSFORMER_COPY', 0);
 define('TRANSFORMER_MERGE', 1);
 define('TRANSFORMER_EXACT_COPY', 2);
 
-require __DIR__ . '/../vendor/autoload.php';
-
+$loader       = require __DIR__ . '/../vendor/autoload.php';
 $errorHandler = new ErrorHandler();
 
 if (\is_file(__DIR__ . '/config/install.php')) {
@@ -55,6 +56,8 @@ if (\is_file(__DIR__ . '/config/install.php')) {
 } else {
     throw new RuntimeException('Application is not configured');
 }
+
+$c->autoloader = $loader;
 
 $errorHandler->setContainer($c);
 
@@ -74,8 +77,7 @@ if (
 $c->FORK_REVISION = 68;
 $c->START         = $forkStart;
 $c->PUBLIC_URL    = $c->BASE_URL . $forkPublicPrefix;
-
-$controllers = ['Primary', 'Routing'];
+$controllers      = ['Primary', 'Routing'];
 
 foreach ($controllers as $controller) {
     $page = $c->{$controller};
@@ -89,14 +91,19 @@ if (null !== $page->onlinePos) {
     $c->Online->calc($page);
 }
 
-$tpl = $c->View->rendering($page);
-
-if (
-    $c->isInit('DB')
-    && $c->DB->inTransaction()
-) {
-    $c->DB->commit();
+if (null !== $page->nameTpl) {
+    $page->prepare();
 }
+
+if ($c->isInit('DB')) {
+    if ($c->DB->inTransaction()) {
+        $c->DB->commit();
+    }
+
+    $c->DB->disconnect();
+}
+
+$tpl = $c->View->rendering($page);
 
 if (
     null !== $tpl
@@ -106,4 +113,4 @@ if (
     $tpl   = \str_replace('<!-- debuginfo -->', $debug, $tpl);
 }
 
-exit($tpl);
+exit($tpl ?? 0);

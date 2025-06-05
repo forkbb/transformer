@@ -1,6 +1,6 @@
 <?php
 /**
- * This file is part of the ForkBB <https://github.com/forkbb>.
+ * This file is part of the ForkBB <https://forkbb.ru, https://github.com/forkbb>.
  *
  * @copyright (c) Visman <mio.visman@yandex.ru, https://github.com/MioVisman>
  * @license   The MIT License (MIT)
@@ -58,6 +58,7 @@ class Parser extends Parserus
             'hashtagLink',
             1 === $this->c->user->g_search ? $this->c->Router->link('Search', ['keywords' => 'HASHTAG']) : null
         );
+        $this->setAttr('user', $this->c->user);
     }
 
     /**
@@ -75,6 +76,7 @@ class Parser extends Parserus
                 )
                 : [];
             //$blackList = null;
+
         } else {
             $whiteList = 1 === $this->c->config->b_message_bbcode
                 ? (empty($this->c->config->a_bb_white_mes) && empty($this->c->config->a_bb_black_mes)
@@ -88,10 +90,10 @@ class Parser extends Parserus
         $blackList = 1 === $this->c->user->g_post_links ? null : ['email', 'url', 'img'];
 
         $this->setAttr('isSign', $isSignature)
-             ->setWhiteList($whiteList)
-             ->setBlackList($blackList)
-             ->parse($text, ['strict' => true])
-             ->stripEmptyTags(" \n\t\r\v", true);
+            ->setWhiteList($whiteList)
+            ->setBlackList($blackList)
+            ->parse($text, ['strict' => true])
+            ->stripEmptyTags(" \n\t\r\v", true);
 
         if (1 === $this->c->config->b_make_links) {
             $this->detectUrls();
@@ -106,7 +108,7 @@ class Parser extends Parserus
     /**
      * Преобразует бб-коды в html в сообщениях
      */
-    public function parseMessage(string $text = null, bool $hideSmilies = false): string
+    public function parseMessage(?string $text = null, bool $hideSmilies = false): string
     {
         // при null предполагается брать данные после prepare()
         if (null !== $text) {
@@ -114,9 +116,9 @@ class Parser extends Parserus
             $blackList = $this->c->config->a_bb_black_mes;
 
             $this->setAttr('isSign', false)
-                 ->setWhiteList($whiteList)
-                 ->setBlackList($blackList)
-                 ->parse($text);
+                ->setWhiteList($whiteList)
+                ->setBlackList($blackList)
+                ->parse($text);
         }
 
         if (
@@ -130,9 +132,37 @@ class Parser extends Parserus
     }
 
     /**
+     * Удаляет из сообщения $text теги $remove для цитирования
+     * $remove = ['имя тега' => 'текст замены', ...]
+     */
+    public function prepareToQuote(string $text, array $remove = []): string
+    {
+        $whiteList = 1 === $this->c->config->b_message_bbcode ? null : [];
+        $blackList = $this->c->config->a_bb_black_mes;
+
+        $this->setAttr('isSign', false)
+            ->setWhiteList($whiteList)
+            ->setBlackList($blackList)
+            ->parse($text);
+
+        if ($remove) {
+            $arr = $this->getIds(...(\array_keys($remove)));
+
+            if ($arr) {
+                foreach ($arr as $id => $name) {
+                    $this->data[$id]['text'] = $remove[$name];
+                    $this->data[$id]['tag'] = null;
+                }
+            }
+        }
+
+        return \preg_replace('%^(\x20*\n)+|(\n\x20*)+$%D', '', $this->getCode());
+    }
+
+    /**
      * Преобразует бб-коды в html в подписях пользователей
      */
-    public function parseSignature(string $text = null): string
+    public function parseSignature(?string $text = null): string
     {
         // при null предполагается брать данные после prepare()
         if (null !== $text) {
@@ -140,9 +170,9 @@ class Parser extends Parserus
             $blackList = $this->c->config->a_bb_black_sig;
 
             $this->setAttr('isSign', true)
-                 ->setWhiteList($whiteList)
-                 ->setBlackList($blackList)
-                 ->parse($text);
+                ->setWhiteList($whiteList)
+                ->setBlackList($blackList)
+                ->parse($text);
         }
 
         if (1 === $this->c->config->b_smilies_sig) {
@@ -161,7 +191,7 @@ class Parser extends Parserus
      * Устанавливает/возвращает флаг использования встроенных стилей в ббкодах
      * (обработчик ббкода должен вызвать этот метод со значением true)
      */
-    public function inlineStyle(bool $flag = null): bool
+    public function inlineStyle(?bool $flag = null): bool
     {
         $prev = $this->flagInlneStyle;
 
@@ -170,5 +200,24 @@ class Parser extends Parserus
         }
 
         return $prev;
+    }
+
+    /**
+     * Создает строку идентификатора на основе текста
+     */
+    public function createIdentifier(string $text): string
+    {
+        $text = \preg_replace('%^\s+|\s+$%uD', '', $text);
+        $text = \preg_replace('%[^\p{L}\p{N}-]+%u', '_', $text);
+
+        if (\mb_strlen($text, 'UTF-8') > 80) {
+            $text = \mb_substr($text, 0, 80, 'UTF-8');
+        }
+
+        $text  = \trim($text, '-_');
+        $first = \mb_substr($text, 0, 1, 'UTF-8');
+        $other = \mb_substr($text, 1, null, 'UTF-8');
+
+        return \mb_strtoupper($first, 'UTF-8') . $other;
     }
 }

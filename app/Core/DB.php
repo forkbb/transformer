@@ -1,6 +1,6 @@
 <?php
 /**
- * This file is part of the ForkBB <https://github.com/forkbb>.
+ * This file is part of the ForkBB <https://forkbb.ru, https://github.com/forkbb>.
  *
  * @copyright (c) Visman <mio.visman@yandex.ru, https://github.com/MioVisman>
  * @license   The MIT License (MIT)
@@ -21,7 +21,7 @@ class DB
     /**
      * Экземпляр PDO через который идет работа с бд
      */
-    protected PDO $pdo;
+    protected ?PDO $pdo;
 
     /**
      * Префикс для таблиц базы
@@ -64,6 +64,12 @@ class DB
      */
     protected float $delta = 0;
 
+    /**
+     * Метки ~ начала и ~ окончания жизни PDO
+     */
+    protected float $pdoStart = 0;
+    protected float $pdoEnd   = 0;
+
     protected array $pdoMethods = [
         'beginTransaction'      => true,
         'commit'                => true,
@@ -97,8 +103,8 @@ class DB
 
     public function __construct(
         string $dsn,
-        string $username = null,
-        #[SensitiveParameter] string $password = null,
+        ?string $username = null,
+        #[SensitiveParameter] ?string $password = null,
         array $options = [],
         string $prefix = ''
     ) {
@@ -112,10 +118,11 @@ class DB
 
         list($initSQLCommands, $initFunction) = $this->prepareOptions($options);
 
-        $start     = \microtime(true);
-        $this->pdo = new PDO($dsn, $username, $password, $options);
+        $this->pdoStart = $start = \microtime(true);
+        $this->pdo               = new PDO($dsn, $username, $password, $options);
 
         $this->saveQuery('PDO::__construct()', \microtime(true) - $start, false);
+
 
         if (\is_string($initSQLCommands)) {
             $this->exec($initSQLCommands);
@@ -150,6 +157,7 @@ class DB
 
         if (\is_file(__DIR__ . "/DB/{$typeU}Statement.php")) {
             $this->statementClass = "ForkBB\\Core\\DB\\{$typeU}Statement";
+
         } else {
             $this->statementClass = DBStatement::class;
         }
@@ -226,10 +234,12 @@ class DB
                     case 's':
                     case 'f':
                         $value = [1];
+
                         break;
                     default:
                         $value = [1];
                         $type  = 's';
+
                         break;
                 }
 
@@ -264,6 +274,7 @@ class DB
             && \array_key_exists(':' . $key, $params)
         ) {
             return $params[':' . $key];
+
         } elseif (\array_key_exists($key, $params)) {
             return $params[$key];
         }
@@ -285,6 +296,18 @@ class DB
     public function getQueries(): array
     {
         return $this->queries;
+    }
+
+    /**
+     * Метод возвращает приблизительное время жизни текущего экземпляра PDO
+     */
+    public function getLifeTime(): float
+    {
+        if (empty($this->pdoEnd)) {
+            $this->pdoEnd = \microtime(true);
+        }
+
+        return $this->pdoEnd - $this->pdoStart;
     }
 
     /**
@@ -375,6 +398,7 @@ class DB
             && \is_array($args[0])
         ) {
             $params = \array_shift($args);
+
         } else {
             $params = [];
         }
@@ -463,6 +487,7 @@ class DB
     {
         if (isset($this->pdoMethods[$name])) {
             return $this->pdo->$name(...$args);
+
         } elseif (empty($this->dbDrv)) {
             $this->dbDrv = new $this->dbDrvClass($this, $this->dbPrefix);
 
@@ -470,5 +495,14 @@ class DB
         }
 
         return $this->dbDrv->$name(...$args);
+    }
+
+    /**
+     * Уничтожает (или пытается?) объект PDO
+     */
+    public function disconnect(): void
+    {
+        $this->pdo    = null;
+        $this->pdoEnd = \microtime(true);
     }
 }

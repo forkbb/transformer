@@ -1,6 +1,6 @@
 <?php
 /**
- * This file is part of the ForkBB <https://github.com/forkbb>.
+ * This file is part of the ForkBB <https://forkbb.ru, https://github.com/forkbb>.
  *
  * @copyright (c) Visman <mio.visman@yandex.ru, https://github.com/MioVisman>
  * @license   The MIT License (MIT)
@@ -50,6 +50,7 @@ class Image extends File
 
         if (\is_string($this->data)) {
             $this->image = $this->imgDriver->readFromStr($this->data);
+
         } else {
             $this->image = $this->imgDriver->readFromPath($this->path);
         }
@@ -100,6 +101,7 @@ class Image extends File
         if (\is_array($info['extension'])) {
             if (\in_array($this->ext, $info['extension'], true)) {
                 $info['extension'] = $this->ext;
+
             } else {
                 $info['extension'] = \reset($info['extension']); // ???? выбор расширения?
             }
@@ -118,8 +120,10 @@ class Image extends File
         if (null === $result) {
             $result      = false;
             $this->error = 'File type not supported';
+
         } elseif (! $result) {
             $this->error = 'Error writing file';
+
         } else {
             \chmod($path, 0644);
         }

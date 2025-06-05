@@ -1,6 +1,6 @@
 <?php
 /**
- * This file is part of the ForkBB <https://github.com/forkbb>.
+ * This file is part of the ForkBB <https://forkbb.ru, https://github.com/forkbb>.
  *
  * @copyright (c) Visman <mio.visman@yandex.ru, https://github.com/MioVisman>
  * @license   The MIT License (MIT)
@@ -34,10 +34,18 @@ class Mail
         'Content-Type' => true,
     ];
     protected string $response;
+    protected ?array $domains = null;
 
-    public function __construct(string $host, string $user, #[SensitiveParameter] string $pass, int $ssl, string $eol, protected Container $c)
-    {
-        if ('' != $host) {
+    public function __construct(
+        string $host,
+        string $user,
+        #[SensitiveParameter] string $pass,
+        int $ssl,
+        string $eol,
+        protected string $pathToFile,
+        protected Container $c
+    ) {
+        if ('' !== $host) {
             $hp = \explode(':', $host, 2);
 
             if (
@@ -57,6 +65,7 @@ class Mail
                 'timeout' => 15,
             ];
             $this->EOL = "\r\n";
+
         } else {
             $this->EOL = \in_array($eol, ["\r\n", "\n", "\r"], true) ? $eol : \PHP_EOL;
         }
@@ -84,6 +93,7 @@ class Mail
         ) {
             if (1 === \strpos($domain, 'IPv6:')) {
                 $ip = \substr($domain, 6, -1);
+
             } else {
                 $ip = \substr($domain, 1, -1);
             }
@@ -91,6 +101,7 @@ class Mail
             if (false === \filter_var($ip, \FILTER_VALIDATE_IP)) {
                 return false;
             }
+
         } else {
             $ip = null;
 
@@ -103,14 +114,16 @@ class Mail
             return false;
         }
 
+        if (true === $strict) {
+            $this->domains ??= include $this->pathToFile;
 
-        if ($strict) {
             $level = $this->c->ErrorHandler->logOnly(\E_WARNING);
 
-            if ($ip) {
-                $mx = \checkdnsrr($ip, 'MX'); // ipv6 в пролёте :(
+            if (\is_string($ip)) {
+                $mx = $this->domains[$ip] ?? \checkdnsrr($ip, 'MX'); // ipv6 в пролёте :(
+
             } else {
-                $mx = \dns_get_record($domainASCII, \DNS_MX);
+                $mx = $this->domains[$domainASCII] ?? \dns_get_record($domainASCII, \DNS_MX);
             }
 
             $this->c->ErrorHandler->logOnly($level);
@@ -163,7 +176,7 @@ class Mail
     /**
      * Добавляет заголовок To
      */
-    public function addTo(string|array $email, string $name = null): Mail
+    public function addTo(string|array $email, string $name = ''): Mail
     {
         if (! \is_array($email)) {
             $email = \preg_split('%[,\n\r]%', $email, -1, \PREG_SPLIT_NO_EMPTY);
@@ -173,7 +186,7 @@ class Mail
             $cur = $this->valid(\trim((string) $cur), false, true);
 
             if (false !== $cur) {
-                $this->to[$cur] = $name ?? '';
+                $this->to[$cur] = $name;
             }
         }
 
@@ -183,17 +196,17 @@ class Mail
     /**
      * Задает заголовок To
      */
-    public function setTo(array|string $email, string $name = null): Mail
+    public function setTo(array|string $email, string $name = ''): Mail
     {
         $this->to = [];
 
-        return $this->addTo($email, $name ?? '');
+        return $this->addTo($email, $name);
     }
 
     /**
      * Задает заголовок From
      */
-    public function setFrom(string $email, string $name = null): Mail
+    public function setFrom(string $email, string $name = ''): Mail
     {
         $email = $this->valid($email, false, true);
 
@@ -208,7 +221,7 @@ class Mail
     /**
      * Задает заголовок Reply-To
      */
-    public function setReplyTo(string $email, string $name = null): Mail
+    public function setReplyTo(string $email, string $name = ''): Mail
     {
         $email = $this->valid($email, false, true);
 
@@ -229,6 +242,7 @@ class Mail
             || ! isset($name[0])
         ) {
             return $email;
+
         } else {
             $name = $this->encodeText($this->filterName($name));
 
@@ -243,6 +257,7 @@ class Mail
     {
         if (\preg_match('%[^\x20-\x7F]%', $str)) {
             return '=?UTF-8?B?' . \base64_encode($str) . '?=';
+
         } else {
             return $str;
         }
@@ -308,12 +323,14 @@ class Mail
 
             if (! isset($this->tplHeaders[$type])) {
                 throw new MailException("Unknown template header: {$type}.");
+
             } elseif ('' == $value) {
                 throw new MailException("Empty template header: {$type}.");
             }
 
             if ('Subject' === $type) {
                 $this->setSubject($value);
+
             } else {
                 $this->headers[$type] = \preg_replace('%[\x00-\x1F]%', '', $value);
             }
@@ -340,8 +357,24 @@ class Mail
     /**
      * Отправляет письмо
      */
-    public function send(): bool
+    public function send(int|array|null $data = null): bool
     {
+        $priority = 5;
+
+        if (\is_int($data)) {
+            $priority = $data;
+
+        } elseif (
+            true === FORK_CLI
+            && ! empty($data)
+        ) {
+            $this->from          = $data['from'];
+            $this->to            = $data['to'];
+            $this->headers       = $data['headers'];
+            $this->message       = $data['message'];
+            $this->maxRecipients = $data['max'];
+        }
+
         if (empty($this->to)) {
             throw new MailException('No recipient for the email.');
         }
@@ -360,8 +393,26 @@ class Mail
 
         $this->headers['Date'] = \gmdate('r');
 
+        if (
+            true !== FORK_CLI
+            && 1 === $this->c->config->b_email_use_cron
+        ) {
+            $data = [
+                'from'    => $this->from,
+                'to'      => $this->to,
+                'headers' => $this->headers,
+                'message' => $this->message,
+                'max'     => $this->maxRecipients,
+            ];
+
+            if (true === $this->c->MailQueue->push($data, $priority)) {
+                return true;
+            }
+        }
+
         if (\is_array($this->smtp)) {
             return $this->smtp();
+
         } else {
             return $this->mail();
         }
@@ -391,6 +442,7 @@ class Mail
                     return false;
                 }
             }
+
         } else {
             $to        = $this->from;
             $arrArrBcc = \array_chunk($this->to, $this->maxRecipients, true);
@@ -476,8 +528,9 @@ class Mail
                     . $message,
                     ['250']
                 );
-                $this->smtpData('NOOP', ['250']);
+//                $this->smtpData('NOOP', ['250']);
             }
+
         } else {
             $arrRecipients = \array_chunk($this->to, $this->maxRecipients, true);
 
@@ -496,7 +549,7 @@ class Mail
                     . $message,
                     ['250']
                 );
-                $this->smtpData('NOOP', ['250']);
+//                $this->smtpData('NOOP', ['250']);
             }
         }
 
@@ -582,6 +635,7 @@ class Mail
                                 $this->auth = 1;
 
                                 return;
+
                             } elseif (isset($methods['LOGIN'])) {
                                 $this->smtpData('AUTH LOGIN', ['334']);
                                 $this->smtpData(\base64_encode($this->smtp['user']), ['334']);
@@ -590,6 +644,7 @@ class Mail
                                 $this->auth = 1;
 
                                 return;
+
                             } elseif (isset($methods['PLAIN'])) {
                                 $plain = \base64_encode("\0{$this->smtp['user']}\0{$this->smtp['pass']}");
 
@@ -598,6 +653,7 @@ class Mail
                                 $this->auth = 1;
 
                                 return;
+
                             } else {
                                 throw new SmtpException("Unknown AUTH methods: \"{$extn['AUTH']}\".");
                             }
@@ -609,6 +665,7 @@ class Mail
                         ) {
                             if (\function_exists('\\stream_socket_enable_crypto')) {
                                 throw new SmtpException("The server \"{$this->smtp['host']}:{$this->smtp['port']}\" requires STARTTLS.");
+
                             } else {
                                 throw new SmtpException("The server \"{$this->smtp['host']}:{$this->smtp['port']}\" requires STARTTLS, but \stream_socket_enable_crypto() was not found.");
                             }
@@ -667,6 +724,7 @@ class Mail
                 && ' ' === $get[3]
             ) {
                 $responseCode = \substr($get, 0, 3);
+
                 break;
             }
         }
@@ -699,6 +757,7 @@ class Mail
 
             if (\filter_var($ip, \FILTER_VALIDATE_IP, \FILTER_FLAG_IPV4)) {
                 $name = "[{$ip}]";
+
             } elseif (\filter_var($ip, \FILTER_VALIDATE_IP, \FILTER_FLAG_IPV6)) {
                 $name = "[IPv6:{$ip}]";
             }

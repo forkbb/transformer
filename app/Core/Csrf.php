@@ -1,6 +1,6 @@
 <?php
 /**
- * This file is part of the ForkBB <https://github.com/forkbb>.
+ * This file is part of the ForkBB <https://forkbb.ru, https://github.com/forkbb>.
  *
  * @copyright (c) Visman <mio.visman@yandex.ru, https://github.com/MioVisman>
  * @license   The MIT License (MIT)
@@ -38,7 +38,7 @@ class Csrf
     /**
      * Возвращает csrf токен
      */
-    public function create(string $marker, array $args = [], int|string $time = null, string $type = 's'): string
+    public function create(string $marker, array $args = [], int|string $time = 0, string $type = 's'): string
     {
         $marker = $this->argsToStr($marker, $args);
         $time   = $time ?: \time();
@@ -61,7 +61,7 @@ class Csrf
     /**
      * Возвращает хэш
      */
-    public function createHash(string $marker, array $args = [], int|string $time = null): string
+    public function createHash(string $marker, array $args = [], int|string $time = 0): string
     {
         $marker = $this->argsToStr($marker, $args, ['hash']);
         $time   = $time ?: \time() + $this->hashExpiration;
@@ -92,7 +92,7 @@ class Csrf
     /**
      * Проверка токена/хэша
      */
-    public function verify($token, string $marker, array $args = [], int $lifetime = null): bool
+    public function verify($token, string $marker, array $args = [], ?int $lifetime = null): bool
     {
         $this->error = 'Bad token';
         $now         = \time();
@@ -109,6 +109,7 @@ class Csrf
                     if ($matches[2] + ($lifetime ?? self::TOKEN_LIFETIME) < $now) {
                         // просрочен
                         $this->error = 'Expired token';
+
                     } elseif (
                         $matches[2] + 0 <= $now
                         && \hash_equals($this->create($marker, $args, $matches[2], $matches[1]), $token)
@@ -123,6 +124,7 @@ class Csrf
                     if ($matches[2] + 0 < $now) {
                         // просрочен
                         $this->error = 'Expired token';
+
                     } elseif (\hash_equals($this->createHash($marker, $args, $matches[2]), $token)) {
                         $this->error = null;
                         $result      = true;

@@ -1,6 +1,6 @@
 <?php
 /**
- * This file is part of the ForkBB <https://github.com/forkbb>.
+ * This file is part of the ForkBB <https://forkbb.ru, https://github.com/forkbb>.
  *
  * @copyright (c) Visman <mio.visman@yandex.ru, https://github.com/MioVisman>
  * @license   The MIT License (MIT)
@@ -58,22 +58,24 @@ return [
         'common' => [
             'X-Content-Type-Options'  => 'nosniff',
             'X-Frame-Options'         => 'DENY',
-            'X-XSS-Protection'        => '1; mode=block',
             'Referrer-Policy'         => 'strict-origin-when-cross-origin',
-            'Content-Security-Policy' => 'default-src \'self\';img-src *;object-src \'none\';frame-ancestors \'none\';base-uri \'self\';form-action \'self\'',
+            'Content-Security-Policy' => 'default-src \'self\';img-src *;object-src \'none\';frame-ancestors \'none\';base-uri \'none\';form-action \'self\'',
             'Feature-Policy'          => 'accelerometer \'none\';ambient-light-sensor \'none\';autoplay \'none\';battery \'none\';camera \'none\';document-domain \'self\';fullscreen \'self\';geolocation \'none\';gyroscope \'none\';magnetometer \'none\';microphone \'none\';midi \'none\';payment \'none\';picture-in-picture \'none\';sync-xhr \'self\';usb \'none\'',
         ],
         'secure' => [
             'X-Content-Type-Options'  => 'nosniff',
             'X-Frame-Options'         => 'DENY',
-            'X-XSS-Protection'        => '1; mode=block',
             'Referrer-Policy'         => 'strict-origin-when-cross-origin',
-            'Content-Security-Policy' => 'default-src \'self\';object-src \'none\';frame-ancestors \'none\';base-uri \'self\';form-action \'self\'',
+            'Content-Security-Policy' => 'default-src \'self\';object-src \'none\';frame-ancestors \'none\';base-uri \'none\';form-action \'self\'',
             'Feature-Policy'          => 'accelerometer \'none\';ambient-light-sensor \'none\';autoplay \'none\';battery \'none\';camera \'none\';document-domain \'self\';fullscreen \'self\';geolocation \'none\';gyroscope \'none\';magnetometer \'none\';microphone \'none\';midi \'none\';payment \'none\';picture-in-picture \'none\';sync-xhr \'self\';usb \'none\'',
         ],
     ],
-    'DATE_FORMATS' => ['Y-m-d', 'd M Y', 'Y-m-d', 'Y-d-m', 'd-m-Y', 'm-d-Y', 'M j Y', 'jS M Y'],
-    'TIME_FORMATS' => ['H:i:s', 'H:i', 'H:i:s', 'H:i', 'g:i:s a', 'g:i a'],
+    'FRIENDLY_URL' => [
+        'lowercase' => true,
+        'translit'  => true, // 'Any-Latin;Latin-ASCII;',
+        'WtoHyphen' => true,
+        'file'      => 'translit.default.php',
+    ],
 
     'shared' => [
         '%DIR_ROOT%'   => \realpath(__DIR__ . '/../..'),
@@ -84,6 +86,7 @@ return [
         '%DIR_LANG%'   => '%DIR_APP%/lang',
         '%DIR_LOG%'    => '%DIR_APP%/log',
         '%DIR_VIEWS%'  => '%DIR_APP%/templates',
+        '%DIR_EXT%'    => '%DIR_ROOT%/ext',
 
         'DB' => [
             'class' => \ForkBB\Core\DB::class,
@@ -104,9 +107,13 @@ return [
         ],
         'Validator' => \ForkBB\Core\Validator::class,
         'View' => [
-            'class'     => \ForkBB\Core\View::class,
-            'cache_dir' => '%DIR_CACHE%',
-            'views_dir' => '%DIR_VIEWS%',
+            'class'  => \ForkBB\Core\View::class,
+            'config' => [
+                'cache'      => '%DIR_CACHE%',
+                'defaultDir' => '%DIR_VIEWS%/_default',
+                'userDir'    => '%DIR_VIEWS%/_user',
+                'preFile'    => '%DIR_CONFIG%/ext/pre.php',
+            ],
         ],
         'Router' => [
             'class'    => \ForkBB\Core\Router::class,
@@ -121,6 +128,11 @@ return [
             'pass'  => '%config.o_smtp_pass%',
             'ssl'   => '%config.b_smtp_ssl%',
             'eol'   => '%EOL%',
+            'file'  => '%DIR_CONFIG%/domains.default.php',
+        ],
+        'MailQueue' => [
+            'class' => \ForkBB\Core\Mail\FileQueue::class,
+            'path'  => '%DIR_CACHE%/mail',
         ],
         'Func'      => \ForkBB\Core\Func::class,
         'Test'      => [
@@ -161,6 +173,8 @@ return [
         'forums'        => '@ForumManager:init',
         'topics'        => \ForkBB\Models\Topic\Topics::class,
         'posts'         => \ForkBB\Models\Post\Posts::class,
+        'drafts'        => \ForkBB\Models\Draft\Drafts::class,
+        'premod'        => \ForkBB\Models\Draft\Premod::class,
         'polls'         => \ForkBB\Models\Poll\Polls::class,
         'reports'       => \ForkBB\Models\Report\Reports::class,
         'user'          => '@users:current',
@@ -182,6 +196,8 @@ return [
         ],
         'providerUser'  => \ForkBB\Models\ProviderUser\ProviderUser::class,
         'attachments'   => \ForkBB\Models\Attachment\Attachments::class,
+        'extensions'    => '@ExtensionManager:init',
+        'reactions'     => \ForkBB\Models\Reaction\Reactions::class,
 
         'Csrf' => [
             'class'   => \ForkBB\Core\Csrf::class,
@@ -288,6 +304,10 @@ return [
         'Posts/userStat'       => \ForkBB\Models\Post\UserStat::class,
         'Posts/view'           => \ForkBB\Models\Post\View::class,
 
+        'Drafts/load'   => \ForkBB\Models\Draft\Load::class,
+        'Drafts/save'   => \ForkBB\Models\Draft\Save::class,
+        'Drafts/delete' => \ForkBB\Models\Draft\Delete::class,
+
         'Reports/load' => \ForkBB\Models\Report\Load::class,
         'Reports/save' => \ForkBB\Models\Report\Save::class,
 
@@ -334,6 +354,8 @@ return [
         'Users/updateLastVisit'    => \ForkBB\Models\User\UpdateLastVisit::class,
         'Users/updateLoginIpCache' => \ForkBB\Models\User\UpdateLoginIpCache::class,
         'Users/usersNumber'        => \ForkBB\Models\User\UsersNumber::class,
+
+        'Reactions/delete' => \ForkBB\Models\Reaction\Delete::class,
     ],
     'multiple'  => [
         'CtrlPrimary' => \ForkBB\Controllers\Primary::class,
@@ -360,6 +382,7 @@ return [
         'Ban'                => \ForkBB\Models\Pages\Ban::class,
         'Debug'              => \ForkBB\Models\Pages\Debug::class,
         'Misc'               => \ForkBB\Models\Pages\Misc::class,
+        'Sitemap'            => \ForkBB\Models\Pages\Sitemap::class,
         'Moderate'           => \ForkBB\Models\Pages\Moderate::class,
         'Report'             => \ForkBB\Models\Pages\Report::class,
         'Email'              => \ForkBB\Models\Pages\Email::class,
@@ -382,6 +405,10 @@ return [
         'ProfileOAuth'       => \ForkBB\Models\Pages\Profile\OAuth::class,
         'ProfileDelete'      => \ForkBB\Models\Pages\Profile\Delete::class,
         'ProfileSearch'      => \ForkBB\Models\Pages\Profile\Search::class,
+        'ProfileAboutMe'     => \ForkBB\Models\Pages\Profile\AboutMe::class,
+        'Reaction'           => \ForkBB\Models\Pages\Reaction::class,
+        'Drafts'             => \ForkBB\Models\Pages\Drafts::class,
+        'Premoderation'      => \ForkBB\Models\Pages\Premoderation::class,
         'AdminIndex'         => \ForkBB\Models\Pages\Admin\Index::class,
         'AdminStatistics'    => \ForkBB\Models\Pages\Admin\Statistics::class,
         'AdminOptions'       => \ForkBB\Models\Pages\Admin\Options::class,
@@ -406,6 +433,7 @@ return [
         'AdminLogs'          => \ForkBB\Models\Pages\Admin\Logs::class,
         'AdminUploads'       => \ForkBB\Models\Pages\Admin\Uploads::class,
         'AdminAntispam'      => \ForkBB\Models\Pages\Admin\Antispam::class,
+        'AdminExtensions'    => \ForkBB\Models\Pages\Admin\Extensions::class,
 
         'AdminListModel'    => \ForkBB\Models\AdminList\AdminList::class,
         'BanListModel'      => \ForkBB\Models\BanList\BanList::class,
@@ -414,12 +442,15 @@ return [
         'CensorshipModel'   => \ForkBB\Models\Censorship\Censorship::class,
         'ConfigModel'       => \ForkBB\Models\Config\Config::class,
         'DBMapModel'        => \ForkBB\Models\DBMap\DBMap::class,
+        'ExtensionModel'    => \ForkBB\Models\Extension\Extension::class,
+        'ExtensionManager'  => \ForkBB\Models\Extension\Extensions::class,
         'ForumModel'        => \ForkBB\Models\Forum\Forum::class,
         'ForumManager'      => \ForkBB\Models\Forum\Forums::class,
         'GroupModel'        => \ForkBB\Models\Group\Group::class,
         'GroupManager'      => \ForkBB\Models\Group\Groups::class,
         'PollModel'         => \ForkBB\Models\Poll\Poll::class,
         'PostModel'         => \ForkBB\Models\Post\Post::class,
+        'DraftModel'        => \ForkBB\Models\Draft\Draft::class,
         'PPostModel'        => \ForkBB\Models\PM\PPost::class,
         'PTopicModel'       => \ForkBB\Models\PM\PTopic::class,
         'ReportModel'       => \ForkBB\Models\Report\Report::class,

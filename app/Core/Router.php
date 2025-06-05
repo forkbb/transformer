@@ -1,6 +1,6 @@
 <?php
 /**
- * This file is part of the ForkBB <https://github.com/forkbb>.
+ * This file is part of the ForkBB <https://forkbb.ru, https://github.com/forkbb>.
  *
  * @copyright (c) Visman <mio.visman@yandex.ru, https://github.com/MioVisman>
  * @license   The MIT License (MIT)
@@ -37,7 +37,10 @@ class Router
     /**
      * Список методов доступа
      */
-    protected array $methods = [];
+    protected array $methods = [
+        'GET'  => 1,
+        'HEAD' => 1,
+    ];
 
     /**
      * Массив для построения ссылок
@@ -97,9 +100,11 @@ class Router
         ) {
             if (isset($route[3])) {
                 return $this->link($route[3], $route[2]);
+
             } else {
                 return $url;
             }
+
         } else {
             return $this->link($defMarker, $defArgs);
         }
@@ -108,7 +113,7 @@ class Router
     /**
      * Возвращает ссылку на основании маркера
      */
-    public function link(string $marker = null, array $args = []): string
+    public function link(?string $marker = null, array $args = []): string
     {
         $result = $this->baseUrl;
         $anchor = isset($args['#']) ? '#' . \rawurlencode($args['#']) : '';
@@ -116,9 +121,11 @@ class Router
         // маркер пустой
         if (null === $marker) {
             return $result . "/{$anchor}";
+
         // такой ссылки нет
         } elseif (! isset($this->links[$marker])) {
             return $result . '/';
+
         // ссылка статична
         } elseif (\is_string($data = $this->links[$marker])) {
             return $result . $data . $anchor;
@@ -132,6 +139,7 @@ class Router
         ) {
             $args['hash'] = $this->csrf->createHash($marker, $args);
         }
+
         if (
             isset($names['token'])
             && ! isset($args['token'])
@@ -149,7 +157,9 @@ class Router
                     'page' !== $name
                     || 1 !== $args[$name]
                 ) {
-                    $data['{' . $name . '}'] = \rawurlencode(\str_replace($this->subSearch, $this->subRepl, (string) $args[$name]));
+                    $data['{' . $name . '}'] = \is_integer($args[$name])
+                        ? (string) $args[$name]
+                        : \rawurlencode(\str_replace($this->subSearch, $this->subRepl, (string) $args[$name]));
 
                     continue;
                 }
@@ -158,6 +168,7 @@ class Router
             // значения нет, но оно обязательно
             if ($need) {
                 return $result . '/';
+
             // значение не обязательно
             } else {
 //                $link = preg_replace('%\[[^\[\]{}]*{' . preg_quote($name, '%') . '}[^\[\]{}]*\]%', '', $link);
@@ -168,6 +179,7 @@ class Router
                 );
             }
         }
+
         $link = \str_replace(['[', ']'], '', $link);
 
         return $result . \strtr($link, $data) . $anchor;
@@ -178,15 +190,7 @@ class Router
      */
     public function route(string $method, string $uri): array
     {
-        $head = 'HEAD' == $method;
-
-        if (
-            empty($this->methods[$method])
-            && (
-                ! $head
-                || empty($this->methods['GET'])
-            )
-        ) {
+        if (empty($this->methods[$method])) {
             return [
                 self::NOT_IMPLEMENTED,
             ];
@@ -195,6 +199,7 @@ class Router
         if ($this->length) {
             if (0 === \strpos($uri, $this->prefix)) {
                 $uri = \substr($uri, $this->length);
+
             } else {
                 return [
                     self::NOT_FOUND,
@@ -202,6 +207,7 @@ class Router
             }
         }
 
+        $head    = 'HEAD' == $method;
         $allowed = [];
 
         if (isset($this->statical[$uri])) {
@@ -214,6 +220,7 @@ class Router
                     [],
                     $marker,
                 ];
+
             } elseif (
                 $head
                 && isset($this->statical[$uri]['GET'])
@@ -226,13 +233,20 @@ class Router
                     [],
                     $marker,
                 ];
+
             } else {
                 $allowed = \array_keys($this->statical[$uri]);
             }
         }
 
         $pos  = \strpos($uri, '/', 1);
-        $base = false === $pos ? $uri : \substr($uri, 0, $pos);
+
+        if (false === $pos) {
+            $base = isset($this->dynamic[$uri]) ? $uri : '/';
+
+        } else {
+            $base = \substr($uri, 0, $pos);
+        }
 
         if (isset($this->dynamic[$base])) {
             foreach ($this->dynamic[$base] as $pattern => $data) {
@@ -242,11 +256,13 @@ class Router
 
                 if (isset($data[$method])) {
                     list($handler, $keys, $marker) = $data[$method];
+
                 } elseif (
                     $head
                     && isset($data['GET'])
                 ) {
                     list($handler, $keys, $marker) = $data['GET'];
+
                 } else {
                     $allowed += \array_keys($data);
 
@@ -254,6 +270,7 @@ class Router
                 }
 
                 $args = [];
+
                 foreach ($keys as $key => $type) {
                     if (isset($matches[$key][0])) {
                         $args[$key] = \str_replace($this->subRepl, $this->subSearch, $matches[$key]);
@@ -261,8 +278,10 @@ class Router
                         switch ($type) {
                             case 'i':
                                 $args[$key] = (int) $args[$key]; // ???? добавить проверку типа?
+
                                 break;
                         }
+
                     } else {
                         $args[$key] = null;
                     }
@@ -276,10 +295,12 @@ class Router
                 ];
             }
         }
+
         if (empty($allowed)) {
             return [
                 self::NOT_FOUND,
             ];
+
         } else {
             return [
                 self::METHOD_NOT_ALLOWED,
@@ -291,12 +312,13 @@ class Router
     /**
      * Метод добавляет маршрут
      */
-    public function add(array|string $method, string $route, string $handler, string $marker = null): void
+    public function add(array|string $method, string $route, string $handler, ?string $marker = null): void
     {
         if (\is_array($method)) {
             foreach ($method as $m) {
                 $this->methods[$m] = 1;
             }
+
         } else {
             $this->methods[$method] = 1;
         }
@@ -310,28 +332,35 @@ class Router
         ) {
             $anchor = \substr($route, $pos);
             $route  = \substr($route, 0, $pos);
+
         } else {
             $anchor = '';
         }
 
         if (false === \strpbrk($route, '{}[]')) {
             $data = null;
+
             if (\is_array($method)) {
                 foreach ($method as $m) {
                     $this->statical[$route][$m] = [$handler, $marker];
                 }
+
             } else {
                 $this->statical[$route][$method] = [$handler, $marker];
             }
+
         } else {
             $data = $this->parse($route);
+
             if (null === $data) {
                 throw new InvalidArgumentException("Wrong route: {$route}");
             }
+
             if (\is_array($method)) {
                 foreach ($method as $m) {
                     $this->dynamic[$data[0]][$data[1]][$m] = [$handler, $data[2], $marker];
                 }
+
             } else {
                 $this->dynamic[$data[0]][$data[1]][$method] = [$handler, $data[2], $marker];
             }
@@ -340,6 +369,7 @@ class Router
         if ($marker) {
             if ($data) {
                 $this->links[$marker] = [$data[3] . $anchor, $data[4]];
+
             } else {
                 $this->links[$marker] = $link;
             }
@@ -355,10 +385,12 @@ class Router
 
         $s = 1;
         $base = $parts[0];
+
         if ('/' === $parts[0]) {
             $s     = 2;
             $base .= $parts[1];
         }
+
         if (
             isset($parts[$s])
             && '/' !== $parts[$s]
@@ -386,16 +418,19 @@ class Router
                         if (! \preg_match('%^([a-zA-Z][^:|]*+)(?:\|([a-z]))?(?::(.+))?$%D', $buffer, $data)) {
                             return null;
                         }
+
                         $pattern          .= '(?P<' . $data[1] . '>' . ($data[3] ?? '[^/\x00-\x1f]+') . ')';
                         $args[$data[1]]    = empty($data[2]) ? 's' : $data[2];
                         $temp             .= '{' . $data[1] . '}';
                         $var               = false;
                         $buffer            = '';
                         $argsReq[$data[1]] = $req;
+
                         break;
                     default:
                         $buffer .= $part;
                 }
+
             } elseif ($first) {
                 switch ($part) {
                     case '/':
@@ -403,10 +438,12 @@ class Router
                         $first    = false;
                         $pattern .= \preg_quote($part, '%');
                         $temp    .= $part;
+
                         break;
                     default:
                         return null;
                 }
+
             } else {
                 switch ($part) {
                     case '[':
@@ -415,18 +452,23 @@ class Router
                         $first    = true;
                         $req      = false;
                         $temp    .= '[';
+
                         break;
                     case ']':
                         --$s;
+
                         if ($s < 0) {
                             return null;
                         }
+
                         $pattern .= ')?';
                         $req      = true;
                         $temp    .= ']';
+
                         break;
                     case '{':
                         $var = true;
+
                         break;
                     case '}':
                         return null;
@@ -436,12 +478,14 @@ class Router
                 }
             }
         }
+
         if (
             $var
             || $s
         ) {
             return null;
         }
+
         $pattern .= '$%D';
 
         return [
