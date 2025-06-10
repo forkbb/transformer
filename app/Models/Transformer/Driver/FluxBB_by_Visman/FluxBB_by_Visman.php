@@ -43,7 +43,7 @@ class FluxBB_by_Visman extends AbstractDriver
         'warnings',
     ];
     protected string $min = '51';
-    protected string $max = '86';
+    protected string $max = '87';
 
     public function getType(): string
     {
@@ -380,6 +380,7 @@ class FluxBB_by_Visman extends AbstractDriver
         return [
             'id_old'          => $id,
             'forum_name'      => (string) $vars['forum_name'],
+            'friendly_name'   => '',
             'forum_desc'      => (string) $vars['forum_desc'],
             'redirect_url'    => (string) $vars['redirect_url'],
             'moderators'      => (string) $vars['moderators'],
@@ -1397,6 +1398,29 @@ class FluxBB_by_Visman extends AbstractDriver
             ['b_ant_use_js'            , 0],
             ['s_meta_desc'             , ''],
             ['a_og_image'              , \json_encode([], FORK_JSON_ENCODE)],
+            ['b_reaction'              , 0],
+            ['a_reaction_types'        , \json_encode(
+                [
+                    1  => ['like', true],
+                    2  => ['fire', true],
+                    3  => ['lol', true],
+                    4  => ['smile', true],
+                    5  => ['frown', true],
+                    6  => ['sad', true],
+                    7  => ['cry', true],
+                    8  => ['angry', true],
+                    9  => ['dislike', true],
+                    10 => ['meh', true],
+                    11 => ['shock', true],
+                ], FORK_JSON_ENCODE
+            )],
+            ['b_show_user_reaction'    , 0],
+            ['b_default_lang_auto'     , 1],
+            ['b_email_use_cron'        , 0],
+            ['i_censoring_count'       , (int) ($old['o_censoring_count'] ?? 0)],
+            ['b_hide_guest_email_fld'  , 0],
+            ['b_regs_disable_email'    , 0],
+            ['b_premoderation'         , 0],
         ];
 
         return true;

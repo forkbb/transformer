@@ -357,6 +357,43 @@ class Transformer extends Model
         ];
         $this->c->DB->createTable('::config', $schema);
 
+        // drafts
+        $schema = [
+            'FIELDS' => [
+                'id'           => ['SERIAL', false],
+                'poster_id'    => ['INT(10) UNSIGNED', false, 0],
+                'topic_id'     => ['INT(10) UNSIGNED', false, 0],
+                'forum_id'     => ['INT(10) UNSIGNED', false, 0],
+                'poster_ip'    => ['VARCHAR(45)', false, ''],
+                'subject'      => ['VARCHAR(255)', false, ''],
+                'message'      => ['MEDIUMTEXT', false],
+                'hide_smilies' => ['TINYINT(1)', false, 0],
+                'pre_mod'      => ['TINYINT(1)', false, 0],
+                'user_agent'   => ['VARCHAR(255)', false, ''],
+                'form_data'    => ['MEDIUMTEXT', false],
+            ],
+            'PRIMARY KEY' => ['id'],
+            'INDEXES' => [
+                'poster_id_idx' => ['poster_id'],
+                'multi1_idx'    => ['topic_id', 'poster_id'],
+                'multi2_idx'    => ['forum_id', 'poster_id'],
+                'pre_mod_idx'   => ['pre_mod'],
+            ],
+            'ENGINE' => $this->DBEngine,
+        ];
+        $this->c->DB->createTable('::drafts', $schema);
+
+        // extensions
+        $schema = [
+            'FIELDS' => [
+                'ext_name'   => ['VARCHAR(190)', false, ''],
+                'ext_status' => ['TINYINT', false, 0],
+                'ext_data'   => ['TEXT', false],
+            ],
+            'PRIMARY KEY' => ['ext_name'],
+        ];
+        $this->c->DB->createTable('::extensions', $schema);
+
         // forum_perms
         $schema = [
             'FIELDS' => [
@@ -374,23 +411,28 @@ class Transformer extends Model
         // forums
         $schema = [
             'FIELDS' => [
-                'id'              => ['SERIAL', false],
-                'forum_name'      => ['VARCHAR(80)', false, 'New forum'],
-                'forum_desc'      => ['TEXT', false],
-                'redirect_url'    => ['VARCHAR(255)', false, ''],
-                'moderators'      => ['TEXT', false],
-                'num_topics'      => ['MEDIUMINT(8) UNSIGNED', false, 0],
-                'num_posts'       => ['MEDIUMINT(8) UNSIGNED', false, 0],
-                'last_post'       => ['INT(10) UNSIGNED', false, 0],
-                'last_post_id'    => ['INT(10) UNSIGNED', false, 0],
-                'last_poster'     => ['VARCHAR(190)', false, ''],
-                'last_poster_id'  => ['INT(10) UNSIGNED', false, 0],
-                'last_topic'      => ['VARCHAR(255)', false, ''],
-                'sort_by'         => ['TINYINT(1)', false, 0],
-                'disp_position'   => ['INT(10)', false, 0],
-                'cat_id'          => ['INT(10) UNSIGNED', false, 0],
-                'no_sum_mess'     => ['TINYINT(1)', false, 0],
-                'parent_forum_id' => ['INT(10) UNSIGNED', false, 0],
+                'id'                => ['SERIAL', false],
+                'forum_name'        => ['VARCHAR(80)', false, 'New forum'],
+                'friendly_name'     => ['VARCHAR(80)', false, ''],
+                'forum_desc'        => ['TEXT', false],
+                'redirect_url'      => ['VARCHAR(255)', false, ''],
+                'moderators'        => ['TEXT', false],
+                'num_topics'        => ['INT(10) UNSIGNED', false, 0],
+                'num_posts'         => ['INT(10) UNSIGNED', false, 0],
+                'last_post'         => ['INT(10) UNSIGNED', false, 0],
+                'last_post_id'      => ['INT(10) UNSIGNED', false, 0],
+                'last_poster'       => ['VARCHAR(190)', false, ''],
+                'last_poster_id'    => ['INT(10) UNSIGNED', false, 0],
+                'last_topic'        => ['VARCHAR(255)', false, ''],
+                'sort_by'           => ['TINYINT(1)', false, 0],
+                'disp_position'     => ['INT(10)', false, 0],
+                'cat_id'            => ['INT(10) UNSIGNED', false, 0],
+                'no_sum_mess'       => ['TINYINT(1)', false, 0],
+                'parent_forum_id'   => ['INT(10) UNSIGNED', false, 0],
+                'use_solution'      => ['TINYINT(1)', false, 0],
+                'premoderation'     => ['TINYINT', false, 0],
+                'use_custom_fields' => ['TINYINT(1)', false, 0],
+                'custom_fields'     => ['TEXT', true],
             ],
             'PRIMARY KEY' => ['id'],
             'ENGINE' => $this->c->DBEngine,
@@ -436,6 +478,9 @@ class Transformer extends Model
                 'g_up_ext'               => ['VARCHAR(255)', false, 'webp,jpg,jpeg,png,gif,avif'],
                 'g_up_size_kb'           => ['INT(10) UNSIGNED', false, 0],
                 'g_up_limit_mb'          => ['INT(10) UNSIGNED', false, 0],
+                'g_use_reaction'         => ['TINYINT(1)', false, 1],
+                'g_use_about_me'         => ['TINYINT(1)', false, 1],
+                'g_premoderation'        => ['TINYINT(1)', false, 0],
             ],
             'PRIMARY KEY' => ['g_id'],
             'ENGINE' => $this->c->DBEngine,
@@ -452,6 +497,7 @@ class Transformer extends Model
                 'last_search' => ['INT(10) UNSIGNED', false, 0],
                 'o_position'  => ['VARCHAR(100)', false, ''],
                 'o_name'      => ['VARCHAR(190)', false, ''],
+                'o_misc'      => ['INT(10) UNSIGNED', false, 0],
             ],
             'UNIQUE KEYS' => [
                 'user_id_ident_idx' => ['user_id', 'ident'],
@@ -480,6 +526,7 @@ class Transformer extends Model
                 'editor_id'    => ['INT(10) UNSIGNED', false, 0],
                 'user_agent'   => ['VARCHAR(255)', false, ''],
                 'topic_id'     => ['INT(10) UNSIGNED', false, 0],
+                'reactions'    => ['VARCHAR(255)', false, ''],
             ],
             'PRIMARY KEY' => ['id'],
             'INDEXES' => [
@@ -490,6 +537,23 @@ class Transformer extends Model
             'ENGINE' => $this->c->DBEngine,
         ];
         $this->c->DB->createTable('::posts', $schema);
+
+        // reactions
+        $schema = [
+            'FIELDS' => [
+                'pid'      => ['INT(10) UNSIGNED', false, 0],
+                'uid'      => ['INT(10) UNSIGNED', false, 0],
+                'reaction' => ['TINYINT UNSIGNED', false, 0],
+            ],
+            'UNIQUE KEYS' => [
+                'pid_uid_idx' => ['pid', 'uid'],
+            ],
+            'INDEXES' => [
+                'uid_idx' => ['uid'],
+            ],
+            'ENGINE' => $this->DBEngine,
+        ];
+        $this->c->DB->createTable('::reactions', $schema);
 
         // reports
         $schema = [
@@ -591,8 +655,8 @@ class Transformer extends Model
                 'last_post_id'   => ['INT(10) UNSIGNED', false, 0],
                 'last_poster'    => ['VARCHAR(190)', false, ''],
                 'last_poster_id' => ['INT(10) UNSIGNED', false, 0],
-                'num_views'      => ['MEDIUMINT(8) UNSIGNED', false, 0],
-                'num_replies'    => ['MEDIUMINT(8) UNSIGNED', false, 0],
+                'num_views'      => ['INT(10) UNSIGNED', false, 0],
+                'num_replies'    => ['INT(10) UNSIGNED', false, 0],
                 'closed'         => ['TINYINT(1)', false, 0],
                 'sticky'         => ['TINYINT(1)', false, 0],
                 'stick_fp'       => ['TINYINT(1)', false, 0],
@@ -601,6 +665,14 @@ class Transformer extends Model
                 'poll_type'      => ['SMALLINT UNSIGNED', false, 0],
                 'poll_time'      => ['INT(10) UNSIGNED', false, 0],
                 'poll_term'      => ['TINYINT', false, 0],
+                'solution'       => ['INT(10) UNSIGNED', false, 0],
+                'solution_wa'    => ['VARCHAR(190)', false, ''],
+                'solution_wa_id' => ['INT(10) UNSIGNED', false, 0],
+                'solution_time'  => ['INT(10) UNSIGNED', false, 0],
+                'toc'            => ['TEXT', true],
+                'cf_level'       => ['TINYINT UNSIGNED', false, 0],
+                'cf_data'        => ['TEXT', true],
+                'premoderation'  => ['TINYINT', false, 0],
             ],
             'PRIMARY KEY' => ['id'],
             'INDEXES' => [
@@ -713,9 +785,11 @@ class Transformer extends Model
                 'time_format'      => ['TINYINT(1)', false, 0],
                 'date_format'      => ['TINYINT(1)', false, 0],
                 'language'         => ['VARCHAR(25)', false, ''],
+                'locale'           => ['VARCHAR(20)', false, 'en'],
                 'style'            => ['VARCHAR(25)', false, ''],
                 'num_posts'        => ['INT(10) UNSIGNED', false, 0],
                 'num_topics'       => ['INT(10) UNSIGNED', false, 0],
+                'num_drafts'       => ['INT(10) UNSIGNED', false, 0],
                 'last_post'        => ['INT(10) UNSIGNED', false, 0],
                 'last_search'      => ['INT(10) UNSIGNED', false, 0],
                 'last_email_sent'  => ['INT(10) UNSIGNED', false, 0],
@@ -740,6 +814,9 @@ class Transformer extends Model
                 'login_ip_cache'   => ['VARCHAR(255)', false, ''],
                 'u_up_size_mb'     => ['INT(10) UNSIGNED', false, 0],
                 'unfollowed_f'     => ['VARCHAR(255)', false, ''],
+                'show_reaction'    => ['TINYINT(1)', false, 1],
+                'page_scroll'      => ['TINYINT', false, 0],
+                'about_me_id'      => ['INT(10) UNSIGNED', false, 0],
             ],
             'PRIMARY KEY' => ['id'],
             'UNIQUE KEYS' => [
@@ -972,6 +1049,7 @@ class Transformer extends Model
                 'g_pm'                   => 0,
                 'g_sig_length'           => 0,
                 'g_sig_lines'            => 0,
+                'g_use_reaction'         => 0,
             ],
             [
                 'g_id'                   => FORK_GROUP_MEMBER,
@@ -1044,98 +1122,7 @@ class Transformer extends Model
 
 /*
         $forkConfig = [
-            'i_fork_revision'         => $this->c->FORK_REVISION,
-            'o_board_title'           => $v->title,
-            'o_board_desc'            => $v->descr,
-            'o_default_timezone'      => \date_default_timezone_get(),
-            'i_timeout_visit'         => 3600,
-            'i_timeout_online'        => 900,
-            'i_redirect_delay'        => 1,
-            'b_show_user_info'        => 1,
-            'b_show_post_count'       => 1,
-            'b_smilies'               => 1,
-            'b_smilies_sig'           => 1,
-            'b_make_links'            => 1,
-            'o_default_lang'          => $v->defaultlang,
-            'o_default_style'         => $v->defaultstyle,
-            'i_default_user_group'    => FORK_GROUP_NEW_MEMBER,
-            'i_topic_review'          => 15,
-            'i_disp_topics_default'   => 30,
-            'i_disp_posts_default'    => 25,
-            'i_disp_users'            => 50,
-            'b_quickpost'             => 1,
-            'b_users_online'          => 1,
-            'b_censoring'             => 0,
-            'b_show_dot'              => 0,
-            'b_topic_views'           => 1,
-            'o_additional_navlinks'   => '',
-            'i_report_method'         => 0,
-            'b_regs_report'           => 0,
-            'i_default_email_setting' => 2,
-            'o_mailing_list'          => $v->email,
-            'b_avatars'               => \filter_var(\ini_get('file_uploads'), \FILTER_VALIDATE_BOOL) ? 1 : 0,
-            'o_avatars_dir'           => '/img/avatars',
-            'i_avatars_width'         => 160,
-            'i_avatars_height'        => 160,
-            'i_avatars_size'          => 51200,
-            'i_avatars_quality'       => 75,
-            'o_admin_email'           => $v->email,
-            'o_webmaster_email'       => $v->email,
-            'b_forum_subscriptions'   => 1,
-            'b_topic_subscriptions'   => 1,
-            'i_email_max_recipients'  => 1,
-            'o_smtp_host'             => '',
-            'o_smtp_user'             => '',
-            'o_smtp_pass'             => '',
-            'b_smtp_ssl'              => 0,
-            'b_regs_allow'            => 1,
-            'b_regs_verify'           => 1,
-            'b_oauth_allow'           => 0,
-            'b_announcement'          => 0,
-            'o_announcement_message'  => __('Announcement '),
-            'b_rules'                 => 0,
-            'o_rules_message'         => __('Rules '),
-            'b_maintenance'           => 0,
-            'o_maintenance_message'   => __('Maintenance message '),
-            'i_feed_type'             => 2,
-            'i_feed_ttl'              => 0,
-            'b_message_bbcode'        => 1,
-            'b_message_all_caps'      => 0,
-            'b_subject_all_caps'      => 0,
-            'b_sig_all_caps'          => 0,
-            'b_sig_bbcode'            => 1,
-            'b_force_guest_email'     => 1,
-            'b_pm'                    => 0,
-            'b_poll_enabled'          => 0,
-            'i_poll_max_questions'    => 3,
-            'i_poll_max_fields'       => 20,
-            'i_poll_time'             => 60,
-            'i_poll_term'             => 3,
-            'b_poll_guest'            => 0,
-            'a_max_users'             => \json_encode(['number' => 1, 'time' => \time()], FORK_JSON_ENCODE),
-            'a_bb_white_mes'          => \json_encode([], FORK_JSON_ENCODE),
-            'a_bb_white_sig'          => \json_encode(['b', 'i', 'u', 'color', 'colour', 'email', 'url'], FORK_JSON_ENCODE),
-            'a_bb_black_mes'          => \json_encode([], FORK_JSON_ENCODE),
-            'a_bb_black_sig'          => \json_encode([], FORK_JSON_ENCODE),
-            'a_guest_set'             => \json_encode(
-                [
-                    'show_smilies' => 1,
-                    'show_sig'     => 1,
-                    'show_avatars' => 1,
-                    'show_img'     => 1,
-                    'show_img_sig' => 1,
-                ], FORK_JSON_ENCODE
-            ),
-            's_РЕГИСТР'               => 'Ok',
-            'b_upload'                => 0,
-            'i_upload_img_quality'    => 75,
-            'i_upload_img_axis_limit' => 1920,
-            's_upload_img_outf'       => 'webp,jpg,png,gif',
-            'i_search_ttl'            => 900,
-            'b_ant_hidden_ch'         => 1,
-            'b_ant_use_js'            => 0,
-            's_meta_desc'             => '',
-            'a_og_image'              => \json_encode([], FORK_JSON_ENCODE),
+            ...
         ];
 
         foreach ($forkConfig as $name => $value) {

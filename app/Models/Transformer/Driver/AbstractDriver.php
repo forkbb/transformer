@@ -392,9 +392,9 @@ abstract class AbstractDriver extends Model
                 FROM ::forums AS f
                 WHERE f.id_old=forum_id
             )
-            WHERE id_old>0';
+            WHERE id_old>0 AND forum_id!=?i:fid';
 
-        if (false === $db->exec($query)) {
+        if (false === $db->exec($query, [':fid' => FORK_SFID])) {
             return false;
         }
 
@@ -596,6 +596,30 @@ abstract class AbstractDriver extends Model
                 WHERE p.id=::topics.last_post_id
             )
             WHERE id_old>0 AND last_post_id>0';
+
+        if (false === $db->exec($query)) {
+            return false;
+        }
+
+        $query = 'UPDATE ::topics
+            SET solution=(
+                SELECT p.id
+                FROM ::posts AS p
+                WHERE p.id_old=::topics.solution
+            )
+            WHERE id_old>0 AND solution>0';
+
+        if (false === $db->exec($query)) {
+            return false;
+        }
+
+        $query = 'UPDATE ::topics
+            SET solution_wa_id=(
+                SELECT u.id
+                FROM ::users AS u
+                WHERE u.id_old=::topics.solution_wa_id
+            )
+            WHERE id_old>0 AND solution_wa_id>0';
 
         if (false === $db->exec($query)) {
             return false;
@@ -1185,6 +1209,138 @@ abstract class AbstractDriver extends Model
     }
 
     public function attachments_pos_pmEnd(DB $db): bool
+    {
+        return true;
+    }
+
+    /*************************************************************************/
+    /* extensions                                                            */
+    /*************************************************************************/
+    //???? стоит ли их переносить?
+
+    /*************************************************************************/
+    /* reactions                                                             */
+    /*************************************************************************/
+    public function reactionsPre(DB $db, int $id): ?bool
+    {
+        return null;
+    }
+
+    public function reactionsGet(int &$id): ?array
+    {
+        return null;
+    }
+
+    public function reactionsSet(DB $db, array $vars): bool
+    {
+        return false !== $db->exec($this->insertQuery, $vars);
+    }
+
+    public function reactionsEnd(DB $db): bool
+    {
+        return true;
+    }
+
+    /*************************************************************************/
+    /* other_again                                                           */
+    /*************************************************************************/
+    public function other_againPre(DB $db, int $id): ?bool
+    {
+        return null;
+    }
+
+    public function other_againGet(int &$id): ?array
+    {
+        return null;
+    }
+
+    public function other_againSet(DB $db, array $vars): bool
+    {
+        return true;
+    }
+
+    public function other_againEnd(DB $db): bool
+    {
+        $query = 'UPDATE ::users
+            SET about_me_id=(
+                SELECT p.id
+                FROM ::posts AS p
+                WHERE p.id_old=::users.about_me_id
+            )
+            WHERE id_old>0 AND about_me_id>0';
+
+        if (false === $db->exec($query)) {
+            return false;
+        }
+
+        // start
+        $query = 'SELECT conf_value
+            FROM ::config
+            WHERE conf_name=\'i_about_me_topic_id\'';
+
+        $tid = (int) $db->query($query)->fetchColumn();
+
+        if ($tid > 0) {
+            return true;
+        }
+
+        $query = 'SELECT id, subject
+            FROM ::topics
+            WHERE forum_id=?i:fid
+            ORDER BY id';
+
+        $stmt = $db->query($query, [":fid" => FORK_SFID]);
+
+        $inConfig = 'INSERT INTO ::config (conf_name, conf_value)
+            VALUES (\'i_about_me_topic_id\', ?i:id)';
+
+        while ($vars = $stmt->fetch()) {
+            if ('[system] About me' == $vars['subject']) {
+                $this->exec($inConfig, ['id' => $vars['id']]);
+
+                return true;
+            }
+        }
+
+        $now     = \time();
+        $ip      = \filter_var($_SERVER['REMOTE_ADDR'], \FILTER_VALIDATE_IP) ?: '0.0.0.0';
+        $topicId = 1;
+
+        $this->c->DB->exec('INSERT INTO ::posts (poster, poster_id, poster_ip, message, posted, topic_id) VALUES(?s, ?i, ?s, ?s, ?i, ?i)', ['ForkBB', 0, $ip, 'Start', $now, $topicId]);
+
+        $postId = (int) $this->c->DB->lastInsertId();
+
+        $this->c->DB->exec('INSERT INTO ::topics (poster, poster_id, subject, posted, first_post_id, last_post, last_post_id, last_poster, last_poster_id, forum_id) VALUES(?s, ?i, ?s, ?i, ?i, ?i, ?i, ?s, ?i, ?i)', ['ForkBB', 0, '[system] About me', $now, $postId, $now, $postId, 'ForkBB', 0, FORK_SFID]);
+
+        $topicId = (int) $this->c->DB->lastInsertId();
+
+        $this->c->DB->exec('UPDATE ::posts SET topic_id=?i WHERE id=?i', [$topicId, $postId]);
+
+        $this->exec($inConfig, ['id' => $topicId]);
+        //end
+
+        return true;
+    }
+
+    /*************************************************************************/
+    /* drafts                                                                */
+    /*************************************************************************/
+    public function reactionsPre(DB $db, int $id): ?bool
+    {
+        return null;
+    }
+
+    public function reactionsGet(int &$id): ?array
+    {
+        return null;
+    }
+
+    public function reactionsSet(DB $db, array $vars): bool
+    {
+        return false !== $db->exec($this->insertQuery, $vars);
+    }
+
+    public function reactionsEnd(DB $db): bool
     {
         return true;
     }

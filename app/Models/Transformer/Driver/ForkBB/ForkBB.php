@@ -22,6 +22,8 @@ class ForkBB extends AbstractDriver
         'categories',
         'censoring',
         'config',
+        'drafts',
+        'extensions',
         'forums',
         'forum_perms',
         'forum_subscriptions',
@@ -35,6 +37,7 @@ class ForkBB extends AbstractDriver
         'poll',
         'poll_voted',
         'posts',
+        'reactions',
         'reports',
         'search_cache',
         'search_matches',
@@ -45,8 +48,8 @@ class ForkBB extends AbstractDriver
         'users',
         'warnings',
     ];
-    protected string $min = '42';
-    protected string $max = '68';
+    protected string $min = '88';
+    protected string $max = '88';
 
     public function getType(): string
     {
@@ -1586,4 +1589,133 @@ class ForkBB extends AbstractDriver
 
         return $vars;
     }
+
+    /*************************************************************************/
+    /* reactions                                                             */
+    /*************************************************************************/
+    public function reactionsPre(DB $db, int $id): bool
+    {
+        $vars = [
+            ':id'    => $id,
+            ':limit' => $this->c->LIMIT,
+        ];
+        $query = 'SELECT pid
+            FROM ::reactions
+            WHERE pid>=?i:id
+            ORDER BY pid
+            LIMIT ?i:limit';
+
+        $ids = $db->query($query, $vars)->fetchAll(PDO::FETCH_COLUMN);
+
+        if (empty($ids)) {
+            $max = $id;
+        } else {
+            $max = \array_pop($ids);
+        }
+
+        $this->insertQuery = 'INSERT INTO ::reactions (pid, uid, reaction)
+            SELECT (
+                SELECT id
+                FROM ::posts
+                WHERE id_old=?i:pid
+            ), (
+                SELECT id
+                FROM ::users
+                WHERE id_old=?i:uid
+            ), ?i:reaction';
+
+        $vars = [
+            ':id'  => $id,
+            ':max' => $max,
+        ];
+        $query = 'SELECT *
+            FROM ::reactions
+            WHERE pid>=?i:id AND pid<=?i:max
+            ORDER BY pid';
+
+        $this->stmt = $db->query($query, $vars);
+
+        return false !== $this->stmt;
+    }
+
+    public function reactionsGet(int &$id): ?array
+    {
+        $vars = $this->stmt->fetch();
+
+        if (false === $vars) {
+            $this->stmt->closeCursor();
+            $this->stmt = null;
+
+            return null;
+        }
+
+        $id = (int) $vars['pid'];
+
+        return $vars;
+    }
+
+    /*************************************************************************/
+    /* drafts                                                                */
+    /*************************************************************************/
+    public function draftsPre(DB $db, int $id): bool
+    {
+        $this->insertQuery = 'INSERT INTO ::drafts (poster_id, topic_id, forum_id, poster_ip, subject, message, hide_smilies, pre_mod, user_agent, form_data)
+            SELECT (
+                COALESCE(
+                    (
+                        SELECT id
+                        FROM ::users AS u
+                        WHERE ::drafts.poster_id>0 AND u.id_old=::drafts.poster_id
+                    ),
+                    0
+                )
+            ), (
+                COALESCE(
+                    (
+                        SELECT id
+                        FROM ::topics AS t
+                        WHERE ::drafts.topic_id>0 AND t.id_old=::drafts.topic_id
+                    ),
+                    0
+                )
+            ), (
+                COALESCE(
+                    (
+                        SELECT id
+                        FROM ::forums AS f
+                        WHERE ::drafts.forum_id>0 AND f.id_old=::drafts.forum_id
+                    ),
+                    0
+                )
+            ), ?s:poster_ip, ?s:subject, ?s:message, ?i:hide_smilies, ?i:pre_mod, ?s:user_agent, ?s:form_data';
+
+        $vars = [
+            ':id'    => $id,
+            ':limit' => $this->c->LIMIT,
+        ];
+        $query = 'SELECT *
+            FROM ::drafts
+            WHERE id>=?i:id
+            ORDER BY id
+            LIMIT ?i:limit';
+
+        $this->stmt = $db->query($query, $vars);
+
+        return false !== $this->stmt;
+    }
+
+    public function draftsGet(int &$id): ?array
+    {
+        $vars = $this->stmt->fetch();
+
+        if (false === $vars) {
+            $this->stmt->closeCursor();
+            $this->stmt = null;
+
+            return null;
+        }
+
+        return $vars;
+    }
+
 }
