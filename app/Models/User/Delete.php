@@ -1,6 +1,6 @@
 <?php
 /**
- * This file is part of the ForkBB <https://github.com/forkbb>.
+ * This file is part of the ForkBB <https://forkbb.ru, https://github.com/forkbb>.
  *
  * @copyright (c) Visman <mio.visman@yandex.ru, https://github.com/MioVisman>
  * @license   The MIT License (MIT)
@@ -21,29 +21,41 @@ class Delete extends Action
     /**
      * Удаляет пользователя(ей)
      */
-    public function delete(User ...$users): void
+    public function delete(User ...$args): void
     {
-        if (empty($users)) {
+        if (empty($args)) {
             throw new InvalidArgumentException('No arguments, expected User(s)');
         }
 
-        $ids        = [];
+        $pids       = [];
+        $users      = [];
         $moderators = [];
         $resetAdmin = false;
         $resetBan   = false;
 
-        foreach ($users as $user) {
+        foreach ($args as $user) {
             if ($user->isGuest) {
                 throw new RuntimeException('Guest can not be deleted');
             }
+
             if ($user->isAdmMod) {
                 $moderators[$user->id] = $user;
             }
+
             if ($user->isAdmin) {
                 $resetAdmin = true;
             }
 
-            $ids[] = $user->id;
+            $users[$user->id] = $user;
+
+            // обо мне
+            if ($user->about_me_id > 0) {
+                $pids[$user->about_me_id] = $user->about_me_id;
+            }
+        }
+
+        if (\count($users) > 1) {
+            \ksort($users, \SORT_NUMERIC);
         }
 
         if ($moderators) {
@@ -65,9 +77,22 @@ class Delete extends Action
 
         //???? предупреждения
 
+        // обо мне
+        if (! empty($pids)) {
+            $forum = $this->c->forums->create([
+                'id'              => FORK_SFID,
+                'parent_forum_id' => 0,
+            ]);
+
+            $this->c->forums->set(FORK_SFID, $forum);
+
+            $posts = $this->c->posts->loadByIds($pids);
+
+            $this->c->posts->delete(...$posts);
+        }
+
         foreach ($users as $user) {
             $this->c->Online->delete($user);
-
             $user->deleteAvatar();
 
             // имя и email удаляемого пользователя в бан
@@ -85,7 +110,7 @@ class Delete extends Action
         }
 
         $vars = [
-            ':users' => $ids,
+            ':users' => \array_keys($users),
         ];
         $query = 'DELETE
             FROM ::users

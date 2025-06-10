@@ -1,6 +1,6 @@
 <?php
 /**
- * This file is part of the ForkBB <https://github.com/forkbb>.
+ * This file is part of the ForkBB <https://forkbb.ru, https://github.com/forkbb>.
  *
  * @copyright (c) Visman <mio.visman@yandex.ru, https://github.com/MioVisman>
  * @license   The MIT License (MIT)
@@ -11,6 +11,7 @@ declare(strict_types=1);
 namespace ForkBB\Models;
 
 use ForkBB\Core\Container;
+use ForkBB\Models\Manager;
 
 class Model
 {
@@ -33,6 +34,11 @@ class Model
      * Зависимости свойств
      */
     protected array $zDepend = [];
+
+    /**
+     * Текущий Manager для модели
+     */
+    protected Manager $manager;
 
     public function __construct(protected Container $c)
     {
@@ -79,6 +85,7 @@ class Model
 
         if (\method_exists($this, $method = 'set' . $name)) {
             $this->$method($value);
+
         } else {
             $this->zAttrs[$name] = $value;
         }
@@ -116,10 +123,13 @@ class Model
     {
         if (\array_key_exists($name, $this->zAttrsCalc)) {
             return $this->zAttrsCalc[$name];
+
         } elseif (\method_exists($this, $method = 'get' . $name)) {
             return $this->zAttrsCalc[$name] = $this->$method();
+
         } elseif (\array_key_exists($name, $this->zAttrs)) {
             return $this->zAttrs[$name];
+
         } elseif (
             \str_starts_with($name, 'censor')
             && isset($this->zAttrs[$root = \lcfirst(\substr($name, 6))])
@@ -131,6 +141,7 @@ class Model
 
         if ($x > 90 || $x < 65) {
             return null;
+
         } else {
             $key = $this->cKey . '/' . \lcfirst($name);
 
@@ -164,5 +175,15 @@ class Model
         $key = $this->cKey . '/' . $name;
 
         return $this->c->$key->setModel($this)->$name(...$args);
+    }
+
+    /**
+     * Объявление менеджера
+     */
+    public function setManager(Manager $manager): Model
+    {
+        $this->manager = $manager;
+
+        return $this;
     }
 }

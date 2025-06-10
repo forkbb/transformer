@@ -1,6 +1,6 @@
 <?php
 /**
- * This file is part of the ForkBB <https://github.com/forkbb>.
+ * This file is part of the ForkBB <https://forkbb.ru, https://github.com/forkbb>.
  *
  * @copyright (c) Visman <mio.visman@yandex.ru, https://github.com/MioVisman>
  * @license   The MIT License (MIT)
@@ -72,7 +72,8 @@ class User extends DataModel
      */
     protected function getisAdmMod(): bool
     {
-        return $this->isAdmin || 1 === $this->g_moderator;
+        return $this->isAdmin
+            || 1 === $this->g_moderator;
     }
 
     /**
@@ -80,7 +81,8 @@ class User extends DataModel
      */
     protected function getisBanByName(): bool
     {
-        return ! $this->isAdmin && $this->c->bans->banFromName($this->username) > 0;
+        return ! $this->isAdmin
+            && $this->c->bans->banFromName($this->username) > 0;
     }
 
     /**
@@ -128,6 +130,7 @@ class User extends DataModel
 
         if (isset($langs[$lang])) {
             return $lang;
+
         } else {
             return \reset($langs) ?: 'en';
         }
@@ -151,6 +154,7 @@ class User extends DataModel
 
         if (isset($styles[$style])) {
             return $style;
+
         } else {
             return \reset($styles) ?: 'ForkBB';
         }
@@ -163,12 +167,13 @@ class User extends DataModel
     {
         if ($this->isGuest) {
             return null;
+
         } else {
             return $this->c->Router->link(
                 'User',
                 [
                     'id'   => $this->id,
-                    'name' => $this->username,
+                    'name' => $this->c->Func->friendly($this->username),
                 ]
             );
         }
@@ -218,14 +223,19 @@ class User extends DataModel
     {
         if ($this->isGuest) {
             return __('Guest');
+
         } elseif ($this->isBanByName) {
             return __('Banned');
+
         } elseif ('' != $this->title) {
             return $this->censorTitle;
+
         } elseif ('' != $this->g_user_title) {
             return $this->censorG_user_title;
+
         } elseif ($this->isUnverified) {
             return __('Unverified');
+
         } else {
             return __('Member');
         }
@@ -278,7 +288,7 @@ class User extends DataModel
      */
     protected function getdisp_posts(): int
     {
-        $attr = $this->getModelAttr('disp_topics');
+        $attr = $this->getModelAttr('disp_posts');
 
         if ($attr < 10) {
             $attr = $this->c->config->i_disp_posts_default;
@@ -311,6 +321,7 @@ class User extends DataModel
                     'pid' => $post->id,
                 ]
             );
+
         } else {
             return null;
         }
@@ -351,9 +362,9 @@ class User extends DataModel
      */
     public function fLog(): string
     {
-        return $this->isGuest
-            ? "id:{$this->id} gid:{$this->group_id} guest"
-            : "id:{$this->id} gid:{$this->group_id} name:{$this->username}";
+        $name = $this->isGuest ? ($this->isBot ? 'bot' : 'guest') : "name:{$this->username}";
+
+        return "id:{$this->id} gid:{$this->group_id} {$name}";
     }
 
     /**
@@ -380,8 +391,10 @@ class User extends DataModel
             || empty($this->email)
         ) {
             return '';
+
         } elseif (2 === $this->email_setting) {
             return null;
+
         } elseif (
             0 === $this->email_setting
             || (
@@ -390,6 +403,7 @@ class User extends DataModel
             )
         ) {
             return 'mailto:' . $this->censorEmail;
+
         } elseif (
             1 === $this->email_setting
             && (
@@ -400,6 +414,7 @@ class User extends DataModel
             $this->c->Csrf->setHashExpiration(3600);
 
             return $this->c->Router->link('SendEmail', ['id' => $this->id]);
+
         } else {
             return '';
         }

@@ -1,6 +1,6 @@
 <?php
 /**
- * This file is part of the ForkBB <https://github.com/forkbb>.
+ * This file is part of the ForkBB <https://forkbb.ru, https://github.com/forkbb>.
  *
  * @copyright (c) Visman <mio.visman@yandex.ru, https://github.com/MioVisman>
  * @license   The MIT License (MIT)
@@ -38,8 +38,10 @@ class Users extends Manager
     {
         if ($this->isset($id)) {
             return $this->get($id);
+
         } else {
             $user = $this->Load->load($id);
+
             $this->set($id, $user);
 
             return $user;
@@ -51,19 +53,29 @@ class Users extends Manager
      */
     public function loadByIds(array $ids): array
     {
-        $result = [];
-        $data   = [];
+        $result   = [];
+        $data     = [];
+        $preGuest = false;
 
         foreach ($ids as $id) {
             if (0 === $id) { // это гость, его грузим через guest()
+                $preGuest = true;
+
                 continue;
+
             } elseif ($this->isset($id)) {
                 $result[$id] = $this->get($id);
+
             } else {
                 $result[$id] = null;
                 $data[]      = $id;
+
                 $this->set($id, null);
             }
+        }
+
+        if (true === $preGuest) {
+            $this->guest();
         }
 
         if (empty($data)) {
@@ -73,6 +85,7 @@ class Users extends Manager
         foreach ($this->Load->loadByIds($data) as $user) {
             if ($user instanceof User) {
                 $result[$user->id] = $user;
+
                 $this->set($user->id, $user);
             }
         }
@@ -90,10 +103,13 @@ class Users extends Manager
 
             if ($loadedUser instanceof User) {
                 return $loadedUser;
+
             } else {
                 $this->set($user->id, $user);
+
                 return $user;
             }
+
         } else {
             return null;
         }
@@ -106,6 +122,7 @@ class Users extends Manager
     {
         if ('' === $name) {
             return null;
+
         } else {
             return $this->returnUser($this->Load->loadByName($name, $caseInsencytive));
         }
@@ -118,6 +135,7 @@ class Users extends Manager
     {
         if ('' === $email) {
             return null;
+
         } else {
             return $this->returnUser($this->Load->loadByEmail($email));
         }
@@ -137,6 +155,7 @@ class Users extends Manager
     public function insert(User $user): int
     {
         $id = $this->Save->insert($user);
+
         $this->set($id, $user);
 
         return $id;
@@ -160,8 +179,8 @@ class Users extends Manager
         $set = [
             'id'          => 0,
             'group_id'    => FORK_GROUP_GUEST,
-            'time_format' => 0,
-            'date_format' => 0,
+            'time_format' => 1,
+            'date_format' => 1,
         ] + $attrs;
 
         if (isset($this->c->config->a_guest_set)) {

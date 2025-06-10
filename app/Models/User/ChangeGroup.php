@@ -1,6 +1,6 @@
 <?php
 /**
- * This file is part of the ForkBB <https://github.com/forkbb>.
+ * This file is part of the ForkBB <https://forkbb.ru, https://github.com/forkbb>.
  *
  * @copyright (c) Visman <mio.visman@yandex.ru, https://github.com/MioVisman>
  * @license   The MIT License (MIT)
@@ -48,14 +48,16 @@ class ChangeGroup extends Action
             ) {
                 $moderators[$user->id] = $user;
             }
+
             if ($user->isAdmin) {
                 $adminPresent = true;
             }
+
             if ($user->isUnverified) {
                 $unverPresent = true;
             }
 
-            $ids[] = $user->id;
+            $ids[]            = $user->id;
             $user->__group_id = $newGroupId;
         }
 
@@ -68,6 +70,10 @@ class ChangeGroup extends Action
                     $this->c->forums->update($forum);
                 }
             }
+        }
+
+        if (\count($ids) > 1) {
+            \sort($ids, \SORT_NUMERIC);
         }
 
         $vars = [
@@ -83,6 +89,7 @@ class ChangeGroup extends Action
         if ($adminPresent) {
             $this->c->admins->reset();
         }
+
         if ($unverPresent) {
             $this->c->stats->reset();
         }

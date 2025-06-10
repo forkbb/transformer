@@ -1,6 +1,6 @@
 <?php
 /**
- * This file is part of the ForkBB <https://github.com/forkbb>.
+ * This file is part of the ForkBB <https://forkbb.ru, https://github.com/forkbb>.
  *
  * @copyright (c) Visman <mio.visman@yandex.ru, https://github.com/MioVisman>
  * @license   The MIT License (MIT)
@@ -29,21 +29,28 @@ class UpdateCountTopics extends Action
                 && ! $arg->isGuest
             ) {
                 $ids[$arg->id] = true;
+
             } elseif (
                 \is_int($arg)
                 && $arg > 0
             ) {
                 $ids[$arg] = true;
+
             } else {
                 throw new InvalidArgumentException('Expected user or positive integer id');
             }
         }
 
         if (empty($ids)) {
-            $where = '::users.id > 0';
+            $where = '';
             $vars  = [];
+
         } else {
-            $where = '::users.id IN (?ai:ids)';
+            if (\count($ids) > 1) {
+                \ksort($ids, \SORT_NUMERIC);
+            }
+
+            $where = ' WHERE ::users.id IN (?ai:ids)';
             $vars  = [
                 ':ids' => \array_keys($ids),
             ];
@@ -54,8 +61,7 @@ class UpdateCountTopics extends Action
                 SELECT COUNT(t.id)
                 FROM ::topics AS t
                 WHERE t.poster_id=::users.id AND t.moved_to=0
-            ), 0)
-            WHERE ' . $where;
+            ), 0)' . $where;
 
         $this->c->DB->exec($query, $vars);
     }

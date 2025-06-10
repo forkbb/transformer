@@ -80,6 +80,12 @@ return [
         'b_smtp_ssl'       => 0,
         'o_avatars_dir'    => '/img/avatars',
     ],
+    'FRIENDLY_URL' => [
+        'lowercase' => true,
+        'translit'  => true, // 'Any-Latin;Latin-ASCII;',
+        'WtoHyphen' => true,
+        'file'      => 'translit.default.php',
+    ],
 
     'DRIVERS' => [
         'ForkBB'           => 'ForkBBDriver',
@@ -121,11 +127,14 @@ return [
         29 => 'attachments',
         30 => 'attachments_pos',
         31 => 'attachments_pos_pm',
+        32 => 'reactions',
+        33 => 'drafts',
 //      'online',
 //      'search_cache',
 //      'search_matches',
 //      'search_words',
-        32 => 'schema re-modification',
+        34 => 'other_again',
+        35 => 'schema re-modification',
     ],
 
     'shared' => [
@@ -165,9 +174,13 @@ return [
         ],
         'Validator' => \ForkBB\Core\Validator::class,
         'View' => [
-            'class'     => \ForkBB\Core\View::class,
-            'cache_dir' => '%DIR_CACHE%',
-            'views_dir' => '%DIR_VIEWS%',
+            'class'  => \ForkBB\Core\View::class,
+            'config' => [
+                'cache'      => '%DIR_CACHE%',
+                'defaultDir' => '%DIR_VIEWS%/_default',
+                'userDir'    => '%DIR_VIEWS%/_user',
+                'preFile'    => '%DIR_CONFIG%/ext/pre.php',
+            ],
         ],
         'Router' => [
             'class'    => \ForkBB\Core\Router::class,
@@ -182,13 +195,23 @@ return [
             'pass'  => '%config.o_smtp_pass%',
             'ssl'   => '%config.b_smtp_ssl%',
             'eol'   => '%EOL%',
+            'file'  => '%DIR_CONFIG%/domains.default.php',
         ],
-        'Func' => \ForkBB\Core\Func::class,
+        'MailQueue' => [
+            'class' => \ForkBB\Core\Mail\FileQueue::class,
+            'path'  => '%DIR_CACHE%/mail',
+        ],
+        'Func'      => \ForkBB\Core\Func::class,
+        'Test'      => [
+            'class'  => \ForkBB\Core\Test::class,
+            'config' => '%DIR_CONFIG%/test.default.php',
+        ],
         'NormEmail' => \MioVisman\NormEmail\NormEmail::class,
         'Csrf' => [
-            'class'  => \ForkBB\Core\Csrf::class,
-            'Secury' => '@Secury',
-            'key'    => '%user.password%%user.ip%%user.id%%BASE_URL%',
+            'class'   => \ForkBB\Core\Csrf::class,
+            'Secury'  => '@Secury',
+            'key'     => '%user.password%%user.ip%%user.id%%BASE_URL%',
+            'extSalt' => '',
         ],
         'HTMLCleaner' => [
             'calss'  => \ForkBB\Core\HTMLCleaner::class,

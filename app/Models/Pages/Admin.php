@@ -1,6 +1,6 @@
 <?php
 /**
- * This file is part of the ForkBB <https://github.com/forkbb>.
+ * This file is part of the ForkBB <https://forkbb.ru, https://github.com/forkbb>.
  *
  * @copyright (c) Visman <mio.visman@yandex.ru, https://github.com/MioVisman>
  * @license   The MIT License (MIT)
@@ -22,6 +22,7 @@ abstract class Admin extends Page
     {
         parent::__construct($container);
 
+        $this->identifier   = 'admin';
         $this->aIndex       = 'index'; # string Указатель на активный пункт навигации в меню админки
         $this->fIndex       = self::FI_ADMIN;
         $this->onlinePos    = 'admin';
@@ -82,6 +83,7 @@ abstract class Admin extends Page
                 'uploads'     => [$r->link('AdminUploads'), 'Uploads'],
                 'antispam'    => [$r->link('AdminAntispam'), 'Antispam'],
                 'logs'        => [$r->link('AdminLogs'), 'Logs'],
+                'extensions'  => [$r->link('AdminExtensions'), 'Extensions'],
                 'maintenance' => [$r->link('AdminMaintenance'), 'Maintenance'],
             ];
         }
@@ -98,12 +100,13 @@ abstract class Admin extends Page
         if ('index' !== $this->aIndex) {
             if (isset($this->aNavigation[$this->aIndex])) {
                 $crumbs[] = $this->aNavigation[$this->aIndex];
+
             } else {
                 $crumbs[] = [null, ['%s', 'unknown']];
             }
         }
 
-        $crumbs[] = [$this->c->Router->link('Admin'), 'Admin title'];
+        $crumbs[] = [$this->c->Router->link('Admin'), 'Admin title', null, 'admin'];
         $result   = parent::crumbs(...$crumbs);
 
         $this->adminHeader = \end($result)[1];

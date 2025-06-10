@@ -1,6 +1,6 @@
 <?php
 /**
- * This file is part of the ForkBB <https://github.com/forkbb>.
+ * This file is part of the ForkBB <https://forkbb.ru, https://github.com/forkbb>.
  *
  * @copyright (c) Visman <mio.visman@yandex.ru, https://github.com/MioVisman>
  * @license   The MIT License (MIT)
@@ -88,6 +88,7 @@ class DataModel extends Model
         if (\str_starts_with($name, '__')) {
             $track = null;
             $name  = \substr($name, 2);
+
         // с отслеживанием
         } else {
             $track = false;
@@ -108,7 +109,6 @@ class DataModel extends Model
         $this->zTrackFlags[$name] = $track;
 
         parent::__set($name, $value);
-
         unset($this->zTrackFlags[$name]);
 
         if (null === $track) {
@@ -143,6 +143,7 @@ class DataModel extends Model
         // без вычисления
         if (\str_starts_with($name, '__')) {
             return $this->getModelAttr(\substr($name, 2));
+
         // с вычислениями
         } else {
             return parent::__get($name);

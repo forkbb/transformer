@@ -1,6 +1,6 @@
 <?php
 /**
- * This file is part of the ForkBB <https://github.com/forkbb>.
+ * This file is part of the ForkBB <https://forkbb.ru, https://github.com/forkbb>.
  *
  * @copyright (c) Visman <mio.visman@yandex.ru, https://github.com/MioVisman>
  * @license   The MIT License (MIT)
@@ -24,16 +24,19 @@ class Email extends RulesValidator
         // поле отсутствует
         if ($v->noValue($email)) {
             return null;
+
         // проверка длины email
         } elseif (\mb_strlen($email, 'UTF-8') > $this->c->MAX_EMAIL_LENGTH) {
             $v->addError('Long email');
 
             return $email;
+
         // это не email
         } elseif (false === ($result = $this->c->Mail->valid($email, true))) {
             $v->addError('The :alias is not valid email');
 
             return $email;
+
         // есть другие ошибки
         } elseif (! empty($v->getErrors())) {
             return $result;
@@ -97,6 +100,7 @@ class Email extends RulesValidator
                 )
             ) {
                 $v->addError('Dupe email');
+
                 $ok = false;
 
             // дополнительная проверка по связанным аккаунтам
@@ -112,6 +116,7 @@ class Email extends RulesValidator
                     )
                 ) {
                     $v->addError('Dupe email (OAuth)');
+
                     $ok = false;
                 }
             }
@@ -126,17 +131,20 @@ class Email extends RulesValidator
                 && ! $originalUser->isGuest
             ) {
                 $flood = \time() - $originalUser->last_email_sent;
+
             } elseif (
                 $user instanceof User
                 && ! $user->isGuest
             ) {
                 $flood = \time() - $user->last_email_sent;
+
             } else {
                 $flood = $this->c->FLOOD_INTERVAL;
             }
 
             if ($flood < $this->c->FLOOD_INTERVAL) {
                 $v->addError(['Account email flood', (int) (($this->c->FLOOD_INTERVAL - $flood) / 60)], FORK_MESS_ERR);
+
                 $ok = false;
             }
         }

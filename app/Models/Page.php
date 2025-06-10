@@ -1,6 +1,6 @@
 <?php
 /**
- * This file is part of the ForkBB <https://github.com/forkbb>.
+ * This file is part of the ForkBB <https://forkbb.ru, https://github.com/forkbb>.
  *
  * @copyright (c) Visman <mio.visman@yandex.ru, https://github.com/MioVisman>
  * @license   The MIT License (MIT)
@@ -16,16 +16,18 @@ use function \ForkBB\__;
 
 abstract class Page extends Model
 {
-    const FI_INDEX = 'index';
-    const FI_USERS = 'userlist';
-    const FI_RULES = 'rules';
-    const FI_SRCH  = 'search';
-    const FI_REG   = 'register';
-    const FI_LOGIN = 'login';
-    const FI_PROFL = 'profile';
-    const FI_PM    = 'pm';
-    const FI_ADMIN = 'admin';
-    const FI_LGOUT = 'logout';
+    const FI_INDEX  = 'index';
+    const FI_USERS  = 'userlist';
+    const FI_RULES  = 'rules';
+    const FI_SRCH   = 'search';
+    const FI_REG    = 'register';
+    const FI_LOGIN  = 'login';
+    const FI_PROFL  = 'profile';
+    const FI_PM     = 'pm';
+    const FI_ADMIN  = 'admin';
+    const FI_LGOUT  = 'logout';
+    const FI_DRAFT  = 'drafts';
+    const FI_PREMOD = 'premod';
 
     /**
      * Заголовки страницы
@@ -40,30 +42,20 @@ abstract class Page extends Model
     public function __construct(Container $container)
     {
         parent::__construct($container);
-
         $container->Lang->load('common');
 
-        $formats                 = $container->DATE_FORMATS;
-        $formats[0]              = __($formats[0]);
-        $formats[1]              = __($formats[1]);
-        $container->DATE_FORMATS = $formats;
-
-        $formats                 = $container->TIME_FORMATS;
-        $formats[0]              = __($formats[0]);
-        $formats[1]              = __($formats[1]);
-        $container->TIME_FORMATS = $formats;
-
-        $this->fIndex       = self::FI_INDEX; # string      Указатель на активный пункт навигации
-        $this->httpStatus   = 200;            # int         HTTP статус ответа для данной страницы
-#       $this->nameTpl      = null;           # null|string Имя шаблона
-#       $this->titles       = [];             # array       Массив титула страницы | setTitles()
-#       $this->fIswev       = [];             # array       Массив info, success, warning, error, validation информации
-#       $this->onlinePos    = '';             # null|string Позиция для таблицы онлайн текущего пользователя
-        $this->onlineDetail = false;          # null|bool   Формировать данные по посетителям online или нет
-        $this->onlineFilter = true;           # bool        Посетители только по текущей странице или по всем
-#       $this->robots       = '';             # string      Переменная для meta name="robots"
-#       $this->canonical    = '';             # string      Переменная для link rel="canonical"
-        $this->hhsLevel     = 'common';       # string      Ключ для $c->HTTP_HEADERS (для вывода заголовков HTTP из конфига)
+        $this->identifier   = 'unknown';      # string|array Идентификатор(ы) для установки классов элемента #fork
+        $this->fIndex       = self::FI_INDEX; # string       Указатель на активный пункт навигации
+        $this->httpStatus   = 200;            # int          HTTP статус ответа для данной страницы
+//      $this->nameTpl      = null;           # null|string  Имя шаблона
+//      $this->titles       = [];             # array        Массив титула страницы | setTitles()
+//      $this->fIswev       = [];             # array        Массив info, success, warning, error, validation информации
+//      $this->onlinePos    = '';             # null|string  Позиция для таблицы онлайн текущего пользователя
+        $this->onlineDetail = false;          # null|bool    Формировать данные по посетителям online или нет
+        $this->onlineFilter = true;           # bool         Посетители только по текущей странице или по всем
+//      $this->robots       = '';             # string       Переменная для meta name="robots"
+//      $this->canonical    = '';             # string       Переменная для link rel="canonical"
+        $this->hhsLevel     = 'common';       # string       Ключ для $c->HTTP_HEADERS (для вывода заголовков HTTP из конфига)
 
         $this->fTitle       = $container->config->o_board_title;
         $this->fDescription = $container->config->o_board_desc;
@@ -97,8 +89,8 @@ abstract class Page extends Model
             ->header('Cache-Control', 'private, no-cache')
             ->header('Content-Type', 'text/html; charset=utf-8')
             ->header('Date', $now)
-            ->header('Last-Modified', $now)
-            ->header('Expires', $now);
+            ->header('Last-Modified', $now);
+            //->header('Expires', $now);
     }
 
     /**
@@ -148,76 +140,73 @@ abstract class Page extends Model
             ],
         ];
 
-        if (
-            1 === $this->user->g_read_board
-            && $this->userRules->viewUsers
-        ) {
-            $navGen[self::FI_USERS] = [
-                $r->link('Userlist'),
-                'User list',
-                'List of users',
-            ];
-        }
+        if (1 === $this->user->g_read_board) {
+            if ($this->userRules->viewUsers) {
+                $navGen[self::FI_USERS] = [
+                    $r->link('Userlist'),
+                    'User list',
+                    'List of users',
+                ];
+            }
 
-        if (
-            1 === $this->c->config->b_rules
-            && 1 === $this->user->g_read_board
-            && (
-                ! $this->user->isGuest
-                || 1 === $this->c->config->b_regs_allow
-            )
-        ) {
-            $navGen[self::FI_RULES] = [
-                $r->link('Rules'),
-                'Rules',
-                'Board rules',
-            ];
-        }
+            if (
+                1 === $this->c->config->b_rules
+                && (
+                    ! $this->user->isGuest
+                    || 1 === $this->c->config->b_regs_allow
+                )
+            ) {
+                $navGen[self::FI_RULES] = [
+                    $r->link('Rules'),
+                    'Rules',
+                    'Board rules',
+                ];
+            }
 
-        if (
-            1 === $this->user->g_read_board
-            && 1 === $this->user->g_search
-        ) {
-            $sub = [];
-            $sub['latest'] = [
-                $r->link(
-                    'SearchAction',
-                    [
-                        'action' => 'latest_active_topics',
-                    ]
-                ),
-                'Latest active topics',
-                'Find latest active topics',
-            ];
-            if (! $this->user->isGuest) {
-                $sub['with-your-posts'] = [
+            if (1 === $this->user->g_search) {
+                $sub = [];
+                $sub['latest'] = [
                     $r->link(
                         'SearchAction',
                         [
-                            'action' => 'topics_with_your_posts',
+                            'action' => 'latest_active_topics',
                         ]
                     ),
-                    'Topics with your posts',
-                    'Find topics with your posts',
+                    'Latest active topics',
+                    'Find latest active topics',
+                ];
+
+                if (! $this->user->isGuest) {
+                    $sub['with-your-posts'] = [
+                        $r->link(
+                            'SearchAction',
+                            [
+                                'action' => 'topics_with_your_posts',
+                            ]
+                        ),
+                        'Topics with your posts',
+                        'Find topics with your posts',
+                    ];
+                }
+
+                $sub['unanswered'] = [
+                    $r->link(
+                        'SearchAction',
+                        [
+                            'action' => 'unanswered_topics',
+                        ]
+                    ),
+                    'Unanswered topics',
+                    'Find unanswered topics',
+                ];
+
+                $navGen[self::FI_SRCH] = [
+                    $r->link('Search'),
+                    'Search',
+                    'Search topics and posts',
+                    $sub
                 ];
             }
-            $sub['unanswered'] = [
-                $r->link(
-                    'SearchAction',
-                    [
-                        'action' => 'unanswered_topics',
-                    ]
-                ),
-                'Unanswered topics',
-                'Find unanswered topics',
-            ];
-
-            $navGen[self::FI_SRCH] = [
-                $r->link('Search'),
-                'Search',
-                'Search topics and posts',
-                $sub
-            ];
         }
 
         if ($this->user->isGuest) {
@@ -228,11 +217,13 @@ abstract class Page extends Model
                     'Register',
                 ];
             }
+
             $navUser[self::FI_LOGIN] = [
                 $r->link('Login'),
                 'Login',
                 'Login',
             ];
+
         } else {
             $navUser[self::FI_PROFL] = [
                 $this->user->link,
@@ -246,6 +237,7 @@ abstract class Page extends Model
                 if (1 !== $this->user->u_pm) {
                     $tmpPM[] = 'pmoff';
                 }
+
                 if ($this->user->u_pm_num_new > 0) {
                     $tmpPM[] = 'pmnew';
                 }
@@ -259,7 +251,34 @@ abstract class Page extends Model
                 ];
             }
 
+            if (
+                1 === $this->user->g_read_board
+                && $this->userRules->useDraft
+                && $this->user->num_drafts > 0
+            ) {
+                $navUser[self::FI_DRAFT] = [
+                    $r->link('Drafts'),
+                    ['Drafts (%s)', $this->user->num_drafts],
+                    'Your drafts',
+                    null,
+                    ['pmnew'],
+                ];
+            }
+
             if ($this->user->isAdmMod) {
+                if (
+                    1 === $this->c->config->b_premoderation
+                    && $this->c->premod->queueSize > 0
+                ) {
+                    $navUser[self::FI_PREMOD] = [
+                        $r->link('Premoderation'),
+                        ['Pre-moderation (%s)', $this->c->premod->queueSize],
+                        'Queue of new topics and posts for moderation',
+                        null,
+                        ['pmnew'],
+                    ];
+                }
+
                 $navUser[self::FI_ADMIN] = [
                     $r->link('Admin'),
                     'Admin',
@@ -286,8 +305,10 @@ abstract class Page extends Model
                    if (empty($matches[4][$i])) {
                        $matches[4][$i] = 'extra' . $i;
                    }
+
                    if (isset($navGen[$matches[4][$i]])) {
                        $navGen[$matches[4][$i]] = [$matches[3][$i], $matches[2][$i], $matches[2][$i]];
+
                    } else {
                        $navGen = \array_merge(
                            \array_slice($navGen, 0, (int) $matches[1][$i]),
@@ -312,7 +333,12 @@ abstract class Page extends Model
             1 === $this->c->config->b_maintenance
             && $this->user->isAdmin
         ) {
-            $this->fIswev = [FORK_MESS_WARN, ['Maintenance mode enabled', $this->c->Router->link('AdminMaintenance')]];
+            if ($this->c->MAINTENANCE_OFF) {
+                $this->fIswev = [FORK_MESS_ERR, ['Maintenance mode enabled off', $this->c->Router->link('AdminMaintenance')]];
+
+            } else {
+                $this->fIswev = [FORK_MESS_WARN, ['Maintenance mode enabled', $this->c->Router->link('AdminMaintenance')]];
+            }
         }
 
         if (
@@ -341,10 +367,11 @@ abstract class Page extends Model
     /**
      * Задает/получает заголовок страницы
      */
-    public function pageHeader(string $name, string $type, int $weight = 0, array $values = null): mixed
+    public function pageHeader(string $name, string $type, int $weight = 0, ?array $values = null): mixed
     {
         if (null === $values) {
             return $this->pageHeaders["{$name}_{$type}"] ?? null;
+
         } else {
             $this->pageHeaders["{$name}_{$type}"] = [
                 'weight' => $weight,
@@ -372,11 +399,7 @@ abstract class Page extends Model
         }
 
         \uasort($this->pageHeaders, function (array $a, array $b) {
-            if ($a['weight'] === $b['weight']) {
-                return 0;
-            } else {
-                return $a['weight'] > $b['weight'] ? -1 : 1;
-            }
+            return $b['weight'] <=> $a['weight'];
         });
 
         return $this->pageHeaders;
@@ -399,12 +422,14 @@ abstract class Page extends Model
             ) {
                 $header = $_SERVER['SERVER_PROTOCOL'];
             }
+
         } else {
             $header .= ':';
         }
 
         if (null === $value) {
             unset($this->httpHeaders[$key]);
+
         } elseif (
             true === $replace
             || empty($this->httpHeaders[$key])
@@ -412,6 +437,7 @@ abstract class Page extends Model
             $this->httpHeaders[$key] = [
                 ["{$header} {$value}", $replace],
             ];
+
         } else {
             $this->httpHeaders[$key][] = ["{$header} {$value}", $replace];
         }
@@ -426,17 +452,15 @@ abstract class Page extends Model
     protected function gethttpHeaders(): array
     {
         foreach ($this->c->HTTP_HEADERS[$this->hhsLevel] as $header => $value) {
-            if (
-                'Content-Security-Policy' === $header
-                && (
-                    $this->needUnsafeInlineStyle
-                    || (
-                        $this->c->isInit('Parser')
-                        && $this->c->Parser->inlineStyle()
-                    )
-                )
-            ) {
-                $value = $this->addUnsafeInline($value);
+            if ('Content-Security-Policy' === $header) {
+                if (
+                    $this->c->isInit('Parser')
+                    && $this->c->Parser->inlineStyle()
+                ) {
+                    $this->addRulesToCSP(['style-src' => '\'unsafe-inline\'']);
+                }
+
+                $value = $this->updateCSP($value);
             }
 
             $this->header($header, $value);
@@ -448,27 +472,124 @@ abstract class Page extends Model
     }
 
     /**
-     * Добавляет в заголовок (Content-Security-Policy) значение unsafe-inline для style-src
+     * Массив для дополнительных правил Content-Security-Policy
      */
-    protected function addUnsafeInline(string $header): string
+    protected array $addCSPRules = [];
+
+    /**
+     * Массив допустимых директив Content-Security-Policy
+     */
+    protected array $CSPDirectives = [
+        'default-src'     => false,
+        'script-src'      => 'default-src',
+        'script-src-elem' => 'script-src',
+        'script-src-attr' => 'script-src',
+        'style-src'       => 'default-src',
+        'style-src-elem'  => 'style-src',
+        'style-src-attr'  => 'style-src',
+        'font-src'        => 'default-src',
+        'img-src'         => 'default-src',
+        'connect-src'     => 'default-src',
+        'worker-src'      => 'default-src',
+        'object-src'      => 'default-src',
+        'media-src'       => 'default-src',
+        'manifest-src'    => 'default-src',
+        'child-src'       => 'default-src',
+        'frame-src'       => 'child-src',
+        'worker-src'      => 'child-src',
+        'base-uri'        => false,
+        'form-action'     => false,
+        'frame-ancestors' => false,
+    ];
+
+    /**
+     * Сохраняет дополнительные правила для изменения Content-Security-Policy
+     * Ключи массива - это имена директив, значения - добавляемые правила
+     */
+    public function addRulesToCSP(array $rules): Page
     {
-        if (\preg_match('%style\-src([^;]+)%', $header, $matches)) {
-            if (false === \strpos($matches[1], 'unsafe-inline')) {
-                return \str_replace($matches[0], "{$matches[0]} 'unsafe-inline'", $header);
-            } else {
-                return $header;
+        foreach ($rules as $directive => $rule) {
+            if (isset($this->CSPDirectives[$directive])) {
+                foreach (\explode(' ', $rule) as $key) {
+                    if (! empty($key)) {
+                        $this->addCSPRules[$directive][$key] = true;
+                    }
+                }
             }
         }
 
-        if (\preg_match('%default\-src([^;]+)%', $header, $matches)) {
-            if (false === \strpos($matches[1], 'unsafe-inline')) {
-                return "{$header};style-src{$matches[1]} 'unsafe-inline'";
-            } else {
-                return "{$header};style-src{$matches[1]}";
+        return $this;
+    }
+
+    /**
+     * Вносит изменения в Content-Security-Policy на основе дополнительных правил
+     */
+    protected function updateCSP(string $csp): string
+    {
+        if (empty($this->addCSPRules)) {
+            return $csp;
+        }
+
+        $raw   = \array_map('\\trim', \explode(';', $csp));
+        $rules = [];
+
+        foreach ($raw as $cur) {
+            $parts     = \explode(' ', $cur);
+            $directive = \array_shift($parts);
+
+            foreach ($parts as $key) {
+                if (! empty($key)) {
+                    $rules[$directive][$key] = true;
+                }
             }
         }
 
-        return "{$header};style-src 'self' 'unsafe-inline'";
+        foreach ($this->CSPDirectives as $directive => $parent) {
+            if (empty($this->addCSPRules[$directive])) {
+                continue;
+            }
+
+            $addDirRules = $this->addCSPRules[$directive];
+
+            if (isset($addDirRules['\'none\''])) {
+                $rules[$directive] = ['\'none\'' => true];
+            }
+
+            if (empty($rules[$directive])) {
+                $oldDirRules = null;
+
+                while (
+                    \is_string($parent)
+                    && null === $oldDirRules
+                ) {
+                    if (empty($rules[$parent])) {
+                        $parent = $this->CSPDirectives[$parent];
+
+                    } else {
+                        $oldDirRules = $rules[$parent];
+                    }
+                }
+
+            } else {
+                $oldDirRules = $rules[$directive];
+                $parent      = $directive;
+            }
+
+            if (isset($oldDirRules['\'none\''])) {
+                $rules[$directive] = $addDirRules;
+
+            } else {
+                $rules[$directive] = \array_merge($oldDirRules, $addDirRules);
+            }
+        }
+
+        $csp = '';
+
+        foreach ($rules as $directive => $parts) {
+            $csp .= $directive . ' ' . \implode(' ', \array_keys($parts)) . ';';
+        }
+
+        return $csp;
     }
 
     /**
@@ -519,6 +640,7 @@ abstract class Page extends Model
             && 2 === \count($value)
         ) {
             $attr[$value[0]][] = $value[1];
+
         } else {
             $attr = \array_merge_recursive($attr, $value); // ???? добавить проверку?
         }
@@ -546,7 +668,7 @@ abstract class Page extends Model
                         $name = ['%s', $name];
                     }
 
-                    $result[]     = [$crumb, $name, $active, $ext];
+                    $result[]     = [$crumb, $name, null, null, $active, $ext];
                     $active       = null;
                     $this->titles = $name;
 
@@ -556,6 +678,7 @@ abstract class Page extends Model
 
                     if ($crumb->linkCrumbExt) {
                         $ext = [$crumb->linkCrumbExt, $crumb->textCrumbExt ?? '#'];
+
                     } else {
                         $ext = null;
                     }
@@ -565,14 +688,16 @@ abstract class Page extends Model
                     $crumb instanceof Model
                     && null !== $crumb->parent
                 );
+
             // ссылка (передана массивом)
             } elseif (\is_array($crumb)) {
-                $result[]     = [$crumb[0], $crumb[1], $active, $crumb[2] ?? $ext];
+                $result[]     = [$crumb[0], $crumb[1], $crumb[2] ?? null, $crumb[3] ?? null, $active, $crumb[4] ?? $ext];
                 $this->titles = $crumb[1];
                 $ext          = null;
+
             // строка
             } else {
-                $result[]     = [null, (string) $crumb, $active, $ext];
+                $result[]     = [null, (string) $crumb, null, null, $active, $ext];
                 $this->titles = (string) $crumb;
                 $ext          = null;
             }
@@ -581,7 +706,7 @@ abstract class Page extends Model
         }
 
         // главная страница
-        $result[] = [$this->c->Router->link('Index'), 'Index', $active, $ext];
+        $result[] = [$this->c->Router->link('Index'), 'Index', null, 'index', $active, $ext];
 
         return \array_reverse($result);
     }
@@ -598,6 +723,7 @@ abstract class Page extends Model
                 $matches[1] . '.min' => $matches[2],
                 $matches[1]          => $matches[2],
             ];
+
         } else {
             $variants = [
                 $path                => '',
@@ -610,6 +736,7 @@ abstract class Page extends Model
             if (\is_file($fullPath)) {
                 if ('' === $end) {
                     return $this->c->PUBLIC_URL . $start;
+
                 } else {
                     $time = \filemtime($fullPath) ?: '0';
 

@@ -1,6 +1,6 @@
 <?php
 /**
- * This file is part of the ForkBB <https://github.com/forkbb>.
+ * This file is part of the ForkBB <https://forkbb.ru, https://github.com/forkbb>.
  *
  * @copyright (c) Visman <mio.visman@yandex.ru, https://github.com/MioVisman>
  * @license   The MIT License (MIT)
@@ -50,7 +50,8 @@ class Manager
         $x = \ord($name);
 
         if ($x > 90 || $x < 65) {
-            return null;
+            return 'repository' === $name ? $this->repository : null;
+
         } else {
             $key = $this->cKey . '/' . \lcfirst($name);
 

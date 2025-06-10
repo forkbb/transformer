@@ -1,6 +1,6 @@
 <?php
 /**
- * This file is part of the ForkBB <https://github.com/forkbb>.
+ * This file is part of the ForkBB <https://forkbb.ru, https://github.com/forkbb>.
  *
  * @copyright (c) Visman <mio.visman@yandex.ru, https://github.com/MioVisman>
  * @license   The MIT License (MIT)
@@ -22,13 +22,16 @@ class Current extends Action
      */
     public function current(): User
     {
-        $ip     = $this->getIp();
-        $cookie = $this->c->Cookie;
-        $user   = $this->load((int) $cookie->uId, $ip);
+        $ip   = \filter_var($_SERVER['REMOTE_ADDR'], \FILTER_VALIDATE_IP) ?: '0.0.0.0';
+        $ua   = \trim($this->c->Secury->replInvalidChars($_SERVER['HTTP_USER_AGENT'] ?? ''));
+        $id   = (int) $this->c->Cookie->uId;
+        $bot  = $id > 0 ? false : $this->isBot($ua);
+        $user = $this->load($id, $ip);
 
         if (! $user->isGuest) {
-            if (! $cookie->verifyUser($user)) {
+            if (! $this->c->Cookie->verifyUser($user)) {
                 $user = $this->load(0, $ip);
+
             } elseif ($user->ip_check_type > 0) {
                 $hexIp = \bin2hex(\inet_pton($ip));
 
@@ -39,16 +42,19 @@ class Current extends Action
         }
 
         $user->__ip        = $ip;
-        $user->__userAgent = $this->getUserAgent();
+        $user->__userAgent = $ua;
 
-        $cookie->setUser($user);
+        $this->c->Cookie->setUser($user);
 
         if ($user->isGuest) {
-            $user->__isBot    = $this->isBot($user->userAgent);
+            $user->__isBot    = false === $bot ? $this->isBot($ua) : $bot;
             $user->__timezone = $this->c->config->o_default_timezone;
-            $user->__language = $this->getLangFromHTTP();
+            $user->__language = 1 === $this->c->config->b_default_lang_auto ? $this->getLangFromHTTP() : $this->c->config->o_default_lang;
+            $user->__locale   = $user->language;
+
         } else {
-            $user->__isBot = false;
+            $user->__isBot    = null;
+
             // Special case: We've timed out, but no other user has browsed the forums since we timed out
             if (
                 $user->logged > 0
@@ -94,29 +100,15 @@ class Current extends Action
             $data = $this->c->DB->query($query, $vars)->fetch();
 
             return $this->manager->guest($data ?: []);
+
         } else {
             return $this->manager->create($data);
         }
     }
 
-    /**
-     * Возврат ip пользователя
-     */
-    protected function getIp(): string
-    {
-        return \filter_var($_SERVER['REMOTE_ADDR'], \FILTER_VALIDATE_IP) ?: '0.0.0.0';
-    }
-
-    /**
-     * Возврат юзер агента браузера пользователя
-     */
-    protected function getUserAgent(): string
-    {
-        return \trim($this->c->Secury->replInvalidChars($_SERVER['HTTP_USER_AGENT'] ?? ''));
-    }
-
-    protected string $defRegex = '%(?:^|[ ()])\b([\w .-]*{}[\w/.!-]*)%i';
-    protected array $botSearchList = [
+    protected array  $brStatus      = [null, 'Unknown', 'Unknown', 'Unknown'];
+    protected string $defRegex      = '%(?:^|[ ()])\b([\w .-]*{}[\w/.!-]*)%i';
+    protected array  $botSearchList = [
         'bot'        => ['%(?<!cu)bot(?!tle)%'],
         'crawl'      => [''],
         'spider'     => ['%spider(?![\w ]*build/)%'],
@@ -129,16 +121,35 @@ class Current extends Action
      * Определяет бота
      * Если бот, то возвращает вычисленное имя
      */
-    protected function isBot(string $agent): string|false
+    protected function isBot(string $agent): ?string
     {
         $status = (int) (
-            empty($_SERVER['HTTP_ACCEPT'])
-            || empty($_SERVER['HTTP_ACCEPT_ENCODING'])
+            empty($_SERVER['HTTP_ACCEPT_ENCODING'])
             || empty($_SERVER['HTTP_ACCEPT_LANGUAGE'])
+            || (
+                ':' === $this->c->BASE_URL[5]
+                && (
+                    empty($_SERVER['HTTP_SEC_FETCH_DEST'])
+                    || empty($_SERVER['HTTP_SEC_FETCH_MODE'])
+                    || empty($_SERVER['HTTP_SEC_FETCH_SITE'])
+                )
+            )
+            || (
+                empty($_SERVER['HTTP_ACCEPT'])
+                && (
+                    empty($_SERVER['HTTP_SEC_FETCH_DEST'])
+                    || 'empty' !== $_SERVER['HTTP_SEC_FETCH_DEST']
+                )
+            )
+            || (
+                isset($_SERVER['HTTP_REFERER'][0])
+                && ! \str_starts_with($_SERVER['HTTP_REFERER'], 'https://')
+                && ! \str_starts_with($_SERVER['HTTP_REFERER'], 'http://')
+            )
         );
 
         if ('' === $agent) {
-            return $status ? 'Unknown' : false;
+            return $this->brStatus[$status];
         }
 
         $agentL = \strtolower($agent);
@@ -148,7 +159,7 @@ class Current extends Action
             || false !== ($pos = \strpos($agentL, 'https:'))
             || false !== ($pos = \strpos($agentL, 'www.'))
         ) {
-            $status = 1;
+            $status = 2;
             $agent  = \substr($agent, 0, $pos);
             $agentL = \strtolower($agent);
         }
@@ -162,8 +173,9 @@ class Current extends Action
                 )
                 && \preg_match($regex[1] ?? \str_replace('{}', $needle, $this->defRegex), $agent, $match)
             ) {
-                $status = 2;
+                $status = 3;
                 $agent  = $match[1];
+
                 break;
             }
         }
@@ -172,18 +184,14 @@ class Current extends Action
             0 === $status
             && (
                 ! \str_starts_with($agent, 'Mozilla/')
-                || (
-                    false === \strpos($agent, ' Gecko')
-                    && false === \strpos($agent, ' MSIE ')
-                )
+                || false === \strpos($agent, ' Gecko')
             )
-            && ! \str_starts_with($agent, 'Opera/')
         ) {
-            $status = 1;
+            $status = 2;
         }
 
-        if (0 === $status) {
-            return false;
+        if ($status < 2) {
+            return $this->brStatus[$status];
         }
 
         $reg = [
@@ -207,7 +215,8 @@ class Current extends Action
             empty($agent)
             || isset($agent[28])
         ) {
-            return 'Unknown';
+            return $this->brStatus[$status];
+
         } else {
             return $agent;
         }
@@ -230,6 +239,7 @@ class Current extends Action
                     $entry  = $arr[0] . '_' . \strtoupper($arr[1]);
                     $main[] = $arr[0];
                 }
+
                 if (isset($langs[$entry])) {
                     return $langs[$entry];
                 }
