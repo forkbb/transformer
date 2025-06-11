@@ -379,7 +379,7 @@ class Transformer extends Model
                 'multi2_idx'    => ['forum_id', 'poster_id'],
                 'pre_mod_idx'   => ['pre_mod'],
             ],
-            'ENGINE' => $this->DBEngine,
+            'ENGINE' => $this->c->DBEngine,
         ];
         $this->c->DB->createTable('::drafts', $schema);
 
@@ -391,6 +391,7 @@ class Transformer extends Model
                 'ext_data'   => ['TEXT', false],
             ],
             'PRIMARY KEY' => ['ext_name'],
+            'ENGINE' => $this->c->DBEngine,
         ];
         $this->c->DB->createTable('::extensions', $schema);
 
@@ -551,7 +552,7 @@ class Transformer extends Model
             'INDEXES' => [
                 'uid_idx' => ['uid'],
             ],
-            'ENGINE' => $this->DBEngine,
+            'ENGINE' => $this->c->DBEngine,
         ];
         $this->c->DB->createTable('::reactions', $schema);
 
@@ -782,8 +783,8 @@ class Transformer extends Model
                 'show_avatars'     => ['TINYINT(1)', false, 1],
                 'show_sig'         => ['TINYINT(1)', false, 1],
                 'timezone'         => ['VARCHAR(255)', false, \date_default_timezone_get()],
-                'time_format'      => ['TINYINT(1)', false, 0],
-                'date_format'      => ['TINYINT(1)', false, 0],
+                'time_format'      => ['TINYINT(1)', false, 1],
+                'date_format'      => ['TINYINT(1)', false, 1],
                 'language'         => ['VARCHAR(25)', false, ''],
                 'locale'           => ['VARCHAR(20)', false, 'en'],
                 'style'            => ['VARCHAR(25)', false, ''],
