@@ -61,7 +61,7 @@ class Install extends Admin
         }
     }
 
-    protected function verifyKey(array $args, string $dbFlag = null): void
+    protected function verifyKey(array $args, ?string $dbFlag = null): void
     {
         if (
             ! isset($args['key'], $this->settings['key'])
