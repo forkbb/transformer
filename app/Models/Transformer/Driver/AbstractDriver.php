@@ -1281,6 +1281,22 @@ abstract class AbstractDriver extends Model
         $tid = (int) $db->query($query)->fetchColumn();
 
         if ($tid > 0) {
+            $query = 'SELECT id
+                FROM ::topics
+                WHERE id_old=?i:tid';
+
+            $newTid = (int) $db->query($query, [':tid' => $tid])->fetchColumn();
+
+            if ($newTid > 0) {
+                $query = 'UPDATE ::config
+                    SET conf_value=?i:tid
+                    WHERE conf_name=\'i_about_me_topic_id\''
+
+                if (false === $db->exec($query, [':tid' => $newTid])) {
+                    return false;
+                }
+            }
+
             return true;
         }
 
