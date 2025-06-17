@@ -272,6 +272,14 @@ class FluxBB_by_Visman extends AbstractDriver
 
         $id  = (int) $vars['id'];
         $now = \time();
+        $l   = match ($vars['language']) {
+            'Russian'             => 'ru',
+            'French'              => 'fr',
+            'Spanish'             => 'es',
+            'Simplified_Chinese'  => 'zh',
+            'Traditional_Chinese' => 'zh',
+            default               => 'en',
+        };
 
         return [
             'id_old'           => $id,
@@ -306,7 +314,8 @@ class FluxBB_by_Visman extends AbstractDriver
             'timezone'         => (string) $vars['timezone'],
             'time_format'      => (int) $vars['time_format'],
             'date_format'      => (int) $vars['date_format'],
-            'language'         => 'Russian' == $vars['language'] ? 'ru' : 'en',
+            'language'         => $l,
+            'locale'           => $l,
             'style'            => 'ForkBB',
             'num_posts'        => (int) $vars['num_posts'],
             'num_topics'       => 0,
@@ -334,6 +343,9 @@ class FluxBB_by_Visman extends AbstractDriver
             'login_ip_cache'   => '',
             'u_up_size_mb'     => 0,
             'unfollowed_f'     => '',
+            'show_reaction'    => 1,
+            'page_scroll'      => 0,
+            'about_me_id'      => 0,
         ];
     }
 
