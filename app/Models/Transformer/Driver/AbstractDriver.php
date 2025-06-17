@@ -1364,7 +1364,7 @@ abstract class AbstractDriver extends Model
 
         $this->c->DB->exec('UPDATE ::posts SET topic_id=?i WHERE id=?i', [$topicId, $postId]);
 
-        $this->exec($inConfig, ['id' => $topicId]);
+        $this->c->DB->exec($inConfig, ['id' => $topicId]);
         //end
 
         return true;
