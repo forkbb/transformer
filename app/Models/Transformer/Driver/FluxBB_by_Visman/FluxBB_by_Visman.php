@@ -710,6 +710,7 @@ class FluxBB_by_Visman extends AbstractDriver
             'editor_id'    => 0,
             'user_agent'   => (string) $vars['user_agent'],
             'topic_id'     => (int) $vars['topic_id'],
+            'reactions'    => '',
         ];
     }
 
