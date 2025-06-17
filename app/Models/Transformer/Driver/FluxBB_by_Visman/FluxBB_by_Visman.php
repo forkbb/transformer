@@ -644,6 +644,14 @@ class FluxBB_by_Visman extends AbstractDriver
             'poll_type'      => (int) $vars['poll_type'],
             'poll_time'      => (int) $vars['poll_time'],
             'poll_term'      => (int) $vars['poll_term'],
+            'solution'       => 0,
+            'solution_wa'    => '',
+            'solution_wa_id' => 0,
+            'solution_time'  => 0,
+            'toc'            => null,
+            'cf_level'       => 0,
+            'cf_data'        => null,
+            'premoderation'  => 0,
         ];
     }
 

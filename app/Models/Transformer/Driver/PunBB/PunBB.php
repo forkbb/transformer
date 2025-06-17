@@ -648,6 +648,14 @@ class PunBB extends AbstractDriver
             'poll_type'      => (int) ($vars['poll_type'] ?? 0),
             'poll_time'      => (int) ($vars['poll_time'] ?? 0),
             'poll_term'      => (int) ($vars['poll_term'] ?? 0),
+            'solution'       => 0,
+            'solution_wa'    => '',
+            'solution_wa_id' => 0,
+            'solution_time'  => 0,
+            'toc'            => null,
+            'cf_level'       => 0,
+            'cf_data'        => null,
+            'premoderation'  => 0,
         ];
     }
 
