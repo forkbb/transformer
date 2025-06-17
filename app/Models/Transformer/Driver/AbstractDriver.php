@@ -530,7 +530,7 @@ abstract class AbstractDriver extends Model
             WHERE id_old>0
             ORDER BY id_old';
 
-        $data = $db->query($query)->fetchAll(PDO::FETCH_COLUMN);
+        $data = $db->query($query)->fetchAll(PDO::FETCH_KEY_PAIR);
 
         return false !== $this->c->Cache->set('repl_of_posts', $data);
     }
