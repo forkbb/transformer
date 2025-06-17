@@ -223,7 +223,18 @@ abstract class AbstractDriver extends Model
             )
             WHERE id_old>0';
 
-        return false !== $db->exec($query);
+        if (false === $db->exec($query)) {
+            return false;
+        }
+
+        $query = 'SELECT id_old, id, username
+            FROM ::users
+            WHERE id_old>0
+            ORDER BY id_old';
+
+        $data = $db->query($query)->fetchAll(PDO::FETCH_UNIQUE);
+
+        return false !== $this->c->Cache->set('repl_of_users', $data);
     }
 
     /*************************************************************************/
@@ -284,7 +295,14 @@ abstract class AbstractDriver extends Model
             }
         }
 
-        return true;
+        $query = 'SELECT id_old, id, forum_name, friendly_name
+            FROM ::forums
+            WHERE id_old>0
+            ORDER BY id_old';
+
+        $data = $db->query($query)->fetchAll(PDO::FETCH_UNIQUE);
+
+        return false !== $this->c->Cache->set('repl_of_forums', $data);
     }
 
     /*************************************************************************/
@@ -415,7 +433,14 @@ abstract class AbstractDriver extends Model
             }
         }
 
-        return true;
+        $query = 'SELECT id_old, id, subject
+            FROM ::topics
+            WHERE id_old>0
+            ORDER BY id_old';
+
+        $data = $db->query($query)->fetchAll(PDO::FETCH_UNIQUE);
+
+        return false !== $this->c->Cache->set('repl_of_topics', $data);
     }
 
     /*************************************************************************/
@@ -500,7 +525,14 @@ abstract class AbstractDriver extends Model
             return false;
         }
 
-        return true;
+        $query = 'SELECT id_old, id
+            FROM ::posts
+            WHERE id_old>0
+            ORDER BY id_old';
+
+        $data = $db->query($query)->fetchAll(PDO::FETCH_COLUMN);
+
+        return false !== $this->c->Cache->set('repl_of_posts', $data);
     }
 
     /*************************************************************************/
@@ -1290,7 +1322,7 @@ abstract class AbstractDriver extends Model
             if ($newTid > 0) {
                 $query = 'UPDATE ::config
                     SET conf_value=?i:tid
-                    WHERE conf_name=\'i_about_me_topic_id\''
+                    WHERE conf_name=\'i_about_me_topic_id\'';
 
                 if (false === $db->exec($query, [':tid' => $newTid])) {
                     return false;
@@ -1341,22 +1373,22 @@ abstract class AbstractDriver extends Model
     /*************************************************************************/
     /* drafts                                                                */
     /*************************************************************************/
-    public function reactionsPre(DB $db, int $id): ?bool
+    public function draftsPre(DB $db, int $id): ?bool
     {
         return null;
     }
 
-    public function reactionsGet(int &$id): ?array
+    public function draftsGet(int &$id): ?array
     {
         return null;
     }
 
-    public function reactionsSet(DB $db, array $vars): bool
+    public function draftsSet(DB $db, array $vars): bool
     {
         return false !== $db->exec($this->insertQuery, $vars);
     }
 
-    public function reactionsEnd(DB $db): bool
+    public function draftsEnd(DB $db): bool
     {
         return true;
     }
