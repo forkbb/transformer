@@ -218,6 +218,7 @@ class Install extends Admin
                 ->addValidators([
                     'check_prefix' => [$this, 'vCheckPrefix'],
                     'check_host'   => [$this, 'vCheckHost'],
+                    'rtrim_url'    => [$this, 'vRtrimURL']
                 ])->addRules([
                     'token'        => 'token:Source',
                     'dbtype'       => 'required|string:trim|in:' . \implode(',', \array_keys($this->dbTypes)),
@@ -226,6 +227,7 @@ class Install extends Admin
                     'dbuser'       => 'exist|string:trim',
                     'dbpass'       => 'exist|string:trim',
                     'dbprefix'     => 'exist|string:trim,empty|check_prefix',
+                    'baseurl'      => 'required|string:trim|rtrim_url|max:128',
                 ])->addAliases([
                     'dbtype'       => 'Database type',
                     'dbhost'       => 'Database server hostname',
@@ -233,6 +235,7 @@ class Install extends Admin
                     'dbuser'       => 'Database username',
                     'dbpass'       => 'Database password',
                     'dbprefix'     => 'Table prefix',
+                    'baseurl'      => 'Base URL',
                 ])->addArguments([
                     'token'        => $args,
                     'dbhost'       => true,
@@ -283,6 +286,7 @@ class Install extends Admin
                 ->addValidators([
                     'check_prefix' => [$this, 'vCheckPrefix'],
                     'check_host'   => [$this, 'vCheckHost'],
+                    'rtrim_url'    => [$this, 'vRtrimURL']
                 ])->addRules([
                     'token'        => 'token:Receiver',
                     'dbtype'       => 'required|string:trim|in:' . \implode(',', \array_keys($this->dbTypes)),
@@ -291,6 +295,7 @@ class Install extends Admin
                     'dbuser'       => 'exist|string:trim',
                     'dbpass'       => 'exist|string:trim',
                     'dbprefix'     => 'required|string:trim,empty|check_prefix',
+                    'baseurl'      => 'required|string:trim|rtrim_url|max:128',
                 ])->addAliases([
                     'dbtype'       => 'Database type',
                     'dbhost'       => 'Database server hostname',
@@ -298,6 +303,7 @@ class Install extends Admin
                     'dbuser'       => 'Database username',
                     'dbpass'       => 'Database password',
                     'dbprefix'     => 'Table prefix',
+                    'baseurl'      => 'Base URL',
                 ])->addArguments([
                     'token'        => $args,
                     'dbhost'       => false,
@@ -450,12 +456,10 @@ class Install extends Admin
                     'rtrim_url'     => [$this, 'vRtrimURL']
                 ])->addRules([
                     'token'         => 'token:Config',
-                    'baseurl'       => 'required|string:trim|rtrim_url|max:128',
                     'cookie_domain' => 'exist|string:trim|max:128',
                     'cookie_path'   => 'required|string:trim|max:1024',
                     'cookie_secure' => 'required|integer|in:0,1',
                 ])->addAliases([
-                    'baseurl'       => 'Base URL',
                     'cookie_domain' => 'Cookie Domain',
                     'cookie_path'   => 'Cookie Path',
                     'cookie_secure' => 'Cookie Secure',
@@ -472,7 +476,7 @@ class Install extends Admin
                 }
 
                 $repl = [ //????
-                    '_BASE_URL_'      => $v->baseurl,
+                    '_BASE_URL_'      => $this->settings['receiver']['baseurl'],
                     '_DB_DSN_'        => $this->c->DB_DSN,
                     '_DB_USERNAME_'   => $this->c->DB_USERNAME,
                     '_DB_PASSWORD_'   => $this->c->DB_PASSWORD,
@@ -616,6 +620,17 @@ class Install extends Admin
                         ],
                     ],
                 ],
+                'board' => [
+                    'fields' => [
+                        'baseurl' => [
+                            'type'      => 'text',
+                            'maxlength' => '128',
+                            'value'     => $v ? $v->baseurl : $this->c->BASE_URL,
+                            'caption'   => 'Base URL',
+                            'required'  => true,
+                        ],
+                    ],
+                ],
             ],
             'btns'   => [
                 'submit'  => [
@@ -678,6 +693,12 @@ class Install extends Admin
                             'caption' => 'Board type',
                             'value'   => $this->settings['sourceInfo']['type'],
                         ],
+                        'sbaseurl' => [
+                            'class'   => ['pline'],
+                            'type'    => 'str',
+                            'caption' => 'Base URL',
+                            'value'   => $this->settings['source']['baseurl'],
+                        ],
                         'stype' => [
                             'class'   => ['pline'],
                             'type'    => 'str',
@@ -733,6 +754,12 @@ class Install extends Admin
                     'class'  => ['data'],
                     'legend' => 'Receiver legend',
                     'fields' => [
+                        'rbaseurl' => [
+                            'class'   => ['pline'],
+                            'type'    => 'str',
+                            'caption' => 'Base URL',
+                            'value'   => $this->settings['receiver']['baseurl'],
+                        ],
                         'rtype' => [
                             'class'   => ['pline'],
                             'type'    => 'str',
@@ -823,17 +850,6 @@ class Install extends Admin
                         ],
                         [
                             'value' => __('Info 11'),
-                        ],
-                    ],
-                ],
-                'board' => [
-                    'fields' => [
-                        'baseurl' => [
-                            'type'      => 'text',
-                            'maxlength' => '128',
-                            'value'     => $v ? $v->baseurl : $this->c->BASE_URL,
-                            'caption'   => 'Base URL',
-                            'required'  => true,
                         ],
                     ],
                 ],
