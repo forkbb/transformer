@@ -1465,4 +1465,73 @@ class FluxBB_by_Visman extends AbstractDriver
             ':conf_value' => $result[1],
         ];
     }
+
+    /*************************************************************************/
+    /* replace_links                                                         */
+    /*************************************************************************/
+    public function replace_linksSet(DB $db, array $vars): bool
+    {
+        $from            = \preg_quote(\str_replace(['https://', 'http://'], '', $this->c->URL_FROM), '%');
+        $count           = 0;
+        $vars['message'] = \preg_replace_callback(
+            "%https?://{$from}/([^\x00-\x1f\[\]\s]+)%i",
+            function ($matches) use (&$count) {
+                if (\str_starts_with($matches[1], 'profile.php?')) {
+                    if (\preg_match('%\bid=(\d+)%', $matches[1], $m)) {
+                        ++$count;
+
+                        return $this->linkGen('user', (int) $m[1]);
+                    }
+
+                } elseif (\str_starts_with($matches[1], 'viewforum.php?')) {
+                    if (\preg_match('%\bid=(\d+)%', $matches[1], $m)) {
+                        ++$count;
+
+                        return $this->linkGen('forum', (int) $m[1]);
+                    }
+
+                } elseif (\str_starts_with($matches[1], 'viewtopic.php?')) {
+                    if (\preg_match('%\bpid=(\d+)%', $matches[1], $m)) {
+                        ++$count;
+
+                        return $this->linkGen('post', (int) $m[1]);
+
+                    } elseif (\preg_match('%\bid=(\d+)%', $matches[1], $m)) {
+                        ++$count;
+
+                        return $this->linkGen('topic', (int) $m[1]);
+                    }
+                }
+
+                return $matches[0];
+            },
+            $vars['message']
+        );
+
+        $vars['message'] = \preg_replace_callback(
+            '%\[(user|forum|topic|post)\](\d+)\[/\1\]%',
+            function ($matches) use (&$count) {
+                ++$count;
+
+                return '[url]' . $this->linkGen($matches[1], (int) $matches[2]) . '[/url]';
+            },
+            $vars['message']
+        );
+
+        $vars['message'] = \preg_replace_callback(
+            '%\[(user|forum|topic|post)=(\d+)\](.*?)\[/\1\]%',
+            function ($matches) use (&$count) {
+                ++$count;
+
+                return '[url=' . $this->linkGen($matches[1], (int) $matches[2]) . ']' . $matches[3] . '[/url]';
+            },
+            $vars['message']
+        );
+
+        if ($count > 0) {
+            return false !== $db->exec($this->updateQuery, $vars);
+        } else {
+            return true;
+        }
+    }
 }

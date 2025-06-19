@@ -134,7 +134,8 @@ return [
 //      'search_matches',
 //      'search_words',
         34 => 'other_again',
-        35 => 'schema re-modification',
+        35 => 'replace_links',
+        36 => 'schema re-modification',
     ],
 
     'shared' => [

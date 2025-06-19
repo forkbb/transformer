@@ -161,7 +161,10 @@ class Transformer extends Model
                     ];
                 }
 
-                $resultPre = $driver->$pre($this->c->DBSource, $id);
+                $resultPre = $driver->$pre(
+                    'replace_links' === $name ? $this->c->DB : $this->c->DBSource,
+                    $id
+                );
 
                 if (false === $resultPre) {
                     throw new RuntimeException("The {$pre} method returned false");

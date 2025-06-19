@@ -400,6 +400,8 @@ class Install extends Admin
 
         $this->c->SOURCE_TYPE = $this->settings['sourceInfo']['type'];
         $this->c->TR_METHOD   = $this->settings['receiverInfo']['method'];
+        $this->c->URL_FROM    = $this->settings['source']['baseurl'];
+        $this->c->URL_TO      = $this->settings['receiver']['baseurl'];
         $this->c->dbMapArray  = $db->getMap();
         $this->c->rUsernames  = $this->settings['usernames'] ?? [];
         $count                = \count($this->c->rUsernames);

@@ -14,6 +14,7 @@ use ForkBB\Core\DB;
 use ForkBB\Models\Model;
 use PDO;
 use PDOException;
+use RuntimeException;
 
 abstract class AbstractDriver extends Model
 {
@@ -1391,5 +1392,133 @@ abstract class AbstractDriver extends Model
     public function draftsEnd(DB $db): bool
     {
         return true;
+    }
+
+    /*************************************************************************/
+    /* replace_links                                                         */
+    /*************************************************************************/
+    public function replace_linksPre(DB $db, int $id): bool
+    {
+        $this->updateQuery = 'UPDATE ::posts
+            SET message=?s:message
+            WHERE id=?i:id';
+
+        $vars = [
+            ':id'    => $id,
+            ':limit' => $this->c->LIMIT,
+        ];
+        $query = 'SELECT id, message
+            FROM ::posts
+            WHERE id>=?i:id AND id_old>0
+            ORDER BY id
+            LIMIT ?i:limit';
+
+        $this->stmt = $db->query($query, $vars);
+
+        return false !== $this->stmt;
+    }
+
+    public function replace_linksGet(int &$id): ?array
+    {
+        $vars = $this->stmt->fetch();
+
+        if (false === $vars) {
+            $this->stmt->closeCursor();
+            $this->stmt = null;
+
+            return null;
+        }
+
+        $id = (int) $vars['id'];
+
+        return $vars;
+    }
+
+//    public function replace_linksSet(DB $db, array $vars): bool
+//    {
+////        $this->c->URL_FROM
+////        $this->c->URL_TO
+//
+//        return false !== $db->exec($this->updateQuery, $vars);
+//    }
+
+    public function replace_linksEnd(DB $db): bool
+    {
+        return true;
+    }
+
+    protected int|array $replOfUsers  = 0;
+    protected int|array $replOfForums = 0;
+    protected int|array $replOfTopics = 0;
+    protected int|array $replOfPosts  = 0;
+
+    protected function linkGen(string $type, int $i): string
+    {
+        switch ($type) {
+            case 'user':
+                if (0 === $this->replOfUsers) {
+                    $this->replOfUsers = $this->c->Cache->get('repl_of_users', []);
+                }
+
+                if (isset($this->replOfUsers[$i])) {
+                    $id       = $this->replOfUsers[$i]['id'];
+                    $username = $this->c->Func->friendly($this->replOfUsers[$i]['username']);
+                    $username = \rawurlencode($username);
+
+                    return "{$this->c->URL_TO}/user/{$id}/{$username}";
+
+                } else {
+                    return "Bad link to old user number {$i}";
+                }
+
+            case 'forum':
+                if (0 === $this->replOfForums) {
+                    $this->replOfForums = $this->c->Cache->get('repl_of_forums', []);
+                }
+
+                if (isset($this->replOfForums[$i])) {
+                    $id   = $this->replOfForums[$i]['id'];
+                    $name = isset($this->replOfForums[$i]['friendly_name'][0]) ? $this->replOfForums[$i]['friendly_name'] : $this->replOfForums[$i]['forum_name'];
+                    $name = \rawurlencode($name);
+
+                    return "{$this->c->URL_TO}/forum/{$id}/{$name}";
+
+                } else {
+                    return "Bad link to old forum number {$i}";
+                }
+
+            case 'post':
+                if (0 === $this->replOfPosts) {
+                    $this->replOfPosts = $this->c->Cache->get('repl_of_posts', []);
+                }
+
+                if (isset($this->replOfPosts[$i])) {
+                    $id = $this->replOfPosts[$i];
+
+                    return "{$this->c->URL_TO}/post/{$id}#p{$id}";
+
+                } else {
+                    return "Bad link to old post number {$i}";
+                }
+
+            case 'topic':
+                if (0 === $this->replOfTopics) {
+                    $this->replOfTopics = $this->c->Cache->get('repl_of_topics', []);
+                }
+
+                if (isset($this->replOfTopics[$i])) {
+                    $id   = $this->replOfTopics[$i]['id'];
+                    $name = $this->c->Func->friendly($this->replOfTopics[$i]['subject']);
+                    $name = \rawurlencode($name);
+
+                    return "{$this->c->URL_TO}/topic/{$id}/{$name}";
+
+                } else {
+                    return "Bad link to old topic number {$i}";
+                }
+
+            default:
+                throw new RuntimeException("Unknown link type: '{$type}'");
+        }
     }
 }
