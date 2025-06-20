@@ -42,6 +42,10 @@ Two options
 * Note: Root must point to the [**/public/**](https://github.com/forkbb/forkbb/tree/master/public) directory.
 * Note: The **index.dist.php** file does not need to be renamed.
 
+## Before starting
+
+Configure the **FRIENDLY_URL** section in the files /app/config/install.php and /app/config/main.dist.php ( [topic](https://forkbb.ru/topic/95/transliteratsiya-translitation) ).
+
 ## Links
 
 * Homepage: https://forkbb.ru/
