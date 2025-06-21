@@ -1736,7 +1736,7 @@ class ForkBB extends AbstractDriver
                     }
 
                 } elseif (\str_starts_with($matches[1], 'forum')) {
-                    if (\preg_match('%^forum/\d+)%', $matches[1], $m)) {
+                    if (\preg_match('%^forum/(\d+)%', $matches[1], $m)) {
                         ++$count;
 
                         return $this->linkGen('forum', (int) $m[1]);
