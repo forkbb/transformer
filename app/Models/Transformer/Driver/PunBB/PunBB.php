@@ -240,6 +240,9 @@ class PunBB extends AbstractDriver
             'g_up_size_kb'           => 0,
             'g_up_limit_mb'          => 0,
             'g_delete_profile'       => 0,
+            'g_use_reaction'         => 1,
+            'g_use_about_me'         => 1,
+            'g_premoderation'        => 0,
         ];
     }
 
