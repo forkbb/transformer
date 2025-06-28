@@ -1726,7 +1726,7 @@ class ForkBB extends AbstractDriver
         $from            = \preg_quote(\str_replace(['https://', 'http://'], '', $this->c->URL_FROM), '%');
         $count           = 0;
         $vars['message'] = \preg_replace_callback(
-            "%https?://{$from}/([^\x00-\x1f\[\]\s]+)%i",
+            '%https?://' . $from . '/([^\\x00-\\x1f\\[\\]\\s]+)%i',
             function ($matches) use (&$count) {
                 if (\str_starts_with($matches[1], 'user')) {
                     if (\preg_match('%^user/(\d+)%', $matches[1], $m)) {
